@@ -1,0 +1,6 @@
+@BocciaCoaching_HostAddress = http://localhost:5243
+
+GET {{BocciaCoaching_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
