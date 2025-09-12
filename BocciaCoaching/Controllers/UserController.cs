@@ -79,5 +79,12 @@ namespace BocciaCoaching.Controllers
             return Ok(users);
         }
 
+
+        [HttpPost("ValidateEmail")]
+        public async Task<ActionResult<IEnumerable<String>>> ValidateEmail(String email)
+        {
+            String Response = await _user.ValidateEmail(email);
+            return Ok(Response);
+        }
     }
 }

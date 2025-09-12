@@ -56,5 +56,11 @@ namespace BocciaCoaching.Services
         {
             return _repository.RegistrarAtleta(atlheteInfoSave);
         }
+
+
+        public Task<String> ValidateEmail(String email)
+        {
+            return _repository.ValidateEmail(email);
+        }
     }
 }
