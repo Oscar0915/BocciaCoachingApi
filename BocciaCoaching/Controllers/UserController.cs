@@ -81,9 +81,9 @@ namespace BocciaCoaching.Controllers
 
 
         [HttpPost("ValidateEmail")]
-        public async Task<ActionResult<IEnumerable<String>>> ValidateEmail(ValidateEmailDto email)
+        public async Task<ActionResult<IEnumerable<ValidateEmailDto>>> ValidateEmail(ValidateEmailDto email)
         {
-            String Response = await _user.ValidateEmail(email);
+            ValidateEmailDto Response = await _user.ValidateEmail(email);
             return Ok(Response);
         }
     }
