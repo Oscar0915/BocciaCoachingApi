@@ -15,7 +15,7 @@ namespace BocciaCoaching.Services.Interfaces
         Task<ResponseAddAssessStrengthDto> CrearEvaluacion(AddAssessStrengthDto addAssessStrengthDto);
         Task<AthletesToEvaluated> AgregarAtletaAEvaluacion(RequestAddAthleteToEvaluationDto athletesToEvaluated);
         Task<bool> AgregarDetalleDeEvaluacion(RequestAddDetailToEvaluationForAthlete requestAddDetailToEvaluationForAthlete);
-        Task<String> ValidateEmail(String email);
+        Task<String> ValidateEmail(ValidateEmailDto email);
 
     }
 }

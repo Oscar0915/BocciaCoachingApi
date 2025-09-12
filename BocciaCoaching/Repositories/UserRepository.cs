@@ -235,14 +235,14 @@ namespace BocciaCoaching.Repositories
         }
 
 
-        public async Task<String> ValidateEmail(String email)
+        public async Task<String> ValidateEmail(ValidateEmailDto email)
         {
-            var isAvailable = await GetUserByEmailAsync(email);
+            var isAvailable = await GetUserByEmailAsync(email.Email);
 
             if (isAvailable != null)
                 return "No disponible";
 
-            return email;
+            return email.Email;
 
         }
 

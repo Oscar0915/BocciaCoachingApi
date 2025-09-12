@@ -58,7 +58,7 @@ namespace BocciaCoaching.Services
         }
 
 
-        public Task<String> ValidateEmail(String email)
+        public Task<String> ValidateEmail(ValidateEmailDto email)
         {
             return _repository.ValidateEmail(email);
         }
