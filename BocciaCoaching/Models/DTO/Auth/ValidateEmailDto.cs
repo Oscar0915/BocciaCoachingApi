@@ -1,4 +1,4 @@
-﻿namespace BocciaCoaching.Models.DTO.User
+﻿namespace BocciaCoaching.Models.DTO.Auth
 {
     public class ValidateEmailDto
     {
