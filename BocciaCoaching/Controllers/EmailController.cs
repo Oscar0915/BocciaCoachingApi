@@ -38,13 +38,11 @@ namespace BocciaCoaching.Controllers
 
 
         [HttpPost("ValidateCode")]
-        public async Task<ActionResult<IEnumerable<bool>>> ValidateCode(EmailParametersDto emailParametersDto)
+        public async Task<ActionResult<IEnumerable<EmailValidateCodeResponseDto>>> ValidateCode(EmailParametersDto emailParametersDto)
         {
             var isValid = _email.ValidateCode(emailParametersDto);
 
-            return isValid
-                ? Ok("Código válido ✅")
-                : BadRequest("Código inválido ❌ o expirado ⏳");
+            return Ok(isValid);
         }
     }
 }

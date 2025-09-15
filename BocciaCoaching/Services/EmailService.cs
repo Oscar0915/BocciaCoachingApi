@@ -49,17 +49,17 @@ namespace BocciaCoaching.Services
             _cache.Set(emailParametersDto.ToEmail, emailParametersDto.Code, options);
         }
 
-        public bool ValidateCode(EmailParametersDto emailParametersDto)
+        public EmailValidateCodeResponseDto ValidateCode(EmailParametersDto emailParametersDto)
         {
             if (_cache.TryGetValue(emailParametersDto.ToEmail, out string? storedCode))
             {
                 if (storedCode == emailParametersDto.Code)
                 {
                     _cache.Remove(emailParametersDto.ToEmail); 
-                    return true;
+                    return new EmailValidateCodeResponseDto { Message = "Código válido" , StateCode=200};
                 }
             }
-            return false;
+            return new EmailValidateCodeResponseDto { Message = "Código no válido", StateCode = 400 };
         }
     }
 }

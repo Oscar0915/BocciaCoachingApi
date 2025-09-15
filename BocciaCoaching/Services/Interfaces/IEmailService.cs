@@ -6,6 +6,6 @@ namespace BocciaCoaching.Services.Interfaces
     {
         Task SendSecurityCodeAsync(EmailParametersDto emailParametersDto);
         void SaveCode(EmailParametersDto emailParametersDto);
-        bool ValidateCode(EmailParametersDto emailParametersDto);
+        EmailValidateCodeResponseDto ValidateCode(EmailParametersDto emailParametersDto);
     }
 }
