@@ -26,12 +26,21 @@ namespace BocciaCoaching.Repositories
 
                 var user = new User
                 {
-                    FirstName = userDto.FirstName,
                     Email = userDto.Email,
                     Password = passwordHash,
+                    Country = userDto.Region,
                 };
 
                 await _context.Users.AddAsync(user);
+                await _context.SaveChangesAsync();
+
+                var Athlete = new UserRol
+                {
+                    RolId = userDto.Rol,
+                    UserId = user.UserId
+                };
+
+                await _context.UserRols.AddAsync(Athlete);
                 await _context.SaveChangesAsync();
 
                 return true;

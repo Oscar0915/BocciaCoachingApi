@@ -23,6 +23,8 @@ namespace BocciaCoaching.Models.Entities
 
         public string? Address { get; set; }
 
+        public string? Country { get; set; }
+
         public DateTime? Seniority { get; set; }
 
         public bool Status { get; set; } = true;

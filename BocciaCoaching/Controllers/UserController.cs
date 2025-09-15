@@ -28,7 +28,7 @@ namespace BocciaCoaching.Controllers
         }
 
 
-        [HttpPost(Name = "AddInfoUser")]
+        [HttpPost("AddInfoUser")]
         public async Task<ActionResult<IEnumerable<bool>>> Add(InfoUserRegisterDto user)
         {
             var users = await _user.AddUser(user);
