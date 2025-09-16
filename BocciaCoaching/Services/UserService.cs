@@ -47,9 +47,9 @@ namespace BocciaCoaching.Services
             return _repository.GetByIdAsync(id);
         }
 
-        public Task<LoginResponseDto?> IniciarSesion(LoginRequestDto loginDto)
+        public Task<LoginResponseDto?> Login(LoginRequestDto loginDto)
         {
-            return _repository.IniciarSesion(loginDto);
+            return _repository.Login(loginDto);
         }
 
         public Task<bool> RegistrarAtleta(AtlheteInfoSave atlheteInfoSave)

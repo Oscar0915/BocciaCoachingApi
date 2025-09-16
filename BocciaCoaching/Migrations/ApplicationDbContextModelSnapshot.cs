@@ -185,7 +185,7 @@ namespace BocciaCoaching.Migrations
                     b.Property<DateTime?>("Seniority")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<bool>("Status")
+                    b.Property<bool?>("Status")
                         .HasColumnType("tinyint(1)");
 
                     b.Property<DateTime?>("UpdatedAt")

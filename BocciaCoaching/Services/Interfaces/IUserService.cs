@@ -10,7 +10,7 @@ namespace BocciaCoaching.Services.Interfaces
         Task<IEnumerable<InfoBasicUserDto>> GetAllAsync();
         Task<InfoBasicUserDto?> GetByIdAsync(int id);
         Task<bool> AddUser(InfoUserRegisterDto userDto);
-        Task<LoginResponseDto?> IniciarSesion(LoginRequestDto loginDto);
+        Task<LoginResponseDto?> Login(LoginRequestDto loginDto);
         Task<bool> RegistrarAtleta(AtlheteInfoSave atlheteInfoSave);
         Task<ResponseAddAssessStrengthDto> CrearEvaluacion(AddAssessStrengthDto addAssessStrengthDto);
         Task<AthletesToEvaluated> AgregarAtletaAEvaluacion(RequestAddAthleteToEvaluationDto athletesToEvaluated);

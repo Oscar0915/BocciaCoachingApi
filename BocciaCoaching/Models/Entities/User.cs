@@ -19,7 +19,7 @@ namespace BocciaCoaching.Models.Entities
 
         public string? Email { get; set; }
 
-        public string? Password { get; set; }
+        public  string? Password { get; set; }
 
         public string? Address { get; set; }
 
@@ -27,7 +27,7 @@ namespace BocciaCoaching.Models.Entities
 
         public DateTime? Seniority { get; set; }
 
-        public bool Status { get; set; } = true;
+        public bool? Status { get; set; } = true;
 
         public Session? Session { get; set; }
         public DateTime CreatedAt { get ; set ; }

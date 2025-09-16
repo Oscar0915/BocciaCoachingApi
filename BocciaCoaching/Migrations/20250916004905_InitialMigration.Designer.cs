@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BocciaCoaching.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250902045849_CreateInitial")]
-    partial class CreateInitial
+    [Migration("20250916004905_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace BocciaCoaching.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
-            modelBuilder.Entity("BocciaCoaching.Models.AssessStrength", b =>
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.AssessStrength", b =>
                 {
                     b.Property<int>("AssessStrengthId")
                         .ValueGeneratedOnAdd()
@@ -41,7 +41,7 @@ namespace BocciaCoaching.Migrations
                     b.ToTable("AssessStrength");
                 });
 
-            modelBuilder.Entity("BocciaCoaching.Models.AthletesToEvaluated", b =>
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.AthletesToEvaluated", b =>
                 {
                     b.Property<int>("AthletesToEvaluatedId")
                         .ValueGeneratedOnAdd()
@@ -69,7 +69,7 @@ namespace BocciaCoaching.Migrations
                     b.ToTable("AthletesToEvaluated");
                 });
 
-            modelBuilder.Entity("BocciaCoaching.Models.EvaluationDetailStrength", b =>
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.EvaluationDetailStrength", b =>
                 {
                     b.Property<int>("EvaluationDetailStrengthId")
                         .ValueGeneratedOnAdd()
@@ -83,8 +83,26 @@ namespace BocciaCoaching.Migrations
                     b.Property<int>("AthleteId")
                         .HasColumnType("int");
 
+                    b.Property<int>("BoxNumber")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Observations")
+                        .HasColumnType("longtext");
+
+                    b.Property<decimal?>("ScoreObtained")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<decimal?>("TargetDistance")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<int>("ThrowOrder")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime(6)");
@@ -98,7 +116,7 @@ namespace BocciaCoaching.Migrations
                     b.ToTable("EvaluationDetailStrength");
                 });
 
-            modelBuilder.Entity("BocciaCoaching.Models.Rol", b =>
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.Rol", b =>
                 {
                     b.Property<int>("RolId")
                         .ValueGeneratedOnAdd()
@@ -115,7 +133,7 @@ namespace BocciaCoaching.Migrations
                     b.ToTable("Rol");
                 });
 
-            modelBuilder.Entity("BocciaCoaching.Models.Session", b =>
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.Session", b =>
                 {
                     b.Property<int>("SessionId")
                         .ValueGeneratedOnAdd()
@@ -134,7 +152,7 @@ namespace BocciaCoaching.Migrations
                     b.ToTable("Session");
                 });
 
-            modelBuilder.Entity("BocciaCoaching.Models.User", b =>
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.User", b =>
                 {
                     b.Property<int>("UserId")
                         .ValueGeneratedOnAdd()
@@ -144,6 +162,12 @@ namespace BocciaCoaching.Migrations
 
                     b.Property<string>("Address")
                         .HasColumnType("longtext");
+
+                    b.Property<string>("Country")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Dni")
                         .HasColumnType("longtext");
@@ -164,15 +188,18 @@ namespace BocciaCoaching.Migrations
                     b.Property<DateTime?>("Seniority")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<bool>("Status")
+                    b.Property<bool?>("Status")
                         .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
 
                     b.HasKey("UserId");
 
                     b.ToTable("User");
                 });
 
-            modelBuilder.Entity("BocciaCoaching.Models.UserRol", b =>
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.UserRol", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -198,21 +225,21 @@ namespace BocciaCoaching.Migrations
                     b.ToTable("UserRol");
                 });
 
-            modelBuilder.Entity("BocciaCoaching.Models.AthletesToEvaluated", b =>
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.AthletesToEvaluated", b =>
                 {
-                    b.HasOne("BocciaCoaching.Models.AssessStrength", "AssessStrength")
+                    b.HasOne("BocciaCoaching.Models.Entities.AssessStrength", "AssessStrength")
                         .WithMany()
                         .HasForeignKey("AssessStrengthId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BocciaCoaching.Models.User", "Athlete")
+                    b.HasOne("BocciaCoaching.Models.Entities.User", "Athlete")
                         .WithMany()
                         .HasForeignKey("AthleteId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BocciaCoaching.Models.User", "Coach")
+                    b.HasOne("BocciaCoaching.Models.Entities.User", "Coach")
                         .WithMany()
                         .HasForeignKey("CoachId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -225,15 +252,15 @@ namespace BocciaCoaching.Migrations
                     b.Navigation("Coach");
                 });
 
-            modelBuilder.Entity("BocciaCoaching.Models.EvaluationDetailStrength", b =>
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.EvaluationDetailStrength", b =>
                 {
-                    b.HasOne("BocciaCoaching.Models.AssessStrength", "AssessStrength")
+                    b.HasOne("BocciaCoaching.Models.Entities.AssessStrength", "AssessStrength")
                         .WithMany()
                         .HasForeignKey("AssessStrengthId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BocciaCoaching.Models.User", "Athlete")
+                    b.HasOne("BocciaCoaching.Models.Entities.User", "Athlete")
                         .WithMany()
                         .HasForeignKey("AthleteId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -244,26 +271,26 @@ namespace BocciaCoaching.Migrations
                     b.Navigation("Athlete");
                 });
 
-            modelBuilder.Entity("BocciaCoaching.Models.Session", b =>
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.Session", b =>
                 {
-                    b.HasOne("BocciaCoaching.Models.User", "User")
+                    b.HasOne("BocciaCoaching.Models.Entities.User", "User")
                         .WithOne("Session")
-                        .HasForeignKey("BocciaCoaching.Models.Session", "UserId")
+                        .HasForeignKey("BocciaCoaching.Models.Entities.Session", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("BocciaCoaching.Models.UserRol", b =>
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.UserRol", b =>
                 {
-                    b.HasOne("BocciaCoaching.Models.Rol", "Rol")
+                    b.HasOne("BocciaCoaching.Models.Entities.Rol", "Rol")
                         .WithMany()
                         .HasForeignKey("RolId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BocciaCoaching.Models.User", "User")
+                    b.HasOne("BocciaCoaching.Models.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -274,7 +301,7 @@ namespace BocciaCoaching.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("BocciaCoaching.Models.User", b =>
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.User", b =>
                 {
                     b.Navigation("Session");
                 });

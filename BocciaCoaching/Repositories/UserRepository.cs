@@ -29,6 +29,7 @@ namespace BocciaCoaching.Repositories
                     Email = userDto.Email,
                     Password = passwordHash,
                     Country = userDto.Region,
+                    FirstName = "Name",
                 };
 
                 await _context.Users.AddAsync(user);
@@ -78,7 +79,15 @@ namespace BocciaCoaching.Repositories
         public async Task<User?> GetUserByEmailAsync(string email)
         {
             return await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == email);
+     .Select(u => new User
+     {
+         UserId = u.UserId,
+         Email = u.Email ?? string.Empty,
+         Password = u.Password ?? string.Empty,
+         FirstName = u.FirstName ?? string.Empty,
+         LastName = u.LastName ?? string.Empty
+     })
+     .FirstOrDefaultAsync(u => u.Email == email);
         }
 
         /// <summary>
@@ -86,7 +95,7 @@ namespace BocciaCoaching.Repositories
         /// </summary>
         /// <param name="userDto"></param>
         /// <returns></returns>
-        public async Task<LoginResponseDto?> IniciarSesion(LoginRequestDto loginDto)
+        public async Task<LoginResponseDto?> Login(LoginRequestDto loginDto)
         {
             var user = await GetUserByEmailAsync(loginDto.Email);
             if (user == null) return null;

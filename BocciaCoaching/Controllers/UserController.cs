@@ -38,9 +38,9 @@ namespace BocciaCoaching.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<IEnumerable<LoginResponseDto>>> Login(LoginRequestDto user)
         {
-            var users = await _user.IniciarSesion(user);
+            var users = await _user.Login(user);
 
-            var result = await _user.IniciarSesion(user);
+            var result = await _user.Login(user);
             if (result == null)
                 return Unauthorized(new { message = "Credenciales inválidas" });
 

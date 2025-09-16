@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BocciaCoaching.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateInitial : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -62,8 +62,12 @@ namespace BocciaCoaching.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Address = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    Country = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     Seniority = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    Status = table.Column<bool>(type: "tinyint(1)", nullable: false)
+                    Status = table.Column<bool>(type: "tinyint(1)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -111,6 +115,13 @@ namespace BocciaCoaching.Migrations
                 {
                     EvaluationDetailStrengthId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    BoxNumber = table.Column<int>(type: "int", nullable: false),
+                    ThrowOrder = table.Column<int>(type: "int", nullable: false),
+                    TargetDistance = table.Column<decimal>(type: "decimal(65,30)", nullable: true),
+                    ScoreObtained = table.Column<decimal>(type: "decimal(65,30)", nullable: true),
+                    Observations = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Status = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     AthleteId = table.Column<int>(type: "int", nullable: false),
                     AssessStrengthId = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
