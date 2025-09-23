@@ -13,19 +13,14 @@ namespace BocciaCoaching.Data
         public DbSet<Session> Sessions { get; set; }
         public DbSet<AthletesToEvaluated> AthletesToEvaluated { get; set; }
         public DbSet<EvaluationDetailStrength> EvaluationDetailStrengths { get; set; }
-
-
-
+        public DbSet<Team> Teams { get; set; }
+        public DbSet<TeamUser> TeamsUsers { get; set; }
         public DbSet<AssessStrength> AssessStrengths { get; set; }
 
         #region Required
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<User>()
-                .Property(b => b.FirstName)
-                .IsRequired();
-
-            base.OnModelCreating(modelBuilder);
+            
         }
         #endregion
 

@@ -3,6 +3,7 @@ using BocciaCoaching.Models.DTO.AssessStrength;
 using BocciaCoaching.Models.DTO.Auth;
 using BocciaCoaching.Models.DTO.User;
 using BocciaCoaching.Models.Entities;
+using BocciaCoaching.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Org.BouncyCastle.Crypto.Generators;
 using System.Security.Cryptography.X509Certificates;

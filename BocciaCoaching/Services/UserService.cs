@@ -3,7 +3,7 @@ using BocciaCoaching.Models.DTO.AssessStrength;
 using BocciaCoaching.Models.DTO.Auth;
 using BocciaCoaching.Models.DTO.User;
 using BocciaCoaching.Models.Entities;
-using BocciaCoaching.Repositories;
+using BocciaCoaching.Repositories.Interfaces;
 using BocciaCoaching.Services.Interfaces;
 
 namespace BocciaCoaching.Services

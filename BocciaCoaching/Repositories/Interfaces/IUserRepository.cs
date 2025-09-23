@@ -5,7 +5,7 @@ using BocciaCoaching.Models.DTO.User;
 using BocciaCoaching.Models.Entities;
 using System.Threading.Tasks;
 
-namespace BocciaCoaching.Repositories
+namespace BocciaCoaching.Repositories.Interfaces
 {
     public interface IUserRepository
     {
