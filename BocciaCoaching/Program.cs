@@ -28,9 +28,14 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddMemoryCache();
 
+//Services
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<ITeamService, TeamService>();
+
+//Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ITeamRepository, TeamRepository>();
 
 
 builder.Services.AddControllers();
