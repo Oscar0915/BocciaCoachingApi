@@ -6,9 +6,9 @@ using MimeKit;
 
 namespace BocciaCoaching.Services
 {
-    public class EmailService: IEmailService
+    public class EmailService : IEmailService
     {
-        private readonly string _smtpServer = "smtp.hostinger.com"; 
+        private readonly string _smtpServer = "smtp.hostinger.com";
         private readonly int _port = 587;
         private readonly string _fromEmail = "notify@bocciacoaching.com";
         private readonly string _password = "Sr[c26g3";
@@ -22,21 +22,29 @@ namespace BocciaCoaching.Services
 
         public async Task SendSecurityCodeAsync(EmailParametersDto emailParametersDto)
         {
-            var message = new MimeMessage();
-            message.From.Add(new MailboxAddress("Boccia Coaching", _fromEmail));
-            message.To.Add(new MailboxAddress("", emailParametersDto.ToEmail));
-            message.Subject = "Código de verificación";
-
-            message.Body = new TextPart("plain")
+            try
             {
-                Text = $"Tu código de verificación es: {emailParametersDto.Code}\nEste código expira en 5 minutos."
-            };
+                var message = new MimeMessage();
+                message.From.Add(new MailboxAddress("Boccia Coaching", _fromEmail));
+                message.To.Add(new MailboxAddress("", emailParametersDto.ToEmail));
+                message.Subject = "Código de verificación";
 
-            using var client = new SmtpClient();
-            await client.ConnectAsync(_smtpServer, _port, MailKit.Security.SecureSocketOptions.StartTls);
-            await client.AuthenticateAsync(_fromEmail, _password);
-            await client.SendAsync(message);
-            await client.DisconnectAsync(true);
+                message.Body = new TextPart("plain")
+                {
+                    Text = $"Tu código de verificación es: {emailParametersDto.Code}\nEste código expira en 5 minutos."
+                };
+
+                using var client = new SmtpClient();
+                await client.ConnectAsync(_smtpServer, _port, MailKit.Security.SecureSocketOptions.StartTls);
+                await client.AuthenticateAsync(_fromEmail, _password);
+                await client.SendAsync(message);
+                await client.DisconnectAsync(true);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+
         }
 
 
@@ -55,8 +63,8 @@ namespace BocciaCoaching.Services
             {
                 if (storedCode == emailParametersDto.Code)
                 {
-                    _cache.Remove(emailParametersDto.ToEmail); 
-                    return new EmailValidateCodeResponseDto { Message = "Código válido" , StateCode=200};
+                    _cache.Remove(emailParametersDto.ToEmail);
+                    return new EmailValidateCodeResponseDto { Message = "Código válido", StateCode = 200 };
                 }
             }
             return new EmailValidateCodeResponseDto { Message = "Código no válido", StateCode = 400 };
