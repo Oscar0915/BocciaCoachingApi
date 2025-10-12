@@ -16,6 +16,8 @@ namespace BocciaCoaching.Data
         public DbSet<Team> Teams { get; set; }
         public DbSet<TeamUser> TeamsUsers { get; set; }
         public DbSet<AssessStrength> AssessStrengths { get; set; }
+        public DbSet<ModuleError> ModuleError { get; set; }
+        public DbSet<LogError> LogError { get; set; }
 
         #region Required
         protected override void OnModelCreating(ModelBuilder modelBuilder)

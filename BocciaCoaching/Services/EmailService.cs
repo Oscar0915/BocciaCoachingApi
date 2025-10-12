@@ -1,13 +1,18 @@
-﻿using BocciaCoaching.Models.DTO.Auth;
+﻿using BocciaCoaching.Data;
+using BocciaCoaching.Models.DTO.Auth;
+using BocciaCoaching.Models.Entities;
+using BocciaCoaching.Repositories;
 using BocciaCoaching.Services.Interfaces;
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Caching.Memory;
 using MimeKit;
+using System.Reflection;
 
 namespace BocciaCoaching.Services
 {
     public class EmailService : IEmailService
     {
+        private readonly LogErrorRepository logErrorRepository; 
         private readonly string _smtpServer = "smtp.hostinger.com";
         private readonly int _port = 587;
         private readonly string _fromEmail = "notify@bocciacoaching.com";
@@ -15,9 +20,10 @@ namespace BocciaCoaching.Services
 
         private readonly IMemoryCache _cache;
 
-        public EmailService(IMemoryCache cache)
+        public EmailService(IMemoryCache cache, ApplicationDbContext context)
         {
             _cache = cache;
+            logErrorRepository = new LogErrorRepository(context);
         }
 
         public async Task SendSecurityCodeAsync(EmailParametersDto emailParametersDto)
@@ -39,10 +45,24 @@ namespace BocciaCoaching.Services
                 await client.AuthenticateAsync(_fromEmail, _password);
                 await client.SendAsync(message);
                 await client.DisconnectAsync(true);
+
+                LogError _log = new()
+                {
+                    ModuleErrorId = 1,
+                    ErrorMessage = "Sin error",
+                    Location = MethodBase.GetCurrentMethod().Name
+                };
+                await logErrorRepository.AddLogError(_log);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                LogError _log = new()
+                {
+                    ModuleErrorId = 1,
+                    ErrorMessage = ex.Message,
+                    Location = MethodBase.GetCurrentMethod().Name
+                };
+                await logErrorRepository.AddLogError(_log);
             }
 
         }
