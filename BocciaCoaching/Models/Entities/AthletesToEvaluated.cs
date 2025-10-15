@@ -7,6 +7,7 @@ namespace BocciaCoaching.Models.Entities
     [Table("AthletesToEvaluated")]
     public class AthletesToEvaluated
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
         public int AthletesToEvaluatedId { get; set; }
 

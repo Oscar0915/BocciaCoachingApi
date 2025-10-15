@@ -32,10 +32,12 @@ builder.Services.AddMemoryCache();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ITeamService, TeamService>();
+builder.Services.AddScoped<IAssessStrengthService, AssessStrengthService>();
 
 //Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ITeamRepository, TeamRepository>();
+builder.Services.AddScoped<IAssessStrengthRepository, AssessStrengthRepository>();
 
 
 builder.Services.AddControllers();

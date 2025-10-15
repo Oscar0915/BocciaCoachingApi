@@ -1,10 +1,10 @@
-﻿namespace BocciaCoaching.Models.DTO.AssessStrength
+﻿namespace BocciaCoaching.Models.DTO.Team
 {
-    public class AddAssessStrengthDto
+    public class RequestEvaluationForceDto
     {
-        public int Id { get; set; } 
         public DateTime EvaluationDate { get; set; }
         public string Description { get; set; }
+
         public string State { get; set; }
     }
 }

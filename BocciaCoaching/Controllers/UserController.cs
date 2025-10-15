@@ -56,28 +56,6 @@ namespace BocciaCoaching.Controllers
         }
 
 
-        [HttpPost("AddEvaluation")]
-        public async Task<ActionResult<IEnumerable<bool>>> NewEvaluation(AddAssessStrengthDto user)
-        {
-            var users = await _user.CrearEvaluacion(user);
-            return Ok(users);
-        }
-
-
-        [HttpPost("AthletesToEvaluated")]
-        public async Task<ActionResult<IEnumerable<bool>>> AthletesToEvaluated(RequestAddAthleteToEvaluationDto user)
-        {
-            var users = await _user.AgregarAtletaAEvaluacion(user);
-            return Ok(users);
-        }
-
-
-        [HttpPost("AddDeatilsToEvaluation")]
-        public async Task<ActionResult<IEnumerable<bool>>> AddDeatilsToEvaluation(RequestAddDetailToEvaluationForAthlete user)
-        {
-            var users = await _user.AgregarDetalleDeEvaluacion(user);
-            return Ok(users);
-        }
 
 
         [HttpPost("ValidateEmail")]

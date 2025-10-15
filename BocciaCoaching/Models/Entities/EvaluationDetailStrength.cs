@@ -1,4 +1,5 @@
 ﻿using BocciaCoaching.Models.Interfaces;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BocciaCoaching.Models.Entities
@@ -7,6 +8,8 @@ namespace BocciaCoaching.Models.Entities
     [Table("EvaluationDetailStrength")]
     public class EvaluationDetailStrength: IAuditable
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key]
         public int EvaluationDetailStrengthId { get; set; }
         public int BoxNumber { get; set; }
         public int ThrowOrder { get; set; }

@@ -22,21 +22,7 @@ namespace BocciaCoaching.Services
             return await _repository.AddUser(userDto);
         }
 
-        public async Task<AthletesToEvaluated> AgregarAtletaAEvaluacion(RequestAddAthleteToEvaluationDto athletesToEvaluated)
-        {
-            return await _repository.AgregarAtletaAEvaluacion(athletesToEvaluated);
-        }
-
-        public async Task<bool> AgregarDetalleDeEvaluacion(RequestAddDetailToEvaluationForAthlete requestAddDetailToEvaluationForAthlete)
-        {
-            return await _repository.AgregarDetalleDeEvaluacion(requestAddDetailToEvaluationForAthlete);
-        }
-
-        public async Task<ResponseAddAssessStrengthDto> CrearEvaluacion(AddAssessStrengthDto addAssessStrengthDto)
-        {
-            return await _repository.CrearEvaluacion(addAssessStrengthDto);
-        }
-
+        
         public async Task<IEnumerable<InfoBasicUserDto>> GetAllAsync()
         {
             return await _repository.GetAllAsync();

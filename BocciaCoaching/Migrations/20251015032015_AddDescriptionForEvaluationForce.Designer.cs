@@ -4,6 +4,7 @@ using BocciaCoaching.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BocciaCoaching.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251015032015_AddDescriptionForEvaluationForce")]
+    partial class AddDescriptionForEvaluationForce
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -36,10 +39,6 @@ namespace BocciaCoaching.Migrations
 
                     b.Property<DateTime>("EvaluationDate")
                         .HasColumnType("datetime(6)");
-
-                    b.Property<string>("State")
-                        .IsRequired()
-                        .HasColumnType("longtext");
 
                     b.HasKey("AssessStrengthId");
 

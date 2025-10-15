@@ -1,6 +1,23 @@
-﻿namespace BocciaCoaching.Repositories.Interfaces
+﻿using BocciaCoaching.Models.DTO.General;
+using BocciaCoaching.Models.DTO.Team;
+
+namespace BocciaCoaching.Repositories.Interfaces
 {
     public interface ITeamRepository
     {
+        /// <summary>
+        /// Método para agregar un nuevo equipo
+        /// </summary>
+        /// <param name="requestTeamDto">Información del equipo</param>
+        /// <returns></returns>
+        Task<ResponseNewRecordDto> AddTeam(RequestTeamDto requestTeamDto);
+
+
+        /// <summary>
+        /// Método para agregar mienbros al equipo
+        /// </summary>
+        /// <param name="requestTeamDto">Información del mienbro equipo</param>
+        /// <returns></returns>
+        Task<ResponseNewRecordDto> AddTeamMember(RequestTeamMemberDto requestTeamMemberDto);
     }
 }

@@ -15,7 +15,11 @@ namespace BocciaCoaching.Repositories
         {
             _context = context;
         }
-
+        /// <summary>
+        /// Método para agregar un nuevo equipo
+        /// </summary>
+        /// <param name="requestTeamDto">Información del equipo</param>
+        /// <returns></returns>
         public async Task<ResponseNewRecordDto> AddTeam(RequestTeamDto requestTeamDto)
         {
             try
@@ -45,5 +49,42 @@ namespace BocciaCoaching.Repositories
             }
 
         }
+
+
+        /// <summary>
+        /// Método para agregar mienbros al equipo
+        /// </summary>
+        /// <param name="requestTeamDto">Información del mienbro equipo</param>
+        /// <returns></returns>
+        public async Task<ResponseNewRecordDto> AddTeamMember(RequestTeamMemberDto requestTeamMemberDto)
+        {
+            try
+            {
+                var teamUser = new TeamUser()
+                {
+                    TeamId = requestTeamMemberDto.TeamId,
+                    UserId = requestTeamMemberDto.UserId,
+                    DateCreation = new DateTime(),
+                };
+
+                await _context.TeamsUsers.AddAsync(teamUser);
+                await _context.SaveChangesAsync();
+                return new ResponseNewRecordDto()
+                {
+                    Success = true
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ResponseNewRecordDto()
+                {
+                    Success = true,
+                    Message = ex.Message
+
+                };
+            }
+
+        }
+
     }
 }

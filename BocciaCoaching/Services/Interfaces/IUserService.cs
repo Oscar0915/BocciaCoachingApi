@@ -12,9 +12,7 @@ namespace BocciaCoaching.Services.Interfaces
         Task<bool> AddUser(InfoUserRegisterDto userDto);
         Task<LoginResponseDto?> Login(LoginRequestDto loginDto);
         Task<bool> RegistrarAtleta(AtlheteInfoSave atlheteInfoSave);
-        Task<ResponseAddAssessStrengthDto> CrearEvaluacion(AddAssessStrengthDto addAssessStrengthDto);
-        Task<AthletesToEvaluated> AgregarAtletaAEvaluacion(RequestAddAthleteToEvaluationDto athletesToEvaluated);
-        Task<bool> AgregarDetalleDeEvaluacion(RequestAddDetailToEvaluationForAthlete requestAddDetailToEvaluationForAthlete);
+      
         Task<ValidateEmailDto> ValidateEmail(ValidateEmailDto email);
 
     }
