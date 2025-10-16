@@ -18,6 +18,8 @@ namespace BocciaCoaching.Data
         public DbSet<AssessStrength> AssessStrengths { get; set; }
         public DbSet<ModuleError> ModuleError { get; set; }
         public DbSet<LogError> LogError { get; set; }
+        public DbSet<NotificationType> NotificationType { get; set; }
+        public DbSet<NotificationMessage> NotificationMessage { get; set; }
 
         #region Required
         protected override void OnModelCreating(ModelBuilder modelBuilder)

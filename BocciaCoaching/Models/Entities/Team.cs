@@ -15,6 +15,7 @@ namespace BocciaCoaching.Models.Entities
         public int CoachId { get; set; }
         public User Coach { get; set; }
         public bool? Status { get; set; } = true;
+        public string? Image {  get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set ; }
     }

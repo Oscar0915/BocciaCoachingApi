@@ -4,6 +4,7 @@ using BocciaCoaching.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BocciaCoaching.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251016174416_AddNotificationTables")]
+    partial class AddNotificationTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -188,9 +191,6 @@ namespace BocciaCoaching.Migrations
                     b.Property<string>("Message")
                         .HasColumnType("longtext");
 
-                    b.Property<int>("NotificationTypeId")
-                        .HasColumnType("int");
-
                     b.Property<bool?>("Status")
                         .HasColumnType("tinyint(1)");
 
@@ -199,8 +199,6 @@ namespace BocciaCoaching.Migrations
                     b.HasIndex("AthleteId");
 
                     b.HasIndex("CoachId");
-
-                    b.HasIndex("NotificationTypeId");
 
                     b.ToTable("NotificationMessage");
                 });
@@ -474,17 +472,9 @@ namespace BocciaCoaching.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BocciaCoaching.Models.Entities.NotificationType", "NotificationType")
-                        .WithMany()
-                        .HasForeignKey("NotificationTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Athlete");
 
                     b.Navigation("Coach");
-
-                    b.Navigation("NotificationType");
                 });
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.Session", b =>
