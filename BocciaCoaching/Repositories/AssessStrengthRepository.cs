@@ -48,8 +48,6 @@ namespace BocciaCoaching.Repositories
                 };
             }
         }
-
-
         public async Task<ResponseAddAssessStrengthDto> CrearEvaluacion(AddAssessStrengthDto addAssessStrengthDto)
         {
             try
@@ -163,7 +161,6 @@ namespace BocciaCoaching.Repositories
                 return false;
             }
         }
-
 
     }
 }

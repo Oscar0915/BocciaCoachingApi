@@ -1,5 +1,6 @@
 ﻿using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.Team;
+using BocciaCoaching.Models.Entities;
 using BocciaCoaching.Repositories.Interfaces;
 using BocciaCoaching.Services.Interfaces;
 
@@ -33,7 +34,17 @@ namespace BocciaCoaching.Services
             return await _teamRepository.AddTeamMember(requestTeamMemberDto);
         }
 
-        
+
+        public async Task<List<Team>> GetTeamsForUser(int idUser)
+        {
+            return  await _teamRepository.GetTeamsForUser(idUser);
+        }
+
+        public async Task<List<User>> GetUsersForTeam(RequestGetUserForTeamDto requestGetUserForTeamDto)
+        {
+            return await _teamRepository.GetUsersForTeam(requestGetUserForTeamDto);
+        }
+
 
 
     }

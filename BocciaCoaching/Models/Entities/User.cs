@@ -26,9 +26,8 @@ namespace BocciaCoaching.Models.Entities
         public string? Country { get; set; }
 
         public DateTime? Seniority { get; set; }
-
         public bool? Status { get; set; } = true;
-
+        public ICollection<UserRol> UserRoles { get; set; }
         public Session? Session { get; set; }
         public DateTime CreatedAt { get ; set ; }
         public DateTime? UpdatedAt { get ; set ; }
