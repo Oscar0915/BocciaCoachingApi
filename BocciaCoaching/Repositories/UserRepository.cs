@@ -6,6 +6,7 @@ using BocciaCoaching.Models.Entities;
 using BocciaCoaching.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Org.BouncyCastle.Crypto.Generators;
+using System.Data;
 using System.Security.Cryptography.X509Certificates;
 
 namespace BocciaCoaching.Repositories
@@ -105,11 +106,15 @@ namespace BocciaCoaching.Repositories
             bool validPassword = BCrypt.Net.BCrypt.Verify(loginDto.Password, user.Password);
             if (!validPassword) return null;
 
+            var roles =  _context.UserRols.Where(x=>x.UserId==user.UserId).ToList();
+
+
             // Generar respuesta
             return new LoginResponseDto
             {
                 UserId = user.UserId,
                 Email = user.Email,
+                RolId = roles[0].RolId
             };
         }
 
@@ -169,7 +174,7 @@ namespace BocciaCoaching.Repositories
             var isAvailable = await GetUserByEmailAsync(email.Email);
 
             if (isAvailable != null)
-                return new ValidateEmailDto { Email= "No disponible" };
+                return new ValidateEmailDto { Email = "No disponible" };
 
             return new ValidateEmailDto { Email = email.Email };
 
