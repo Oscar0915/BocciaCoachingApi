@@ -25,8 +25,9 @@ namespace BocciaCoaching.Repositories.Interfaces
         /// </summary>
         /// <param name="idUser"></param>
         /// <returns></returns>
-        Task<List<Team>> GetTeamsForUser(int idUser);
+        Task<List<Team>> GetTeamsForUser(RequestTeamDto requestTeamDto);
 
         Task<List<User>> GetUsersForTeam(RequestGetUserForTeamDto requestGetUserForTeamDto);
+        Task<bool> UpdateTeamImageAsync(RequestUpdateImageTeamDto requestUpdateImageTeamDto);
     }
 }

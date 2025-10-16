@@ -32,9 +32,9 @@ namespace BocciaCoaching.Controllers
             return Ok(users);
         }
         [HttpPost("GetTeamsForUser")]
-        public async Task<ActionResult<List<Team>>> GetTeamsForUser(int idUser)
+        public async Task<ActionResult<List<Team>>> GetTeamsForUser(RequestTeamDto requestTeamDto)
         {
-            List<Team> teams = await _team.GetTeamsForUser(idUser);
+            List<Team> teams = await _team.GetTeamsForUser(requestTeamDto);
             return Ok(teams);
         }
 
@@ -45,6 +45,14 @@ namespace BocciaCoaching.Controllers
             List<User> teams = await _team.GetUsersForTeam(requestGetUserForTeamDto);
             return Ok(teams);
         }
+
+        [HttpPost("UpdateTeamImageAsync")]
+        public async Task<ActionResult<bool>> UpdateTeamImageAsync(RequestUpdateImageTeamDto requestUpdateImageTeamDto)
+        {
+            var responseImage = await _team.UpdateTeamImageAsync(requestUpdateImageTeamDto);
+            return Ok(responseImage);
+        }
+       
 
     }
 }
