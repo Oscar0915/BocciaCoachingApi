@@ -13,7 +13,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll",
         policy =>
         {
-            policy.AllowAnyOrigin()
+            policy.WithOrigins("https://bocciacoaching.com", "http://localhost:4200")
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });
