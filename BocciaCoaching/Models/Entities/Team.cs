@@ -13,9 +13,15 @@ namespace BocciaCoaching.Models.Entities
         public string? NameTeam {  get; set; }
         public string? Description {  get; set; }
         public int CoachId { get; set; }
-        public User Coach { get; set; }
+        public User? Coach { get; set; }
         public bool? Status { get; set; } = true;
         public string? Image {  get; set; }
+        public bool? Bc1 { get; set; }
+        public bool? Bc2 { get; set; }
+        public bool? Bc3 { get; set; }
+        public bool? Bc4 { get; set; }
+        public string? Country { get; set; }
+        public string? Region { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set ; }
     }

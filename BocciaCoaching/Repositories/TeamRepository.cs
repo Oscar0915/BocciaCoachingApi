@@ -143,7 +143,7 @@ namespace BocciaCoaching.Repositories
         /// <param name="base64Image"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
-        public async Task<bool> UpdateTeamImageAsync(RequestUpdateImageTeamDto requestUpdateImageTeamDto)
+        public async Task<bool> UpdateTeam(RequestUpdateTeamDto requestUpdateImageTeamDto)
         {
             try
             {
@@ -152,15 +152,27 @@ namespace BocciaCoaching.Repositories
                 if (team == null)
                     return false;
 
-                // Validar que la cadena base64 sea válida
-                if (string.IsNullOrWhiteSpace(requestUpdateImageTeamDto.Image))
-                    throw new ArgumentException("La imagen no puede estar vacía.");
+                if (!string.IsNullOrEmpty(requestUpdateImageTeamDto.Image))
+                {
+                    // Validar que la cadena base64 sea válida
+                    if (string.IsNullOrWhiteSpace(requestUpdateImageTeamDto.Image))
+                        throw new ArgumentException("La imagen no puede estar vacía.");
 
-                // Si quieres validar que realmente sea base64
-                if (!IsBase64String(requestUpdateImageTeamDto.Image))
-                    throw new ArgumentException("El formato de imagen no es válido.");
+                    // Si quieres validar que realmente sea base64
+                    if (!IsBase64String(requestUpdateImageTeamDto.Image))
+                        throw new ArgumentException("El formato de imagen no es válido.");
 
-                team.Image = requestUpdateImageTeamDto.Image;
+                    team.Image = requestUpdateImageTeamDto.Image;
+                }
+
+                team.Bc1 = requestUpdateImageTeamDto.Bc1;
+                team.Bc2 = requestUpdateImageTeamDto.Bc2;
+                team.Bc3 = requestUpdateImageTeamDto.Bc3;
+                team.Bc4 = requestUpdateImageTeamDto.Bc4;
+
+                team.Country = requestUpdateImageTeamDto.Country;
+                team.Region = requestUpdateImageTeamDto.Region;
+                
                 team.UpdatedAt = DateTime.UtcNow;
 
                 _context.Teams.Update(team);

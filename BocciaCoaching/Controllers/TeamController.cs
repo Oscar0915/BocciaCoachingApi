@@ -46,10 +46,10 @@ namespace BocciaCoaching.Controllers
             return Ok(teams);
         }
 
-        [HttpPost("UpdateTeamImageAsync")]
-        public async Task<ActionResult<bool>> UpdateTeamImageAsync(RequestUpdateImageTeamDto requestUpdateImageTeamDto)
+        [HttpPost("UpdateTeam")]
+        public async Task<ActionResult<bool>> UpdateTeam(RequestUpdateTeamDto requestUpdateImageTeamDto)
         {
-            var responseImage = await _team.UpdateTeamImageAsync(requestUpdateImageTeamDto);
+            var responseImage = await _team.UpdateTeam(requestUpdateImageTeamDto);
             return Ok(responseImage);
         }
        

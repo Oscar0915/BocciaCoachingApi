@@ -28,6 +28,6 @@ namespace BocciaCoaching.Repositories.Interfaces
         Task<List<Team>> GetTeamsForUser(RequestTeamDto requestTeamDto);
 
         Task<List<User>> GetUsersForTeam(RequestGetUserForTeamDto requestGetUserForTeamDto);
-        Task<bool> UpdateTeamImageAsync(RequestUpdateImageTeamDto requestUpdateImageTeamDto);
+        Task<bool> UpdateTeam(RequestUpdateTeamDto requestUpdateImageTeamDto);
     }
 }

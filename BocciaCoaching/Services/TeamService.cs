@@ -45,9 +45,9 @@ namespace BocciaCoaching.Services
             return await _teamRepository.GetUsersForTeam(requestGetUserForTeamDto);
         }
 
-        public async Task<bool> UpdateTeamImageAsync(RequestUpdateImageTeamDto requestUpdateImageTeamDto)
+        public async Task<bool> UpdateTeam(RequestUpdateTeamDto requestUpdateImageTeamDto)
         {
-            return await _teamRepository.UpdateTeamImageAsync(requestUpdateImageTeamDto);
+            return await _teamRepository.UpdateTeam(requestUpdateImageTeamDto);
         }
 
     }
