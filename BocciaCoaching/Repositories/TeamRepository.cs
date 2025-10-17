@@ -50,8 +50,6 @@ namespace BocciaCoaching.Repositories
             }
 
         }
-
-
         /// <summary>
         /// Método para agregar mienbros al equipo
         /// </summary>
@@ -134,8 +132,6 @@ namespace BocciaCoaching.Repositories
                 return new List<User>();
             }
         }
-
-
         /// <summary>
         /// Método para actualizar la imagen del equipo
         /// </summary>

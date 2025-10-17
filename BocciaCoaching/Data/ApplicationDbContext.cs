@@ -21,6 +21,10 @@ namespace BocciaCoaching.Data
         public DbSet<NotificationType> NotificationType { get; set; }
         public DbSet<NotificationMessage> NotificationMessage { get; set; }
 
+        public DbSet<Event> Event { get; set; }
+        public DbSet<LevelEvent> LevelEvent { get; set; }
+        public DbSet<Achievement> Achievement { get; set; }
+
         #region Required
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
