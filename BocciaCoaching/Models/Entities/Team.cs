@@ -19,17 +19,17 @@ namespace BocciaCoaching.Models.Entities
         [Key]
         public int TeamId { get; set; }
         /// <summary>
-        /// Campo:
+        /// Campo: Nombre del equipo
         /// Field: 
         /// </summary>
         public string? NameTeam {  get; set; }
         /// <summary>
-        /// Campo:
+        /// Campo: Descripción del equipo
         /// Field: 
         /// </summary>
         public string? Description {  get; set; }
         /// <summary>
-        /// Campo:
+        /// Campo: Identificador del entrenador
         /// Field: 
         /// </summary>
         public int CoachId { get; set; }
@@ -39,7 +39,7 @@ namespace BocciaCoaching.Models.Entities
         /// </summary>
         public User? Coach { get; set; }
         /// <summary>
-        /// Campo:
+        /// Campo: Estado del equipo
         /// Field: 
         /// </summary>
         public bool? Status { get; set; } = true;
