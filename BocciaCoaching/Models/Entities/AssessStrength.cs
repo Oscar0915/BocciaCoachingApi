@@ -7,26 +7,26 @@ namespace BocciaCoaching.Models.Entities
     public class AssessStrength
     {
         /// <summary>
-        /// Campo:
-        /// Field: 
+        /// ES:
+        /// EN: 
         /// </summary>
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
         public int AssessStrengthId { get; set; }
 
         /// <summary>
-        /// Campo:
-        /// Field: 
+        /// ES:
+        /// EN: 
         /// </summary>
         public DateTime EvaluationDate { get; set; }
         /// <summary>
-        /// Campo:
-        /// Field: 
+        /// ES:
+        /// EN: 
         /// </summary>
         public string Description { get; set; }
         /// <summary>
-        /// Campo:
-        /// Field: 
+        /// ES:
+        /// EN: 
         /// </summary>
         public string State { get; set; }
     }

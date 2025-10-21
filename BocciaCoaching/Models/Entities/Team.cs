@@ -12,90 +12,90 @@ namespace BocciaCoaching.Models.Entities
     public class Team : IAuditable
     {
         /// <summary>
-        /// Campo:Identificador del equipo
-        /// Field: 
+        /// ES:Identificador del equipo
+        /// EN: 
         /// </summary>
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
         public int TeamId { get; set; }
         /// <summary>
-        /// Campo: Nombre del equipo
-        /// Field: 
+        /// ES: Nombre del equipo
+        /// EN: 
         /// </summary>
         public string? NameTeam {  get; set; }
         /// <summary>
-        /// Campo: Descripción del equipo
-        /// Field: 
+        /// ES: Descripción del equipo
+        /// EN: 
         /// </summary>
         public string? Description {  get; set; }
         /// <summary>
-        /// Campo: Identificador del entrenador
-        /// Field: 
+        /// ES: Identificador del entrenador
+        /// EN: 
         /// </summary>
         public int CoachId { get; set; }
         /// <summary>
-        /// Campo:
-        /// Field: 
+        /// ES:
+        /// EN: 
         /// </summary>
         public User? Coach { get; set; }
         /// <summary>
-        /// Campo: Estado del equipo
-        /// Field: 
+        /// ES: Estado del equipo
+        /// EN: 
         /// </summary>
         public bool? Status { get; set; } = true;
         /// <summary>
-        /// Campo:
-        /// Field: 
+        /// ES:
+        /// EN: 
         /// </summary>
         public string? Image {  get; set; }
         /// <summary>
-        /// Campo:
-        /// Field: 
+        /// ES:
+        /// EN: 
         /// </summary>
         public bool? Bc1 { get; set; }
         /// <summary>
-        /// Campo:
-        /// Field: 
+        /// ES:
+        /// EN: 
         /// </summary>
         public bool? Bc2 { get; set; }
         /// <summary>
-        /// Campo:
-        /// Field: 
+        /// ES:
+        /// EN: 
         /// </summary>
         public bool? Bc3 { get; set; }
         /// <summary>
-        /// Campo:
-        /// Field: 
+        /// ES:
+        /// EN: 
         /// </summary>
         public bool? Bc4 { get; set; }
         /// <summary>
-        /// Campo:
-        /// Field: 
+        /// ES:
+        /// EN: 
         /// </summary>
         public bool? Pairs { get; set; }
         /// <summary>
-        /// Campo:
-        /// Field: 
+        /// ES:
+        /// EN: 
         /// </summary>
         public bool? Teams { get; set; }
         /// <summary>
-        /// Campo:
-        /// Field: 
+        /// ES:
+        /// EN: 
         /// </summary>
         public string? Country { get; set; }
         /// <summary>
-        /// Campo:
-        /// Field: 
+        /// ES:
+        /// EN: 
         /// </summary>
         public string? Region { get; set; }
         /// <summary>
-        /// Campo:
-        /// Field: 
+        /// ES:
+        /// EN: 
         /// </summary>
         public DateTime CreatedAt { get; set; }
         /// <summary>
-        /// Campo:
-        /// Field: 
+        /// ES:
+        /// EN: 
         /// </summary>
         public DateTime? UpdatedAt { get; set ; }
     }

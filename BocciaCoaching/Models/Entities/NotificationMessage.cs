@@ -7,55 +7,55 @@ namespace BocciaCoaching.Models.Entities
     public class NotificationMessage
     {
         /// <summary>
-        /// Campo:
-        /// Field: 
+        /// ES:
+        /// EN: 
         /// </summary>
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
         public int NotificationMessageId { get; set; }
         /// <summary>
-        /// Campo:
-        /// Field: 
+        /// ES:
+        /// EN: 
         /// </summary>
         public string? Message { get; set; }
         /// <summary>
-        /// Campo:
-        /// Field: 
+        /// ES:
+        /// EN: 
         /// </summary>
         public bool? Status { get; set; } = true;
         /// <summary>
-        /// Campo:
-        /// Field: 
+        /// ES:
+        /// EN: 
         /// </summary>
         public string? Image {  get; set; }
         /// <summary>
-        /// Campo:
-        /// Field: 
+        /// ES:
+        /// EN: 
         /// </summary>
         public int CoachId { get; set; }
         /// <summary>
-        /// Campo:
-        /// Field: 
+        /// ES:
+        /// EN: 
         /// </summary>
         public User Coach { get; set; }
         /// <summary>
-        /// Campo:
-        /// Field: 
+        /// ES:
+        /// EN: 
         /// </summary>
         public int AthleteId { get; set; }
         /// <summary>
-        /// Campo:
-        /// Field: 
+        /// ES:
+        /// EN: 
         /// </summary>
         public User Athlete { get; set; }
         /// <summary>
-        /// Campo:
-        /// Field: 
+        /// ES:
+        /// EN: 
         /// </summary>
         public int NotificationTypeId { get; set; }
         /// <summary>
-        /// Campo:
-        /// Field: 
+        /// ES:
+        /// EN: 
         /// </summary>
         public NotificationType NotificationType { get; set; }
     }

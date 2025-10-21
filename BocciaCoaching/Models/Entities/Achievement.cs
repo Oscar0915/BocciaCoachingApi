@@ -11,35 +11,35 @@ namespace BocciaCoaching.Models.Entities
     public class Achievement
     {
         /// <summary>
-        /// Campo:
-        /// Field: 
+        /// ES:
+        /// EN: 
         /// </summary>
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
         public int AchievementId { get; set; }
         /// <summary>
-        /// Campo:
-        /// Field: 
+        /// ES:
+        /// EN: 
         /// </summary>
         public bool? Status { get; set; } = true;
         /// <summary>
-        /// Campo:
-        /// Field: 
+        /// ES:
+        /// EN: 
         /// </summary>
         public int Ranked {  get; set; }
         /// <summary>
-        /// Campo:
-        /// Field: 
+        /// ES:
+        /// EN: 
         /// </summary>
         public int EventId { get; set; }
         /// <summary>
-        /// Campo:
-        /// Field: 
+        /// ES:
+        /// EN: 
         /// </summary>
         public Event? Event { get; set; }
         /// <summary>
-        /// Campo:
-        /// Field: 
+        /// ES:
+        /// EN: 
         /// </summary>
         public DateTime CreatedAt { get; set; }
     }

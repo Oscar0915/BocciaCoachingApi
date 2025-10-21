@@ -7,16 +7,16 @@ namespace BocciaCoaching.Models.Entities
     public class Rol
     {
         /// <summary>
-        /// Campo:
-        /// Field: 
+        /// ES:
+        /// EN: 
         /// </summary>
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
         public int RolId { get; set; }
 
         /// <summary>
-        /// Campo: Descripción del rol
-        /// Field: 
+        /// ES: Descripción del rol
+        /// EN: 
         /// </summary>
         public required string Description { get; set; }
     }

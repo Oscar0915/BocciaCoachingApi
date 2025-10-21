@@ -7,21 +7,21 @@ namespace BocciaCoaching.Models.Entities
     public class Session
     {
         /// <summary>
-        /// Campo:Identificador de la tabla Session
-        /// Field: 
+        /// ES:Identificador de la tabla Session
+        /// EN: 
         /// </summary>
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
         public int SessionId { get; set; }
         /// <summary>
-        /// Campo: Identificador del usuario
-        /// Field: 
+        /// ES: Identificador del usuario
+        /// EN: 
         /// </summary>
         public int UserId { get; set; }
 
         /// <summary>
-        /// Campo: 
-        /// Field: 
+        /// ES: 
+        /// EN: 
         /// </summary>
 
         public User User { get; set; } = null!;

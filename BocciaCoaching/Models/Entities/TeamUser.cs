@@ -7,29 +7,29 @@ namespace BocciaCoaching.Models.Entities
     public class TeamUser
     {
         /// <summary>
-        /// Campo: Identificador de la tabla
-        /// Field: 
+        /// ES: Identificador de la tabla
+        /// EN: 
         /// </summary>
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
         public int IdTeamUser { get; set; }
 
         /// <summary>
-        /// Campo: Identificador del usuario
-        /// Field: 
+        /// ES: Identificador del usuario
+        /// EN: 
         /// </summary>
         public int UserId { get; set; }
         public User User { get; set; }
         /// <summary>
-        /// Campo: Identificador del equipo
-        /// Field: 
+        /// ES: Identificador del equipo
+        /// EN: 
         /// </summary>
         public int TeamId { get; set; }
         public Team Team { get; set; }
 
         /// <summary>
-        /// Campo: Fecha de creación del equipo
-        /// Field: 
+        /// ES: Fecha de creación del equipo
+        /// EN: 
         /// </summary>
         public DateTime DateCreation { get; set; }
     }

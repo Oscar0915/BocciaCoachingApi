@@ -7,37 +7,37 @@ namespace BocciaCoaching.Models.Entities
     public class NotificationType
     {
         /// <summary>
-        /// Campo: Identificador de la tabla
-        /// Field: 
+        /// ES: Identificador de la tabla
+        /// EN: 
         /// </summary>
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
         public int NotificationTypeId { get; set; }
         /// <summary>
-        /// Campo: Nombre de la notificación
-        /// Field: 
+        /// ES: Nombre de la notificación
+        /// EN: 
         /// </summary>
         public string? Name { get; set; }
 
         /// <summary>
-        /// Campo: Descripción del tipo de la notificación
-        /// Field: 
+        /// ES: Descripción del tipo de la notificación
+        /// EN: 
         /// </summary>
         public string? Description { get; set; }
         /// <summary>
-        /// Campo: Estado de la notificación
-        /// Field: 
+        /// ES: Estado de la notificación
+        /// EN: 
         /// </summary>
         public bool? Status { get; set; } = true;
 
         /// <summary>
-        /// Campo: Fecha de creación
-        /// Field: 
+        /// ES: Fecha de creación
+        /// EN: 
         /// </summary>
         public DateTime CreatedAt { get; set; }
         /// <summary>
-        /// Campo: Fecha de actualización
-        /// Field: 
+        /// ES: Fecha de actualización
+        /// EN: 
         /// </summary>
         public DateTime? UpdatedAt { get; set; }
 
