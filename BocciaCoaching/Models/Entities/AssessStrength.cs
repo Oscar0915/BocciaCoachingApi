@@ -29,5 +29,9 @@ namespace BocciaCoaching.Models.Entities
         /// EN: 
         /// </summary>
         public string State { get; set; }
+
+        public int TeamId { get; set; }
+
+        public Team Team { get; set; }
     }
 }

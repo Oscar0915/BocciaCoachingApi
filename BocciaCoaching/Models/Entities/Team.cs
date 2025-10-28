@@ -49,42 +49,42 @@ namespace BocciaCoaching.Models.Entities
         /// </summary>
         public string? Image {  get; set; }
         /// <summary>
-        /// ES:
+        /// ES: Categoría BC1 hace parte del equipo
         /// EN: 
         /// </summary>
         public bool? Bc1 { get; set; }
         /// <summary>
-        /// ES:
+        /// ES: Categoría BC2 hace parte del equipo
         /// EN: 
         /// </summary>
         public bool? Bc2 { get; set; }
         /// <summary>
-        /// ES:
+        /// ES: Categoría BC3 hace parte del equipo
         /// EN: 
         /// </summary>
         public bool? Bc3 { get; set; }
         /// <summary>
-        /// ES:
+        /// ES: Categoría BC4 hace parte del equipo
         /// EN: 
         /// </summary>
         public bool? Bc4 { get; set; }
         /// <summary>
-        /// ES:
+        /// ES: Categoría parejas hace parte del equipo
         /// EN: 
         /// </summary>
         public bool? Pairs { get; set; }
         /// <summary>
-        /// ES:
+        /// ES: Categoría equipos hace parte del equipo
         /// EN: 
         /// </summary>
         public bool? Teams { get; set; }
         /// <summary>
-        /// ES:
+        /// ES:  Categoría equipos BC1 y BC2 hace parte del equipo
         /// EN: 
         /// </summary>
         public string? Country { get; set; }
         /// <summary>
-        /// ES:
+        /// ES: País
         /// EN: 
         /// </summary>
         public string? Region { get; set; }

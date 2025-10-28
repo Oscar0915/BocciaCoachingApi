@@ -183,7 +183,6 @@ namespace BocciaCoaching.Repositories
                 return false;
             }
         }
-
         private bool IsBase64String(string base64)
         {
             Span<byte> buffer = new Span<byte>(new byte[base64.Length]);

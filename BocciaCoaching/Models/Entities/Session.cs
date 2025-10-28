@@ -23,7 +23,6 @@ namespace BocciaCoaching.Models.Entities
         /// ES: 
         /// EN: 
         /// </summary>
-
         public User User { get; set; } = null!;
 
 
