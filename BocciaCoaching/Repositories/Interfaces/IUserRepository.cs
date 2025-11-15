@@ -1,9 +1,5 @@
-﻿using BocciaCoaching.Models.DTO;
-using BocciaCoaching.Models.DTO.AssessStrength;
-using BocciaCoaching.Models.DTO.Auth;
+﻿using BocciaCoaching.Models.DTO.Auth;
 using BocciaCoaching.Models.DTO.User;
-using BocciaCoaching.Models.Entities;
-using System.Threading.Tasks;
 
 namespace BocciaCoaching.Repositories.Interfaces
 {
@@ -13,8 +9,7 @@ namespace BocciaCoaching.Repositories.Interfaces
         Task<InfoBasicUserDto?> GetByIdAsync(int id);
         Task<bool> AddUser(InfoUserRegisterDto userDto);
         Task<LoginResponseDto?> Login(LoginRequestDto loginDto);
-         Task<bool> RegistrarAtleta(AtlheteInfoSave atlheteInfoSave);
-       
+        Task<bool> RegistrarAtleta(AtlheteInfoSave atlheteInfoSave);
         Task<ValidateEmailDto> ValidateEmail(ValidateEmailDto email);
     }
 }

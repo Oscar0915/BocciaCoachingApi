@@ -9,44 +9,44 @@ namespace BocciaCoaching.Models.Entities
     public class EvaluationDetailStrength: IAuditable
     {
         /// <summary>
-        /// ES:
+        /// ES: Identificador de la evaluación
         /// EN: 
         /// </summary>
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
         public int EvaluationDetailStrengthId { get; set; }
         /// <summary>
-        /// ES:
+        /// ES: Numero de cajon
         /// EN: 
         /// </summary>
         public int BoxNumber { get; set; }
         /// <summary>
-        /// ES:
+        /// ES: Orden de lanzamiento
         /// EN: 
         /// </summary>
         public int ThrowOrder { get; set; }
         /// <summary>
-        /// ES:
+        /// ES:Distancia objetivo
         /// EN: 
         /// </summary>
         public decimal? TargetDistance { get; set; }
         /// <summary>
-        /// ES:
+        /// ES:Puntaje obtenido
         /// EN: 
         /// </summary>
         public decimal? ScoreObtained { get; set; }
         /// <summary>
-        /// ES:
+        /// ES:Observación
         /// EN: 
         /// </summary>
         public string? Observations { get; set; }
         /// <summary>
-        /// ES:
+        /// ES:Estado
         /// EN: 
         /// </summary>
         public bool Status { get; set; } = true;
         /// <summary>
-        /// ES:
+        /// ES: Identificación del atleta
         /// EN: 
         /// </summary>
         public int AthleteId { get; set; }
@@ -56,7 +56,7 @@ namespace BocciaCoaching.Models.Entities
         /// </summary>
         public User Athlete {  get; set; }
         /// <summary>
-        /// ES:
+        /// ES:Número de la evaluacion
         /// EN: 
         /// </summary>
         public int AssessStrengthId { get; set; }

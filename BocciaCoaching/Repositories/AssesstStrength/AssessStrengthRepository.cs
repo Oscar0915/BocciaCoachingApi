@@ -6,13 +6,17 @@ using BocciaCoaching.Models.Entities;
 using BocciaCoaching.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace BocciaCoaching.Repositories
+namespace BocciaCoaching.Repositories.AssesstStrength
 {
     public class AssessStrengthRepository: IAssessStrengthRepository
     {
 
         private readonly ApplicationDbContext _context;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
         public AssessStrengthRepository(ApplicationDbContext context) { _context = context; }
 
         /// <summary>
@@ -48,6 +52,11 @@ namespace BocciaCoaching.Repositories
                 };
             }
         }
+        /// <summary>
+        /// Crear una nueva evaluación 
+        /// </summary>
+        /// <param name="addAssessStrengthDto"></param>
+        /// <returns></returns>
         public async Task<ResponseAddAssessStrengthDto> CrearEvaluacion(AddAssessStrengthDto addAssessStrengthDto)
         {
             try
@@ -84,6 +93,11 @@ namespace BocciaCoaching.Repositories
                 };
             }
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="athletesToEvaluated"></param>
+        /// <returns></returns>
         public async Task<AthletesToEvaluated> AgregarAtletaAEvaluacion(RequestAddAthleteToEvaluationDto athletesToEvaluated)
         {
             try
@@ -109,6 +123,11 @@ namespace BocciaCoaching.Repositories
                 };
             }
         }
+        /// <summary>
+        /// Funcion que permite agregar el detalle de la evaluacion de fuerza
+        /// </summary>
+        /// <param name="requestAddDetailToEvaluationForAthlete"></param>
+        /// <returns></returns>
         public async Task<bool> AgregarDetalleDeEvaluacion(RequestAddDetailToEvaluationForAthlete requestAddDetailToEvaluationForAthlete)
         {
             try
@@ -162,5 +181,7 @@ namespace BocciaCoaching.Repositories
             }
         }
 
+        
+        
     }
 }

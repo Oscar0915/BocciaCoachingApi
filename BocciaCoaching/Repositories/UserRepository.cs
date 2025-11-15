@@ -1,25 +1,14 @@
 ﻿using BocciaCoaching.Data;
-using BocciaCoaching.Models.DTO.AssessStrength;
 using BocciaCoaching.Models.DTO.Auth;
 using BocciaCoaching.Models.DTO.User;
 using BocciaCoaching.Models.Entities;
 using BocciaCoaching.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Org.BouncyCastle.Crypto.Generators;
-using System.Data;
-using System.Security.Cryptography.X509Certificates;
 
 namespace BocciaCoaching.Repositories
 {
-    public class UserRepository : IUserRepository
+    public class UserRepository(ApplicationDbContext context) : IUserRepository
     {
-        private readonly ApplicationDbContext _context;
-
-        public UserRepository(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
         public async Task<bool> AddUser(InfoUserRegisterDto userDto)
         {
             try
@@ -34,17 +23,17 @@ namespace BocciaCoaching.Repositories
                     FirstName = "Name",
                 };
 
-                await _context.Users.AddAsync(user);
-                await _context.SaveChangesAsync();
+                await context.Users.AddAsync(user);
+                await context.SaveChangesAsync();
 
-                var Athlete = new UserRol
+                var athlete = new UserRol
                 {
                     RolId = userDto.Rol,
                     UserId = user.UserId
                 };
 
-                await _context.UserRols.AddAsync(Athlete);
-                await _context.SaveChangesAsync();
+                await context.UserRoles.AddAsync(athlete);
+                await context.SaveChangesAsync();
 
                 return true;
             }
@@ -57,20 +46,13 @@ namespace BocciaCoaching.Repositories
 
         public async Task<IEnumerable<InfoBasicUserDto>> GetAllAsync()
         {
-            try
+            var usersData = await context.Users.ToListAsync();
+            var infoUser = usersData.Select(u => new InfoBasicUserDto
             {
-                var usersData = await _context.Users.ToListAsync();
-                var infoUser = usersData.Select(u => new InfoBasicUserDto
-                {
-                    Name = u.FirstName,
-                }).ToList();
+                Name = u.FirstName
+            }).ToList();
 
-                return infoUser;
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
+            return infoUser;
         }
 
         public Task<InfoBasicUserDto?> GetByIdAsync(int id)
@@ -78,9 +60,9 @@ namespace BocciaCoaching.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task<User?> GetUserByEmailAsync(string email)
+        private async Task<User?> GetUserByEmailAsync(string email)
         {
-            return await _context.Users
+            return await context.Users
      .Select(u => new User
      {
          UserId = u.UserId,
@@ -95,7 +77,6 @@ namespace BocciaCoaching.Repositories
         /// <summary>
         /// Método para iniciar sesión 
         /// </summary>
-        /// <param name="userDto"></param>
         /// <returns></returns>
         public async Task<LoginResponseDto?> Login(LoginRequestDto loginDto)
         {
@@ -106,7 +87,7 @@ namespace BocciaCoaching.Repositories
             bool validPassword = BCrypt.Net.BCrypt.Verify(loginDto.Password, user.Password);
             if (!validPassword) return null;
 
-            var roles =  _context.UserRols.Where(x=>x.UserId==user.UserId).ToList();
+            var roles =  context.UserRoles.Where(x=>x.UserId==user.UserId).ToList();
 
 
             // Generar respuesta
@@ -142,20 +123,20 @@ namespace BocciaCoaching.Repositories
                     Password = passwordHash,
                 };
 
-                await _context.Users.AddAsync(user);
-                await _context.SaveChangesAsync();
+                await context.Users.AddAsync(user);
+                await context.SaveChangesAsync();
 
 
 
-                var Athlete = new UserRol
+                var athlete = new UserRol
                 {
                     RolId = 3,
                     UserId = user.UserId
 
                 };
 
-                await _context.UserRols.AddAsync(Athlete);
-                await _context.SaveChangesAsync();
+                await context.UserRoles.AddAsync(athlete);
+                await context.SaveChangesAsync();
 
 
 
