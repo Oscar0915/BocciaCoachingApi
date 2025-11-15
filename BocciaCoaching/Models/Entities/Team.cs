@@ -9,7 +9,7 @@ namespace BocciaCoaching.Models.Entities
     /// Table: Teams
     /// </summary>
     [Table("Team")]
-    public class Team : IAuditable
+    public class Team() : IAuditable
     {
         /// <summary>
         /// ES:Identificador del equipo

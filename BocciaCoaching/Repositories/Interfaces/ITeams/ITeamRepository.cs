@@ -2,7 +2,7 @@
 using BocciaCoaching.Models.DTO.Team;
 using BocciaCoaching.Models.Entities;
 
-namespace BocciaCoaching.Repositories.Interfaces
+namespace BocciaCoaching.Repositories.Interfaces.ITeams
 {
     public interface ITeamRepository
     {
@@ -17,13 +17,14 @@ namespace BocciaCoaching.Repositories.Interfaces
         /// <summary>
         /// Método para agregar mienbros al equipo
         /// </summary>
-        /// <param name="requestTeamDto">Información del mienbro equipo</param>
+        /// <param name="requestTeamMemberDto"></param>
         /// <returns></returns>
         Task<ResponseNewRecordDto> AddTeamMember(RequestTeamMemberDto requestTeamMemberDto);
+
         /// <summary>
         /// Método para traer el listado de equipos relacionados a un usuario
         /// </summary>
-        /// <param name="idUser"></param>
+        /// <param name="requestTeamDto"></param>
         /// <returns></returns>
         Task<List<Team>> GetTeamsForUser(RequestTeamDto requestTeamDto);
 

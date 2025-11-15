@@ -2,20 +2,13 @@
 using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.Team;
 using BocciaCoaching.Models.Entities;
-using BocciaCoaching.Repositories.Interfaces;
+using BocciaCoaching.Repositories.Interfaces.ITeams;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
 
-namespace BocciaCoaching.Repositories
+namespace BocciaCoaching.Repositories.Teams
 {
-    public class TeamRepository : ITeamRepository
+    public class TeamRepository(ApplicationDbContext context) : ITeamRepository
     {
-        private readonly ApplicationDbContext _context;
-
-        public TeamRepository(ApplicationDbContext context)
-        {
-            _context = context;
-        }
         /// <summary>
         /// Método para agregar un nuevo equipo
         /// </summary>
@@ -32,8 +25,8 @@ namespace BocciaCoaching.Repositories
                     Description = requestTeamDto.Description,
                 };
 
-                await _context.Teams.AddAsync(team);
-                await _context.SaveChangesAsync();
+                await context.Teams.AddAsync(team);
+                await context.SaveChangesAsync();
                 return new ResponseNewRecordDto()
                 {
                     Success = true
@@ -50,10 +43,11 @@ namespace BocciaCoaching.Repositories
             }
 
         }
+
         /// <summary>
         /// Método para agregar mienbros al equipo
         /// </summary>
-        /// <param name="requestTeamDto">Información del mienbro equipo</param>
+        /// <param name="requestTeamMemberDto"></param>
         /// <returns></returns>
         public async Task<ResponseNewRecordDto> AddTeamMember(RequestTeamMemberDto requestTeamMemberDto)
         {
@@ -66,8 +60,8 @@ namespace BocciaCoaching.Repositories
                     DateCreation = new DateTime(),
                 };
 
-                await _context.TeamsUsers.AddAsync(teamUser);
-                await _context.SaveChangesAsync();
+                await context.TeamsUsers.AddAsync(teamUser);
+                await context.SaveChangesAsync();
                 return new ResponseNewRecordDto()
                 {
                     Success = true
@@ -92,7 +86,7 @@ namespace BocciaCoaching.Repositories
         {
             try
             {
-                var teams = await _context.TeamsUsers
+                var teams = await context.TeamsUsers
                     .Where(tu => tu.UserId == requestTeamDto.CoachId)
                     .Include(tu => tu.Team) // Incluye la info del equipo
                     .Select(tu => tu.Team)  // Proyecta solo el Team
@@ -115,7 +109,7 @@ namespace BocciaCoaching.Repositories
         {
             try
             {
-                var users = await _context.TeamsUsers
+                var users = await context.TeamsUsers
                 .Where(tu => tu.TeamId == requestGetUserForTeamDto.TeamId &&
                              tu.User.UserRoles.Any(ru => ru.RolId == requestGetUserForTeamDto.RolId))
                 .Include(tu => tu.User)
@@ -132,18 +126,18 @@ namespace BocciaCoaching.Repositories
                 return new List<User>();
             }
         }
+
         /// <summary>
         /// Método para actualizar la imagen del equipo
         /// </summary>
-        /// <param name="teamId"></param>
-        /// <param name="base64Image"></param>
+        /// <param name="requestUpdateImageTeamDto"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
         public async Task<bool> UpdateTeam(RequestUpdateTeamDto requestUpdateImageTeamDto)
         {
             try
             {
-                var team = await _context.Teams.FirstOrDefaultAsync(t => t.TeamId == requestUpdateImageTeamDto.TeamId);
+                var team = await context.Teams.FirstOrDefaultAsync(t => t.TeamId == requestUpdateImageTeamDto.TeamId);
 
                 if (team == null)
                     return false;
@@ -171,8 +165,8 @@ namespace BocciaCoaching.Repositories
                 
                 team.UpdatedAt = DateTime.UtcNow;
 
-                _context.Teams.Update(team);
-                await _context.SaveChangesAsync();
+                context.Teams.Update(team);
+                await context.SaveChangesAsync();
 
                 return true;
             }

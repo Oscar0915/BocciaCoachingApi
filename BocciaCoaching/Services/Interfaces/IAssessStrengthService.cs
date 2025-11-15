@@ -5,7 +5,7 @@ namespace BocciaCoaching.Services.Interfaces
 {
     public interface IAssessStrengthService
     {
-        Task<ResponseAddAssessStrengthDto> CrearEvaluacion(AddAssessStrengthDto addAssessStrengthDto);
+        Task<ResponseAddAssessStrengthDto> CreateEvaluation(AddAssessStrengthDto addAssessStrengthDto);
         Task<AthletesToEvaluated> AgregarAtletaAEvaluacion(RequestAddAthleteToEvaluationDto athletesToEvaluated);
         Task<bool> AgregarDetalleDeEvaluacion(RequestAddDetailToEvaluationForAthlete requestAddDetailToEvaluationForAthlete);
     }

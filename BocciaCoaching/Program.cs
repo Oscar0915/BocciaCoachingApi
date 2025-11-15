@@ -2,6 +2,8 @@ using BocciaCoaching.Data;
 using BocciaCoaching.Repositories;
 using BocciaCoaching.Repositories.AssesstStrength;
 using BocciaCoaching.Repositories.Interfaces;
+using BocciaCoaching.Repositories.Interfaces.ITeams;
+using BocciaCoaching.Repositories.Teams;
 using BocciaCoaching.Services;
 using BocciaCoaching.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -42,10 +44,20 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ITeamService, TeamService>();
 builder.Services.AddScoped<IAssessStrengthService, AssessStrengthService>();
 
-//Repositories
-builder.Services.AddScoped<IUserRepository, UserRepository>();
+/*
+Repositories - Repositorios
+*/
+
+// Team - Equipos
+builder.Services.AddScoped<ITeamValidationRepository, TeamValidationRepository>();
 builder.Services.AddScoped<ITeamRepository, TeamRepository>();
+
+//User - Usuario
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+// Assess Strength - Prueba de fuerza 
 builder.Services.AddScoped<IAssessStrengthRepository, AssessStrengthRepository>();
+
 
 
 builder.Services.AddControllers();
