@@ -2,6 +2,7 @@ using BocciaCoaching.Data;
 using BocciaCoaching.Repositories;
 using BocciaCoaching.Repositories.AssesstStrength;
 using BocciaCoaching.Repositories.Interfaces;
+using BocciaCoaching.Repositories.Interfaces.IAssesstStrength;
 using BocciaCoaching.Repositories.Interfaces.ITeams;
 using BocciaCoaching.Repositories.Teams;
 using BocciaCoaching.Services;

@@ -11,7 +11,7 @@ public class TeamValidationRepository (ApplicationDbContext context):ITeamValida
     {
         try
         {
-            var stateTeam = await context.Teams.Where(t => t.CoachId == team.CoachId)
+            var stateTeam = await context.Teams.Where(t => t.TeamId == team.TeamId)
                 .Select(t => t.Status)
                 .FirstOrDefaultAsync();
 

@@ -23,6 +23,7 @@ namespace BocciaCoaching.Data
         public DbSet<Event> Event { get; set; }
         public DbSet<LevelEvent> LevelEvent { get; set; }
         public DbSet<Achievement> Achievement { get; set; }
+        public DbSet<StrengthStatistics> StrengthStatistics { get; set; }
 
         #region Required
         protected override void OnModelCreating(ModelBuilder modelBuilder)

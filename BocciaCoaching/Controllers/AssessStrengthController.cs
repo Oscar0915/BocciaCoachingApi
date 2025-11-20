@@ -1,4 +1,5 @@
 ﻿using BocciaCoaching.Models.DTO.AssessStrength;
+using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.Entities;
 using BocciaCoaching.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +20,7 @@ namespace BocciaCoaching.Controllers
 
 
         [HttpPost("AddEvaluation")]
-        public async Task<ActionResult<IEnumerable<bool>>> NewEvaluation(AddAssessStrengthDto user)
+        public async Task<ActionResult<IEnumerable<ResponseContract<ResponseAddAssessStrengthDto>>>> NewEvaluation(AddAssessStrengthDto user)
         {
             var users = await _assessStrengthService.CreateEvaluation(user);
             return Ok(users);

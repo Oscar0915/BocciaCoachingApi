@@ -10,25 +10,8 @@ namespace BocciaCoaching.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
-                name: "TeamId",
-                table: "AssessStrength",
-                type: "int",
-                nullable: false,
-                defaultValue: 0);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AssessStrength_TeamId",
-                table: "AssessStrength",
-                column: "TeamId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_AssessStrength_Team_TeamId",
-                table: "AssessStrength",
-                column: "TeamId",
-                principalTable: "Team",
-                principalColumn: "TeamId",
-                onDelete: ReferentialAction.Cascade);
+          
+           
         }
 
         /// <inheritdoc />

@@ -4,6 +4,7 @@ using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.Team;
 using BocciaCoaching.Models.Entities;
 using BocciaCoaching.Repositories.Interfaces;
+using BocciaCoaching.Repositories.Interfaces.IAssesstStrength;
 using Microsoft.EntityFrameworkCore;
 
 namespace BocciaCoaching.Repositories.AssesstStrength
@@ -52,47 +53,50 @@ namespace BocciaCoaching.Repositories.AssesstStrength
                 };
             }
         }
+
         /// <summary>
         /// Crear una nueva evaluación 
         /// </summary>
         /// <param name="addAssessStrengthDto"></param>
         /// <returns></returns>
-        public async Task<ResponseAddAssessStrengthDto> CrearEvaluacion(AddAssessStrengthDto addAssessStrengthDto)
+        public async Task<ResponseContract<ResponseAddAssessStrengthDto>> CrearEvaluacion(
+            AddAssessStrengthDto addAssessStrengthDto)
         {
             try
             {
                 var assessStrength = new AssessStrength
                 {
                     EvaluationDate = DateTime.Now,
-                    Description = addAssessStrengthDto.Description, 
-                    State = addAssessStrengthDto.State
+                    Description = addAssessStrengthDto.Description,
+                    State = "A",
+                    TeamId = addAssessStrengthDto.TeamId
                 };
 
                 await _context.AssessStrengths.AddAsync(assessStrength);
                 await _context.SaveChangesAsync();
 
-                var response = new ResponseAddAssessStrengthDto
+                var resultDto = new ResponseAddAssessStrengthDto
                 {
                     AssessStrengthId = assessStrength.AssessStrengthId,
                     DateEvaluation = assessStrength.EvaluationDate,
                     State = true
                 };
 
-
-
-                return response;
+                return ResponseContract<ResponseAddAssessStrengthDto>.Ok(
+                    resultDto,
+                    "Evaluación creada correctamente"
+                );
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error en AddUser: {ex.Message}");
-                return new ResponseAddAssessStrengthDto
-                {
-                    AssessStrengthId = 0,
-                    DateEvaluation = DateTime.Now,
-                    State = false
-                };
+                Console.WriteLine($"Error en CrearEvaluacion: {ex.Message}");
+
+                return ResponseContract<ResponseAddAssessStrengthDto>.Fail(
+                    $"Error al crear la evaluación: {ex.Message}"
+                );
             }
         }
+
         /// <summary>
         /// 
         /// </summary>
@@ -155,20 +159,20 @@ namespace BocciaCoaching.Repositories.AssesstStrength
             }
         }
 
-        public async Task<bool> UpdateState(AddAssessStrengthDto addAssessStrengthDto)
+        public async Task<bool> UpdateState(UpdateAssessStregthDto updateAssessStregthDto)
         {
             try
             {
                 var existing = await _context.AssessStrengths
-                    .FirstOrDefaultAsync(x => x.AssessStrengthId == addAssessStrengthDto.Id);
+                    .FirstOrDefaultAsync(x => x.AssessStrengthId == updateAssessStregthDto.Id);
 
                 if (existing == null)
                 {
-                    Console.WriteLine($"No se encontró el registro con ID {addAssessStrengthDto.Id}");
+                    Console.WriteLine($"No se encontró el registro con ID {updateAssessStregthDto.Id}");
                     return false;
                 }
 
-                existing.State = addAssessStrengthDto.State;
+                existing.State = updateAssessStregthDto.State;
 
                 await _context.SaveChangesAsync();
 
@@ -181,6 +185,62 @@ namespace BocciaCoaching.Repositories.AssesstStrength
             }
         }
 
+        public async Task<bool> InsertStrengthTestStats(StrengthStatistics strengthStatistics)
+        {
+            try
+            {
+                // Crear una nueva instancia por seguridad (evitando trackeo indebido)
+                var statistics = new StrengthStatistics
+                {
+                    EffectivenessPercentage = strengthStatistics.EffectivenessPercentage,
+                    AccuracyPercentage = strengthStatistics.AccuracyPercentage,
+                    EffectiveThrow = strengthStatistics.EffectiveThrow,
+                    FailedThrow = strengthStatistics.FailedThrow,
+                    ShortThrow = strengthStatistics.ShortThrow,
+                    MediumThrow = strengthStatistics.MediumThrow,
+                    LongThrow = strengthStatistics.LongThrow,
+                    ShortEffectivenessPercentage = strengthStatistics.ShortEffectivenessPercentage,
+                    MediumEffectivenessPercentage = strengthStatistics.MediumEffectivenessPercentage,
+                    LongEffectivenessPercentage = strengthStatistics.LongEffectivenessPercentage,
+                    ShortThrowAccuracy = strengthStatistics.ShortThrowAccuracy,
+                    MediumThrowAccuracy = strengthStatistics.MediumThrowAccuracy,
+                    LongThrowAccuracy = strengthStatistics.LongThrowAccuracy,
+                    ShortAccuracyPercentage = strengthStatistics.ShortAccuracyPercentage,
+                    MediumAccuracyPercentage = strengthStatistics.MediumAccuracyPercentage,
+                    LongAccuracyPercentage = strengthStatistics.LongAccuracyPercentage,
+                    AssessStrengthId = strengthStatistics.AssessStrengthId,
+                    AthleteId = strengthStatistics.AthleteId
+                };
+
+                await _context.StrengthStatistics.AddAsync(statistics);
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                // Aquí puedes loguear con serilog, nlog, etc.
+                Console.WriteLine($"Error inserting StrengthStatistics: {e.Message}");
+                return false;
+            }
+        }
+
+
+
+
+        public async Task<List<EvaluationDetailStrength>> GetAllDetailsEvaluation(RequestAddDetailToEvaluationForAthlete evaluationDetail)
+        {
+            try
+            {
+                  var listEvaluationDetail = await  _context.EvaluationDetailStrengths.Where(e=> e.AssessStrengthId == evaluationDetail.AssessStrengthId).ToListAsync();
+                  return listEvaluationDetail;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return new List<EvaluationDetailStrength>();
+            }
+        }
         
         
     }
