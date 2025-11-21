@@ -175,11 +175,15 @@ namespace BocciaCoaching.Repositories
                 if (string.IsNullOrWhiteSpace(user?.FirstName))
                     return ResponseContract<List<User>>.Fail("Debe proporcionar un nombre para la búsqueda.")!;
 
-                var userInfo = await context.Users
-                    .Where(x => x.FirstName != null
-                                && EF.Functions.Like(x.FirstName, $"%{user.FirstName}%")
-                                && context.TeamsUsers.Any(tu => tu.UserId == x.UserId && tu.TeamId == user.TeamId)
-                                && context.UserRoles.Any(ur => ur.UserId == x.UserId && ur.RolId == 3))
+                var userInfo = await (from u in context.Users
+                        join tu in context.TeamsUsers on u.UserId equals tu.UserId
+                        join ur in context.UserRoles on u.UserId equals ur.UserId
+                        where u.FirstName != null
+                              && EF.Functions.Like(u.FirstName, $"%{user.FirstName}%")
+                              && tu.TeamId == user.TeamId
+                              && ur.RolId == 3
+                        select u)
+                    .Distinct()
                     .ToListAsync();
 
 
