@@ -15,7 +15,7 @@ namespace BocciaCoaching.Services.Interfaces
         Task<ResponseNewRecordDto> AddTeamMember(RequestTeamMemberDto requestTeamMemberDto);
 
         Task<List<Team>> GetTeamsForUser(RequestTeamDto requestTeamDto);
-        Task<List<User>> GetUsersForTeam(RequestGetUserForTeamDto requestGetUserForTeamDto);
+        Task<ResponseContract<List<User>>> GetUsersForTeam(RequestGetUserForTeamDto requestGetUserForTeamDto);
         Task<bool> UpdateTeam(RequestUpdateTeamDto requestUpdateImageTeamDto);
     }
 }

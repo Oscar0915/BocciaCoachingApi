@@ -41,7 +41,7 @@ namespace BocciaCoaching.Services
             return  await _teamRepository.GetTeamsForUser(requestTeamDto);
         }
 
-        public async Task<List<User>> GetUsersForTeam(RequestGetUserForTeamDto requestGetUserForTeamDto)
+        public async Task<ResponseContract<List<User>>> GetUsersForTeam(RequestGetUserForTeamDto requestGetUserForTeamDto)
         {
             return await _teamRepository.GetUsersForTeam(requestGetUserForTeamDto);
         }

@@ -105,7 +105,7 @@ namespace BocciaCoaching.Repositories.Teams
         /// </summary>
         /// <param name="requestGetUserForTeamDto"></param>
         /// <returns></returns>
-        public async Task<List<User>> GetUsersForTeam(RequestGetUserForTeamDto requestGetUserForTeamDto)
+        public async Task<ResponseContract<List<User>>> GetUsersForTeam(RequestGetUserForTeamDto requestGetUserForTeamDto)
         {
             try
             {
@@ -118,12 +118,12 @@ namespace BocciaCoaching.Repositories.Teams
                 .Select(tu => tu.User)
                 .ToListAsync();
 
-                return users;
+                return ResponseContract<List<User>>.Ok(users, "Ususarios obtenidos satisfactoriamente");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error en GetUsersForTeam: {ex.Message}");
-                return new List<User>();
+                return ResponseContract<List<User>>.Fail(ex.Message)!;
             }
         }
 

@@ -28,7 +28,7 @@ namespace BocciaCoaching.Repositories.Interfaces.ITeams
         /// <returns></returns>
         Task<List<Team>> GetTeamsForUser(RequestTeamDto requestTeamDto);
 
-        Task<List<User>> GetUsersForTeam(RequestGetUserForTeamDto requestGetUserForTeamDto);
+        Task<ResponseContract<List<User>>> GetUsersForTeam(RequestGetUserForTeamDto requestGetUserForTeamDto);
         Task<bool> UpdateTeam(RequestUpdateTeamDto requestUpdateImageTeamDto);
     }
 }

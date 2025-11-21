@@ -35,6 +35,11 @@ namespace BocciaCoaching.Controllers
         }
 
 
+        /// <summary>
+        /// Agregar el detalle de un lanzamiento de la prueba de fuerza
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
         [HttpPost("AddDeatilsToEvaluation")]
         public async Task<ActionResult<IEnumerable<bool>>> AddDeatilsToEvaluation(RequestAddDetailToEvaluationForAthlete user)
         {
