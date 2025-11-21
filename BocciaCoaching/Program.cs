@@ -17,7 +17,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll",
         policy =>
         {
-            policy.WithOrigins("https://bocciacoaching.com", "http://localhost:4200")
+            policy.WithOrigins("https://bocciacoaching.com", "http://localhost:4200", "https://www.bocciacoaching.com")
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });
@@ -58,6 +58,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 // Assess Strength - Prueba de fuerza 
 builder.Services.AddScoped<IAssessStrengthRepository, AssessStrengthRepository>();
+builder.Services.AddScoped<IValidationsAssetsStrength, ValidatiosStrenthRepository>();
 
 
 
@@ -69,7 +70,7 @@ builder.Services.AddSwaggerGen();
 
 
 var app = builder.Build();
-
+app.UseRouting(); 
 app.UseCors("AllowAll");
 
 // Configure the HTTP request pipeline.
