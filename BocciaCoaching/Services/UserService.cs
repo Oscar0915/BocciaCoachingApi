@@ -1,7 +1,9 @@
 ﻿using BocciaCoaching.Models.DTO;
 using BocciaCoaching.Models.DTO.AssessStrength;
 using BocciaCoaching.Models.DTO.Auth;
+using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.User;
+using BocciaCoaching.Models.DTO.User.Atlhete;
 using BocciaCoaching.Models.Entities;
 using BocciaCoaching.Repositories.Interfaces;
 using BocciaCoaching.Services.Interfaces;
@@ -47,6 +49,30 @@ namespace BocciaCoaching.Services
         public Task<ValidateEmailDto> ValidateEmail(ValidateEmailDto email)
         {
             return _repository.ValidateEmail(email);
+        }
+
+        public async Task<ResponseContract<List<AtlheteInfo>>> GetAthleteForName(SearchDataAthleteDto user)
+        {
+            var responseInfoAthletes = new List<AtlheteInfo>();
+            var dataAthletes= await _repository.GetUserForName(user);
+
+            if (dataAthletes.Success && dataAthletes.Data.Count > 0)
+            {
+                foreach (var atlhete in dataAthletes.Data)
+                {
+                    AtlheteInfo atlheteInfo = new AtlheteInfo();
+                    atlheteInfo.AthleteId = atlhete.UserId;
+                    atlheteInfo.Name = atlhete.FirstName  + " " + atlhete.LastName;
+                    responseInfoAthletes.Add(atlheteInfo);
+                }
+                
+                return ResponseContract<List<AtlheteInfo>>.Ok(
+                    responseInfoAthletes,
+                    "Búsqueda realizada satisfactoriamente"
+                );
+            }
+            
+            return ResponseContract<List<AtlheteInfo>>.Fail("No se encontraron atletas")!;
         }
     }
 }

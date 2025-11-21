@@ -1,5 +1,8 @@
 ﻿using BocciaCoaching.Models.DTO.Auth;
+using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.User;
+using BocciaCoaching.Models.DTO.User.Atlhete;
+using BocciaCoaching.Models.Entities;
 
 namespace BocciaCoaching.Repositories.Interfaces
 {
@@ -11,5 +14,12 @@ namespace BocciaCoaching.Repositories.Interfaces
         Task<LoginResponseDto?> Login(LoginRequestDto loginDto);
         Task<bool> RegistrarAtleta(AtlheteInfoSave atlheteInfoSave);
         Task<ValidateEmailDto> ValidateEmail(ValidateEmailDto email);
+
+        /// <summary>
+        /// Método para la busqueda de los atletas por nombre
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        Task<ResponseContract<List<User>>> GetUserForName(SearchDataAthleteDto user);
     }
 }

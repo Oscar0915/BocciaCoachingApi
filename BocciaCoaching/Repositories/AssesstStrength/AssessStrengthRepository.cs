@@ -93,7 +93,7 @@ namespace BocciaCoaching.Repositories.AssesstStrength
 
                 return ResponseContract<ResponseAddAssessStrengthDto>.Fail(
                     $"Error al crear la evaluación: {ex.Message}"
-                );
+                )!;
             }
         }
 

@@ -29,7 +29,4 @@ public class ResponseContract<T>
     {
         return new ResponseContract<T?>(false, message, default(T));
     }
-    
-    
-    
 }

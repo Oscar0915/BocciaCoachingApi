@@ -1,6 +1,8 @@
 ﻿using BocciaCoaching.Data;
 using BocciaCoaching.Models.DTO.Auth;
+using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.User;
+using BocciaCoaching.Models.DTO.User.Atlhete;
 using BocciaCoaching.Models.Entities;
 using BocciaCoaching.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -161,5 +163,35 @@ namespace BocciaCoaching.Repositories
 
         }
 
+        /// <summary>
+        /// Método para la busqueda de los atletas por nombre
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public async Task<ResponseContract<List<User>>> GetUserForName(SearchDataAthleteDto user)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(user?.FirstName))
+                    return ResponseContract<List<User>>.Fail("Debe proporcionar un nombre para la búsqueda.")!;
+
+                var userInfo = await context.Users
+                    .Where(x => x.FirstName != null &&
+                                EF.Functions.Like(x.FirstName, $"%{user.FirstName}%") 
+                                && context.TeamsUsers.Any(y => y.IdTeamUser == user.TeamId)
+                                && context.UserRoles.Any(ur =>
+                                    ur.UserId == x.UserId &&
+                                    ur.RolId == 3
+                                ) )
+                    .ToListAsync();
+
+                return ResponseContract<List<User>>.Ok(userInfo, "Búsqueda realizada satisfactoriamente");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return ResponseContract<List<User>>.Fail("Ocurrió un error realizando la búsqueda")!;
+            }
+        }
     }
 }

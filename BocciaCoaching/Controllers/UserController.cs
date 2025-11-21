@@ -1,6 +1,8 @@
 using BocciaCoaching.Models.DTO.AssessStrength;
 using BocciaCoaching.Models.DTO.Auth;
+using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.User;
+using BocciaCoaching.Models.DTO.User.Atlhete;
 using BocciaCoaching.Models.Entities;
 using BocciaCoaching.Services;
 using BocciaCoaching.Services.Interfaces;
@@ -42,7 +44,7 @@ namespace BocciaCoaching.Controllers
 
             var result = await _user.Login(user);
             if (result == null)
-                return Unauthorized(new { message = "Credenciales inválidas" });
+                return Unauthorized(new { message = "Credenciales invï¿½lidas" });
 
             return Ok(result);
         }
@@ -62,6 +64,14 @@ namespace BocciaCoaching.Controllers
         public async Task<ActionResult<IEnumerable<ValidateEmailDto>>> ValidateEmail(ValidateEmailDto email)
         {
             ValidateEmailDto Response = await _user.ValidateEmail(email);
+            return Ok(Response);
+        }
+        
+        
+        [HttpPost("SearchAthletesForNameAndTeams")]
+        public async Task<ActionResult<IEnumerable<ResponseContract<List<AtlheteInfo>>>>> SearchAthletesForNameAndTeams(SearchDataAthleteDto email)
+        {
+            var Response = await _user.GetAthleteForName(email);
             return Ok(Response);
         }
     }
