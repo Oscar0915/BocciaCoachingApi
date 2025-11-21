@@ -1,10 +1,12 @@
 using BocciaCoaching.Data;
+using BocciaCoaching.Models.DTO.AssessStrength;
 using BocciaCoaching.Models.Entities;
+using BocciaCoaching.Repositories.Interfaces.IAssesstStrength;
 using Microsoft.EntityFrameworkCore;
 
 namespace BocciaCoaching.Repositories;
 
-public class ValidatiosStrenthRepository
+public class ValidatiosStrenthRepository: IValidationsAssetsStrength
 {
     private readonly ApplicationDbContext _context;
 
@@ -32,6 +34,26 @@ public class ValidatiosStrenthRepository
         }catch(Exception)
         {
             return false;
+        }
+    }
+
+    public async Task<bool> IsUpdateDetailAssessStrength(
+        RequestAddDetailToEvaluationForAthlete requestAddDetailToEvaluationForAthlete)
+    {
+        try
+        {
+            var idUpdate = await _context.EvaluationDetailStrengths.Where(a =>
+                a.ThrowOrder == requestAddDetailToEvaluationForAthlete.ThrowOrder
+                && a.AssessStrengthId == requestAddDetailToEvaluationForAthlete.AssessStrengthId).ToListAsync();
+            
+            if(idUpdate.Count == 0)
+                return false;
+            return true;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
         }
     }
     

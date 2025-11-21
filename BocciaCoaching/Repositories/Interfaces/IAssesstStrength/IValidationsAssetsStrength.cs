@@ -1,16 +1,13 @@
+using BocciaCoaching.Models.DTO.AssessStrength;
 using BocciaCoaching.Models.Entities;
 
 namespace BocciaCoaching.Repositories.Interfaces.IAssesstStrength;
 
 public interface IValidationsAssetsStrength
 {
-    Task<bool>  IsActiveTeam(int teamId);
-    Task<bool>  IsActivePlayer(int playerId);
+    Task<bool> IsUpdateDetailAssessStrength(
+        RequestAddDetailToEvaluationForAthlete requestAddDetailToEvaluationForAthlete);
 
-    /// <summary>
-    /// Número de lanzamientos por prueba realizados
-    /// </summary>
-    /// <returns></returns>
-    Task<int> NumberOfThrowsPerTrial(AssessStrength assessStrength);
+    Task<bool> IsActiveTeam(Team team);
 
 }

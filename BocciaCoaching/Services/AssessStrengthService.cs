@@ -11,6 +11,7 @@ namespace BocciaCoaching.Services
     {
         private readonly IAssessStrengthRepository _assessStrengthRepository;
         private readonly ITeamValidationRepository   _teamValidationRepository;
+        private readonly IValidationsAssetsStrength _validationsAssetsStrength;
 
 
         /// <summary>
@@ -18,10 +19,12 @@ namespace BocciaCoaching.Services
         /// </summary>
         /// <param name="assessStrengthRepository"></param>
         /// <param name="teamValidationRepository"></param>
-        public AssessStrengthService(IAssessStrengthRepository assessStrengthRepository, ITeamValidationRepository teamValidationRepository)
+        public AssessStrengthService(IAssessStrengthRepository assessStrengthRepository, ITeamValidationRepository teamValidationRepository,
+            IValidationsAssetsStrength validationsAssetsStrength)
         {
             _assessStrengthRepository = assessStrengthRepository;
             _teamValidationRepository = teamValidationRepository;
+            _validationsAssetsStrength = validationsAssetsStrength;
         }
         public async Task<ResponseContract<AthletesToEvaluated>> AgregarAtletaAEvaluacion(RequestAddAthleteToEvaluationDto athletesToEvaluated)
         {
@@ -30,6 +33,10 @@ namespace BocciaCoaching.Services
 
         public async Task<bool> AgregarDetalleDeEvaluacion(RequestAddDetailToEvaluationForAthlete requestAddDetailToEvaluationForAthlete)
         {
+            var isUdateDetail =
+                await _validationsAssetsStrength.IsUpdateDetailAssessStrength(requestAddDetailToEvaluationForAthlete);
+            if (isUdateDetail)
+                return true;
             await _assessStrengthRepository.AgregarDetalleDeEvaluacion(requestAddDetailToEvaluationForAthlete);
 
             var dataStrenthStatistic = new StrengthStatistics();
