@@ -176,14 +176,12 @@ namespace BocciaCoaching.Repositories
                     return ResponseContract<List<User>>.Fail("Debe proporcionar un nombre para la búsqueda.")!;
 
                 var userInfo = await context.Users
-                    .Where(x => x.FirstName != null &&
-                                EF.Functions.Like(x.FirstName, $"%{user.FirstName}%") 
-                                && context.TeamsUsers.Any(y => y.IdTeamUser == user.TeamId)
-                                && context.UserRoles.Any(ur =>
-                                    ur.UserId == x.UserId &&
-                                    ur.RolId == 3
-                                ) )
+                    .Where(x => x.FirstName != null
+                                && EF.Functions.Like(x.FirstName, $"%{user.FirstName}%")
+                                && context.TeamsUsers.Any(tu => tu.UserId == x.UserId && tu.TeamId == user.TeamId)
+                                && context.UserRoles.Any(ur => ur.UserId == x.UserId && ur.RolId == 3))
                     .ToListAsync();
+
 
                 return ResponseContract<List<User>>.Ok(userInfo, "Búsqueda realizada satisfactoriamente");
             }
