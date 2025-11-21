@@ -23,7 +23,7 @@ namespace BocciaCoaching.Services
             _assessStrengthRepository = assessStrengthRepository;
             _teamValidationRepository = teamValidationRepository;
         }
-        public async Task<AthletesToEvaluated> AgregarAtletaAEvaluacion(RequestAddAthleteToEvaluationDto athletesToEvaluated)
+        public async Task<ResponseContract<AthletesToEvaluated>> AgregarAtletaAEvaluacion(RequestAddAthleteToEvaluationDto athletesToEvaluated)
         {
             return await _assessStrengthRepository.AgregarAtletaAEvaluacion(athletesToEvaluated);
         }

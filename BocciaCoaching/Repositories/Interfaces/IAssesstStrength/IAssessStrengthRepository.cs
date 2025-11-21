@@ -7,7 +7,9 @@ namespace BocciaCoaching.Repositories.Interfaces.IAssesstStrength
     public interface IAssessStrengthRepository
     {
         Task<ResponseContract<ResponseAddAssessStrengthDto>> CrearEvaluacion(AddAssessStrengthDto addAssessStrengthDto);
-        Task<AthletesToEvaluated> AgregarAtletaAEvaluacion(RequestAddAthleteToEvaluationDto athletesToEvaluated);
+
+        Task<ResponseContract<AthletesToEvaluated>> AgregarAtletaAEvaluacion(
+            RequestAddAthleteToEvaluationDto athletesToEvaluated);
         Task<bool> AgregarDetalleDeEvaluacion(RequestAddDetailToEvaluationForAthlete requestAddDetailToEvaluationForAthlete);
         Task<bool> InsertStrengthTestStats(StrengthStatistics strengthStatistics);
         Task<List<EvaluationDetailStrength>> GetAllDetailsEvaluation(RequestAddDetailToEvaluationForAthlete evaluationDetail);

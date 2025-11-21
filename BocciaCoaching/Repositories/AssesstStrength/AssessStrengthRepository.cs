@@ -102,7 +102,7 @@ namespace BocciaCoaching.Repositories.AssesstStrength
         /// </summary>
         /// <param name="athletesToEvaluated"></param>
         /// <returns></returns>
-        public async Task<AthletesToEvaluated> AgregarAtletaAEvaluacion(RequestAddAthleteToEvaluationDto athletesToEvaluated)
+        public async Task<ResponseContract<AthletesToEvaluated>> AgregarAtletaAEvaluacion(RequestAddAthleteToEvaluationDto athletesToEvaluated)
         {
             try
             {
@@ -114,17 +114,13 @@ namespace BocciaCoaching.Repositories.AssesstStrength
                 };
                 await _context.AthletesToEvaluated.AddAsync(athletesInfo);
                 await _context.SaveChangesAsync();
-                return athletesInfo;
+                return ResponseContract<AthletesToEvaluated>.Ok(athletesInfo,"Inserción exitosa");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error en AddUser: {ex.Message}");
-                return new AthletesToEvaluated
-                {
-                    AssessStrengthId = 0,
-                    AthleteId = 0,
-                    CoachId = 0,
-                };
+                return ResponseContract<AthletesToEvaluated>.Fail("Error al agregar al atleta")!;
+
             }
         }
         /// <summary>

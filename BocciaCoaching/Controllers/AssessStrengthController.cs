@@ -28,7 +28,7 @@ namespace BocciaCoaching.Controllers
 
 
         [HttpPost("AthletesToEvaluated")]
-        public async Task<ActionResult<IEnumerable<bool>>> AthletesToEvaluated(RequestAddAthleteToEvaluationDto user)
+        public async Task<ActionResult<IEnumerable<ResponseContract<AthletesToEvaluated>>>> AthletesToEvaluated(RequestAddAthleteToEvaluationDto user)
         {
             var users = await _assessStrengthService.AgregarAtletaAEvaluacion(user);
             return Ok(users);
