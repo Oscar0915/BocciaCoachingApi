@@ -4,6 +4,8 @@ using BocciaCoaching.Repositories.AssesstStrength;
 using BocciaCoaching.Repositories.Interfaces;
 using BocciaCoaching.Repositories.Interfaces.IAssesstStrength;
 using BocciaCoaching.Repositories.Interfaces.ITeams;
+using BocciaCoaching.Repositories.Statistic;
+using BocciaCoaching.Repositories.Statistic.Interfce;
 using BocciaCoaching.Repositories.Teams;
 using BocciaCoaching.Services;
 using BocciaCoaching.Services.Interfaces;
@@ -60,7 +62,8 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAssessStrengthRepository, AssessStrengthRepository>();
 builder.Services.AddScoped<IValidationsAssetsStrength, ValidatiosStrenthRepository>();
 
-
+// Statistic - Estadisticas
+builder.Services.AddScoped<IStatisticAssessStrength, StatisticAssessStrength>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

@@ -1,4 +1,5 @@
 ﻿using BocciaCoaching.Models.DTO.General;
+using BocciaCoaching.Models.DTO.Statistic;
 using BocciaCoaching.Models.DTO.Team;
 using BocciaCoaching.Models.Entities;
 using BocciaCoaching.Services.Interfaces;
@@ -54,6 +55,11 @@ namespace BocciaCoaching.Controllers
             return Ok(responseImage);
         }
        
-
+        [HttpPost("GetRecentStatistics")]
+        public async Task<ActionResult<ResponseContract<List<StrengthTestSummaryDto>>>> GetRecentStatistics(RequestInfoCoachAndTeam requestInfoCoachAndTeam)
+        {
+            var responseImage = await _team.GetRecentStatistics(requestInfoCoachAndTeam);
+            return Ok(responseImage);
+        }
     }
 }

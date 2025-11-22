@@ -1,4 +1,5 @@
 ﻿using BocciaCoaching.Models.DTO.General;
+using BocciaCoaching.Models.DTO.Statistic;
 using BocciaCoaching.Models.DTO.Team;
 using BocciaCoaching.Models.Entities;
 
@@ -17,5 +18,8 @@ namespace BocciaCoaching.Services.Interfaces
         Task<List<Team>> GetTeamsForUser(RequestTeamDto requestTeamDto);
         Task<ResponseContract<List<User>>> GetUsersForTeam(RequestGetUserForTeamDto requestGetUserForTeamDto);
         Task<bool> UpdateTeam(RequestUpdateTeamDto requestUpdateImageTeamDto);
+
+        Task<ResponseContract<List<StrengthTestSummaryDto>>> GetRecentStatistics(
+            RequestInfoCoachAndTeam requestInfoCoachAndTeam);
     }
 }
