@@ -10,7 +10,10 @@ namespace BocciaCoaching.Repositories.Interfaces.IAssesstStrength
 
         Task<ResponseContract<AthletesToEvaluated>> AgregarAtletaAEvaluacion(
             RequestAddAthleteToEvaluationDto athletesToEvaluated);
-        Task<bool> AgregarDetalleDeEvaluacion(RequestAddDetailToEvaluationForAthlete requestAddDetailToEvaluationForAthlete);
+
+        Task<bool> AgregarDetalleDeEvaluacion(
+            RequestAddDetailToEvaluationForAthlete request,
+            bool isUpdate);
         Task<bool> InsertStrengthTestStats(StrengthStatistics strengthStatistics);
         Task<List<EvaluationDetailStrength>> GetAllDetailsEvaluation(RequestAddDetailToEvaluationForAthlete evaluationDetail);
     }

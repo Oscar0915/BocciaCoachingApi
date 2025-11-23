@@ -128,32 +128,61 @@ namespace BocciaCoaching.Repositories.AssesstStrength
         /// </summary>
         /// <param name="requestAddDetailToEvaluationForAthlete"></param>
         /// <returns></returns>
-        public async Task<bool> AgregarDetalleDeEvaluacion(RequestAddDetailToEvaluationForAthlete requestAddDetailToEvaluationForAthlete)
+        public async Task<bool> AgregarDetalleDeEvaluacion(
+            RequestAddDetailToEvaluationForAthlete request,
+            bool isUpdate)
         {
             try
             {
-                var athletesInfo = new EvaluationDetailStrength
+                if (isUpdate)
                 {
-                    AssessStrengthId = requestAddDetailToEvaluationForAthlete.AssessStrengthId,
-                    AthleteId = requestAddDetailToEvaluationForAthlete.AthleteId,
-                    BoxNumber = requestAddDetailToEvaluationForAthlete.BoxNumber,
-                    Observations = requestAddDetailToEvaluationForAthlete.Observations,
-                    ScoreObtained = requestAddDetailToEvaluationForAthlete.ScoreObtained,
-                    Status = requestAddDetailToEvaluationForAthlete.Status,
-                    TargetDistance = requestAddDetailToEvaluationForAthlete.TargetDistance,
-                    ThrowOrder = requestAddDetailToEvaluationForAthlete.ThrowOrder
+                    // 1. Buscar registro existente
+                    var entity = await _context.EvaluationDetailStrengths
+                        .FirstOrDefaultAsync(x =>
+                            x.AssessStrengthId == request.AssessStrengthId &&
+                            x.AthleteId == request.AthleteId);
 
-                };
-                await _context.EvaluationDetailStrengths.AddAsync(athletesInfo);
+                    if (entity == null)
+                        return false;
+
+                    // 2. Actualizar campos
+                    entity.BoxNumber = request.BoxNumber;
+                    entity.Observations = request.Observations;
+                    entity.ScoreObtained = request.ScoreObtained;
+                    entity.Status = request.Status;
+                    entity.TargetDistance = request.TargetDistance;
+                    entity.ThrowOrder = request.ThrowOrder;
+
+                    _context.EvaluationDetailStrengths.Update(entity);
+                }
+                else
+                {
+                    // Crear nueva entidad
+                    var newEntity = new EvaluationDetailStrength
+                    {
+                        AssessStrengthId = request.AssessStrengthId,
+                        AthleteId = request.AthleteId,
+                        BoxNumber = request.BoxNumber,
+                        Observations = request.Observations,
+                        ScoreObtained = request.ScoreObtained,
+                        Status = request.Status,
+                        TargetDistance = request.TargetDistance,
+                        ThrowOrder = request.ThrowOrder
+                    };
+
+                    await _context.EvaluationDetailStrengths.AddAsync(newEntity);
+                }
+
                 await _context.SaveChangesAsync();
                 return true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error en AddUser: {ex.Message}");
+                Console.WriteLine($"Error: {ex.Message}");
                 return false;
             }
         }
+
 
         public async Task<bool> UpdateState(UpdateAssessStregthDto updateAssessStregthDto)
         {
@@ -181,6 +210,11 @@ namespace BocciaCoaching.Repositories.AssesstStrength
             }
         }
 
+        /// <summary>
+        /// Inserción de las estadisticas de la prueba de fuerza
+        /// </summary>
+        /// <param name="strengthStatistics"></param>
+        /// <returns></returns>
         public async Task<bool> InsertStrengthTestStats(StrengthStatistics strengthStatistics)
         {
             try

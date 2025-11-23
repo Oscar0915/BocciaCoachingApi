@@ -35,9 +35,8 @@ namespace BocciaCoaching.Services
         {
             var isUdateDetail =
                 await _validationsAssetsStrength.IsUpdateDetailAssessStrength(requestAddDetailToEvaluationForAthlete);
-            if (isUdateDetail)
-                return true;
-            await _assessStrengthRepository.AgregarDetalleDeEvaluacion(requestAddDetailToEvaluationForAthlete);
+           
+            await _assessStrengthRepository.AgregarDetalleDeEvaluacion(requestAddDetailToEvaluationForAthlete,isUdateDetail);
 
             var dataStrenthStatistic = new StrengthStatistics();
             
