@@ -140,7 +140,8 @@ namespace BocciaCoaching.Repositories.AssesstStrength
                     var entity = await _context.EvaluationDetailStrengths
                         .FirstOrDefaultAsync(x =>
                             x.AssessStrengthId == request.AssessStrengthId &&
-                            x.AthleteId == request.AthleteId);
+                            x.AthleteId == request.AthleteId&&
+                            x.ThrowOrder==request.ThrowOrder);
 
                     if (entity == null)
                         return false;
