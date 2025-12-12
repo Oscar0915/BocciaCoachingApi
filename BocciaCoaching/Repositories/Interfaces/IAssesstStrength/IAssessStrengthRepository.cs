@@ -1,4 +1,4 @@
-﻿using BocciaCoaching.Models.DTO.AssessStrength;
+﻿﻿using BocciaCoaching.Models.DTO.AssessStrength;
 using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.Entities;
 
@@ -22,5 +22,6 @@ namespace BocciaCoaching.Repositories.Interfaces.IAssesstStrength
         Task<bool> InsertStrengthTestStats(StrengthStatistics strengthStatistics);
         Task<List<EvaluationDetailStrength>> GetAllDetailsEvaluation(RequestAddDetailToEvaluationForAthlete evaluationDetail);
         Task<ResponseContract<bool>> UpdateState(UpdateAssessStregthDto updateAssessStregthDto);
+        Task<int?> GetCoachIdByAssessmentAsync(int assessStrengthId);
     }
 }

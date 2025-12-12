@@ -1,4 +1,4 @@
-﻿using BocciaCoaching.Data;
+﻿﻿using BocciaCoaching.Data;
 using BocciaCoaching.Models.DTO.AssessStrength;
 using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.Team;
@@ -371,6 +371,28 @@ namespace BocciaCoaching.Repositories.AssesstStrength
         public async Task<bool> HasActiveAssessmentAsync()
         {
             return await _context.AssessStrengths.AnyAsync(a => a.State == "A");
+        }
+
+        /// <summary>
+        /// Obtener el CoachId de una evaluación
+        /// </summary>
+        /// <param name="assessStrengthId"></param>
+        /// <returns></returns>
+        public async Task<int?> GetCoachIdByAssessmentAsync(int assessStrengthId)
+        {
+            try
+            {
+                var assessment = await _context.AssessStrengths
+                    .Include(a => a.Team)
+                    .FirstOrDefaultAsync(a => a.AssessStrengthId == assessStrengthId);
+
+                return assessment?.Team?.CoachId;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error obteniendo CoachId: {e.Message}");
+                return null;
+            }
         }
     }
 }

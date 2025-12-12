@@ -1,5 +1,6 @@
 ﻿using BocciaCoaching.Models.DTO.AssessStrength;
 using BocciaCoaching.Models.DTO.General;
+using BocciaCoaching.Models.DTO.Notification;
 using BocciaCoaching.Models.Entities;
 using BocciaCoaching.Repositories.Interfaces.IAssesstStrength;
 using BocciaCoaching.Repositories.Interfaces.ITeams;
@@ -12,15 +13,17 @@ namespace BocciaCoaching.Services
         private readonly IAssessStrengthRepository _assessStrengthRepository;
         private readonly ITeamValidationRepository   _teamValidationRepository;
         private readonly IValidationsAssetsStrength _validationsAssetsStrength;
+        private readonly INotificationService _notificationService;
 
 
         // Constructor
         public AssessStrengthService(IAssessStrengthRepository assessStrengthRepository, ITeamValidationRepository teamValidationRepository,
-            IValidationsAssetsStrength validationsAssetsStrength)
+            IValidationsAssetsStrength validationsAssetsStrength, INotificationService notificationService)
         {
             _assessStrengthRepository = assessStrengthRepository;
             _teamValidationRepository = teamValidationRepository;
             _validationsAssetsStrength = validationsAssetsStrength;
+            _notificationService = notificationService;
         }
         public async Task<ResponseContract<AthletesToEvaluated>> AgregarAtletaAEvaluacion(RequestAddAthleteToEvaluationDto athletesToEvaluated)
         {
@@ -106,6 +109,24 @@ namespace BocciaCoaching.Services
                 
                 //Guardamos las estadisticas
                 await _assessStrengthRepository.InsertStrengthTestStats(dataStrenthStatistic);
+
+                // Obtener el CoachId para enviar la notificación
+                var coachId = await _assessStrengthRepository.GetCoachIdByAssessmentAsync(requestAddDetailToEvaluationForAthlete.AssessStrengthId);
+                
+                if (coachId.HasValue)
+                {
+                    // Crear notificación para el atleta
+                    var notificationMessage = new RequestCreateNotificationMessageDto
+                    {
+                        Message = "Tu evaluación de fuerza ha sido completada. Revisa tus estadísticas.",
+                        CoachId = coachId.Value,
+                        AthleteId = requestAddDetailToEvaluationForAthlete.AthleteId,
+                        NotificationTypeId = 1, // Tipo de notificación para evaluación completada
+                        Status = true
+                    };
+
+                    await _notificationService.CreateMessage(notificationMessage);
+                }
             }
 
             return true;
