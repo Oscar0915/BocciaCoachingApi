@@ -1,4 +1,4 @@
-﻿using BocciaCoaching.Data;
+﻿﻿using BocciaCoaching.Data;
 using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.Team;
 using BocciaCoaching.Models.Entities;
@@ -14,7 +14,7 @@ namespace BocciaCoaching.Repositories.Teams
         /// </summary>
         /// <param name="requestTeamDto">Información del equipo</param>
         /// <returns></returns>
-        public async Task<ResponseNewRecordDto> AddTeam(RequestTeamDto requestTeamDto)
+        public async Task<ResponseContract<int>> AddTeam(RequestTeamDto requestTeamDto)
         {
             try
             {
@@ -27,19 +27,23 @@ namespace BocciaCoaching.Repositories.Teams
 
                 await context.Teams.AddAsync(team);
                 await context.SaveChangesAsync();
-                return new ResponseNewRecordDto()
+
+                // Relacionar automáticamente al entrenador con el equipo
+                var teamUser = new TeamUser()
                 {
-                    Success = true
+                    TeamId = team.TeamId,
+                    UserId = requestTeamDto.CoachId,
+                    DateCreation = DateTime.Now
                 };
+
+                await context.TeamsUsers.AddAsync(teamUser);
+                await context.SaveChangesAsync();
+
+                return ResponseContract<int>.Ok(team.TeamId, "Equipo creado exitosamente");
             }
             catch (Exception ex)
             {
-                return new ResponseNewRecordDto()
-                {
-                    Success = true,
-                    Message = ex.Message
-
-                };
+                return ResponseContract<int>.Fail(ex.Message);
             }
 
         }
@@ -49,7 +53,7 @@ namespace BocciaCoaching.Repositories.Teams
         /// </summary>
         /// <param name="requestTeamMemberDto"></param>
         /// <returns></returns>
-        public async Task<ResponseNewRecordDto> AddTeamMember(RequestTeamMemberDto requestTeamMemberDto)
+        public async Task<ResponseContract<bool>> AddTeamMember(RequestTeamMemberDto requestTeamMemberDto)
         {
             try
             {
@@ -57,24 +61,17 @@ namespace BocciaCoaching.Repositories.Teams
                 {
                     TeamId = requestTeamMemberDto.TeamId,
                     UserId = requestTeamMemberDto.UserId,
-                    DateCreation = new DateTime(),
+                    DateCreation = DateTime.Now,
                 };
 
                 await context.TeamsUsers.AddAsync(teamUser);
                 await context.SaveChangesAsync();
-                return new ResponseNewRecordDto()
-                {
-                    Success = true
-                };
+                
+                return ResponseContract<bool>.Ok(true, "Miembro agregado exitosamente al equipo");
             }
             catch (Exception ex)
             {
-                return new ResponseNewRecordDto()
-                {
-                    Success = true,
-                    Message = ex.Message
-
-                };
+                return ResponseContract<bool>.Fail(ex.Message);
             }
 
         }
@@ -86,13 +83,12 @@ namespace BocciaCoaching.Repositories.Teams
         {
             try
             {
-                var teams = await context.TeamsUsers
-                    .Where(tu => tu.UserId == requestTeamDto.CoachId)
-                    .Include(tu => tu.Team) // Incluye la info del equipo
-                    .Select(tu => tu.Team)  // Proyecta solo el Team
+                var teamUsers = await context.TeamsUsers
+                    .Where(tu => tu.UserId == requestTeamDto.CoachId && tu.Team != null)
+                    .Include(tu => tu.Team)
                     .ToListAsync();
 
-                return teams;
+                return teamUsers.Where(tu => tu.Team != null).Select(tu => tu.Team!).ToList();
             }
             catch (Exception ex)
             {
@@ -109,21 +105,26 @@ namespace BocciaCoaching.Repositories.Teams
         {
             try
             {
-                var users = await context.TeamsUsers
-                .Where(tu => tu.TeamId == requestGetUserForTeamDto.TeamId &&
-                             tu.User.UserRoles.Any(ru => ru.RolId == requestGetUserForTeamDto.RolId))
-                .Include(tu => tu.User)
-                .ThenInclude(u => u.UserRoles)
-                .ThenInclude(ru => ru.Rol)
-                .Select(tu => tu.User)
+                var teamUsers = await context.TeamsUsers
+                .Where(tu => tu.TeamId == requestGetUserForTeamDto.TeamId && tu.User != null)
+                .Include(tu => tu.User!)
+                    .ThenInclude(u => u.UserRoles!)
+                    .ThenInclude(ru => ru.Rol)
                 .ToListAsync();
+
+                var users = teamUsers
+                    .Where(tu => tu.User != null && 
+                           tu.User.UserRoles != null && 
+                           tu.User.UserRoles.Any(ru => ru.RolId == requestGetUserForTeamDto.RolId))
+                    .Select(tu => tu.User!)
+                    .ToList();
 
                 return ResponseContract<List<User>>.Ok(users, "Ususarios obtenidos satisfactoriamente");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error en GetUsersForTeam: {ex.Message}");
-                return ResponseContract<List<User>>.Fail(ex.Message)!;
+                return ResponseContract<List<User>>.Fail(ex.Message);
             }
         }
 

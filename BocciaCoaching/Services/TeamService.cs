@@ -2,7 +2,6 @@
 using BocciaCoaching.Models.DTO.Statistic;
 using BocciaCoaching.Models.DTO.Team;
 using BocciaCoaching.Models.Entities;
-using BocciaCoaching.Repositories.Interfaces;
 using BocciaCoaching.Repositories.Interfaces.ITeams;
 using BocciaCoaching.Repositories.Statistic.Interfce;
 using BocciaCoaching.Services.Interfaces;
@@ -24,7 +23,7 @@ namespace BocciaCoaching.Services
         /// </summary>
         /// <param name="requestTeamDto">Información del equipo</param>
         /// <returns></returns>
-        public async Task<ResponseNewRecordDto> AddTeam(RequestTeamDto requestTeamDto)
+        public async Task<ResponseContract<int>> AddTeam(RequestTeamDto requestTeamDto)
         {
             return await _teamRepository.AddTeam(requestTeamDto);
         }
@@ -32,9 +31,9 @@ namespace BocciaCoaching.Services
         /// <summary>
         /// Método para agregar mienbros al equipo
         /// </summary>
-        /// <param name="requestTeamDto">Información del mienbro equipo</param>
+        /// <param name="requestTeamMemberDto">Información del mienbro equipo</param>
         /// <returns></returns>
-        public async Task<ResponseNewRecordDto> AddTeamMember(RequestTeamMemberDto requestTeamMemberDto)
+        public async Task<ResponseContract<bool>> AddTeamMember(RequestTeamMemberDto requestTeamMemberDto)
         {
             return await _teamRepository.AddTeamMember(requestTeamMemberDto);
         }

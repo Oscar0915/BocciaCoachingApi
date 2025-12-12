@@ -1,4 +1,4 @@
-﻿namespace BocciaCoaching.Models.DTO.General
+﻿﻿namespace BocciaCoaching.Models.DTO.General
 {
     public class ResponseNewRecordDto
     {
@@ -9,5 +9,6 @@
         }
         public bool Success { get; set; }
         public string Message { get; set; }
+        public int? NewRecordId { get; set; }
     }
 }

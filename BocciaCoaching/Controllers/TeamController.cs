@@ -1,9 +1,8 @@
-﻿using BocciaCoaching.Models.DTO.General;
+﻿﻿using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.Statistic;
 using BocciaCoaching.Models.DTO.Team;
 using BocciaCoaching.Models.Entities;
 using BocciaCoaching.Services.Interfaces;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BocciaCoaching.Controllers
@@ -21,17 +20,17 @@ namespace BocciaCoaching.Controllers
         }
 
         [HttpPost("AddNewTeam")]
-        public async Task<ActionResult<IEnumerable<bool>>> Add(RequestTeamDto requestTeamDto )
+        public async Task<ActionResult<ResponseContract<int>>> Add(RequestTeamDto requestTeamDto )
         {
-            var users = await _team.AddTeam(requestTeamDto);
-            return Ok(users);
+            var response = await _team.AddTeam(requestTeamDto);
+            return Ok(response);
         }
 
         [HttpPost("AddNewTeamMember")]
-        public async Task<ActionResult<IEnumerable<bool>>> AddMember(RequestTeamMemberDto requestTeamMemberDto)
+        public async Task<ActionResult<ResponseContract<bool>>> AddMember(RequestTeamMemberDto requestTeamMemberDto)
         {
-            var users = await _team.AddTeamMember(requestTeamMemberDto);
-            return Ok(users);
+            var response = await _team.AddTeamMember(requestTeamMemberDto);
+            return Ok(response);
         }
         [HttpPost("GetTeamsForUser")]
         public async Task<ActionResult<List<Team>>> GetTeamsForUser(RequestTeamDto requestTeamDto)

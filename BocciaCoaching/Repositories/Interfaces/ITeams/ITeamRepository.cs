@@ -1,4 +1,4 @@
-﻿using BocciaCoaching.Models.DTO.General;
+﻿﻿using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.Team;
 using BocciaCoaching.Models.Entities;
 
@@ -11,7 +11,7 @@ namespace BocciaCoaching.Repositories.Interfaces.ITeams
         /// </summary>
         /// <param name="requestTeamDto">Información del equipo</param>
         /// <returns></returns>
-        Task<ResponseNewRecordDto> AddTeam(RequestTeamDto requestTeamDto);
+        Task<ResponseContract<int>> AddTeam(RequestTeamDto requestTeamDto);
 
 
         /// <summary>
@@ -19,7 +19,7 @@ namespace BocciaCoaching.Repositories.Interfaces.ITeams
         /// </summary>
         /// <param name="requestTeamMemberDto"></param>
         /// <returns></returns>
-        Task<ResponseNewRecordDto> AddTeamMember(RequestTeamMemberDto requestTeamMemberDto);
+        Task<ResponseContract<bool>> AddTeamMember(RequestTeamMemberDto requestTeamMemberDto);
 
         /// <summary>
         /// Método para traer el listado de equipos relacionados a un usuario
