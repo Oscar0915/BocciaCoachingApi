@@ -46,7 +46,7 @@ namespace BocciaCoaching.Services
             
             if (result.Success && result.Data > 0)
             {
-                // Crear notificación para el atleta recién creado
+                // Crear notificación de bienvenida para el atleta recién creado
                 var notificationMessage = new RequestCreateNotificationMessageDto
                 {
                     NotificationTypeId = 1,
@@ -57,6 +57,22 @@ namespace BocciaCoaching.Services
                 };
                 
                 await _notificationService.CreateMessage(notificationMessage);
+
+                // Si se proporciona un TeamId, enviar invitación de equipo
+                if (atlheteInfoSave.TeamId.HasValue && atlheteInfoSave.TeamId.Value > 0)
+                {
+                    var teamInvitation = new RequestCreateNotificationMessageDto
+                    {
+                        NotificationTypeId = 2, // Tipo 2 para invitaciones de equipo
+                        ReceiverId = result.Data,
+                        SenderId = atlheteInfoSave.CoachId,
+                        Message = "Has sido invitado a unirte al equipo. ¡Acepta la invitación para formar parte del equipo!",
+                        ReferenceId = atlheteInfoSave.TeamId.Value,
+                        Status = true
+                    };
+                    
+                    await _notificationService.CreateMessage(teamInvitation);
+                }
             }
             
             return result;
