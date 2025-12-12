@@ -17,5 +17,9 @@ namespace BocciaCoaching.Services.Interfaces
         // Listados con paginación/filtro
         Task<ResponseContract<IEnumerable<NotificationMessageDto>>> GetMessagesByCoach(int coachId, int? page = null, int? pageSize = null, bool? status = null);
         Task<ResponseContract<IEnumerable<NotificationMessageDto>>> GetMessagesByAthlete(int athleteId, int? page = null, int? pageSize = null, bool? status = null);
+        
+        // Invitaciones de equipo
+        Task<ResponseContract<bool>> SendTeamInvitation(int coachId, string athleteEmail, int teamId, string? message = null);
+        Task<ResponseContract<bool>> AcceptTeamInvitation(int notificationMessageId);
     }
 }

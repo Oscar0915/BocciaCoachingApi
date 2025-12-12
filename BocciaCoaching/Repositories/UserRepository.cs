@@ -233,6 +233,30 @@ namespace BocciaCoaching.Repositories
         }
 
         /// <summary>
+        /// Obtener usuario por correo electrónico
+        /// </summary>
+        public async Task<ResponseContract<User>> GetUserByEmail(string email)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(email))
+                    return ResponseContract<User>.Fail("El email es requerido");
+
+                var user = await GetUserByEmailAsync(email);
+                
+                if (user == null)
+                    return ResponseContract<User>.Fail("Usuario no encontrado con ese email");
+
+                return ResponseContract<User>.Ok(user, "Usuario encontrado");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en GetUserByEmail: {ex.Message}");
+                return ResponseContract<User>.Fail($"Error al buscar usuario: {ex.Message}");
+            }
+        }
+
+        /// <summary>
         /// Método para la busqueda de los atletas por nombre
         /// </summary>
         /// <param name="user"></param>

@@ -12,6 +12,10 @@ namespace BocciaCoaching.Models.DTO.Notification
         public int NotificationTypeId { get; set; }
         public string? NotificationTypeName { get; set; }
         public bool? Status { get; set; }
+        /// <summary>
+        /// ID de referencia para invitaciones o acciones (ej: TeamId para invitación a equipo)
+        /// </summary>
+        public int? ReferenceId { get; set; }
     }
 }
 

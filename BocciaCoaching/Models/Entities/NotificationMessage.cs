@@ -58,5 +58,10 @@ namespace BocciaCoaching.Models.Entities
         /// EN: 
         /// </summary>
         public NotificationType NotificationType { get; set; }
+        /// <summary>
+        /// ES: ID de referencia para invitaciones o acciones relacionadas (ej: TeamId para invitación a equipo)
+        /// EN: Reference ID for invitations or related actions (e.g., TeamId for team invitation)
+        /// </summary>
+        public int? ReferenceId { get; set; }
     }
 }

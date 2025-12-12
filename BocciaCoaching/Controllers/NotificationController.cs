@@ -78,5 +78,25 @@ namespace BocciaCoaching.Controllers
             var result = await _notificationService.GetMessagesByAthlete(athleteId, page, pageSize, status);
             return Ok(result);
         }
+
+        /// <summary>
+        /// Enviar invitación a un atleta para unirse a un equipo
+        /// </summary>
+        [HttpPost("SendTeamInvitation")]
+        public async Task<ActionResult<ResponseContract<bool>>> SendTeamInvitation([FromBody] SendTeamInvitationDto dto)
+        {
+            var result = await _notificationService.SendTeamInvitation(dto.CoachId, dto.Email, dto.TeamId, dto.Message);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Aceptar invitación de equipo
+        /// </summary>
+        [HttpPost("AcceptTeamInvitation/{notificationMessageId}")]
+        public async Task<ActionResult<ResponseContract<bool>>> AcceptTeamInvitation(int notificationMessageId)
+        {
+            var result = await _notificationService.AcceptTeamInvitation(notificationMessageId);
+            return Ok(result);
+        }
     }
 }

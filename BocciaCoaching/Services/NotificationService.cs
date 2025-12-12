@@ -1,6 +1,7 @@
 using BocciaCoaching.Models.Entities;
 using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.Notification;
+using BocciaCoaching.Models.DTO.Team;
 using BocciaCoaching.Repositories.NotificationTypes;
 using BocciaCoaching.Repositories.Interfaces;
 using BocciaCoaching.Services.Interfaces;
@@ -11,11 +12,13 @@ namespace BocciaCoaching.Services
     {
         private readonly INotificationTypeRepository _repo;
         private readonly IUserRepository _userRepo;
+        private readonly ITeamService _teamService;
 
-        public NotificationService(INotificationTypeRepository repo, IUserRepository userRepo)
+        public NotificationService(INotificationTypeRepository repo, IUserRepository userRepo, ITeamService teamService)
         {
             _repo = repo;
             _userRepo = userRepo;
+            _teamService = teamService;
         }
 
         private NotificationTypeDto MapType(NotificationType t)
@@ -46,7 +49,8 @@ namespace BocciaCoaching.Services
                 ReceiverName = m.Receiver?.FirstName != null ? (m.Receiver.FirstName + (string.IsNullOrWhiteSpace(m.Receiver.LastName) ? "" : " " + m.Receiver.LastName)) : null,
                 // Validar que NotificationType no sea null
                 NotificationTypeName = m.NotificationType?.Name,
-                ReceiverId = m.ReceiverId
+                ReceiverId = m.ReceiverId,
+                ReferenceId = m.ReferenceId
             };
         }
 
@@ -229,7 +233,8 @@ namespace BocciaCoaching.Services
                     SenderId = messageDto.SenderId,
                     ReceiverId = messageDto.ReceiverId,
                     NotificationTypeId = messageDto.NotificationTypeId,
-                    Status = messageDto.Status
+                    Status = messageDto.Status,
+                    ReferenceId = messageDto.ReferenceId
                 };
 
                 var result = await _repo.AddMessageAsync(message);
@@ -268,7 +273,8 @@ namespace BocciaCoaching.Services
                     SenderId = messageDto.SenderId,
                     ReceiverId = messageDto.ReceiverId,
                     NotificationTypeId = messageDto.NotificationTypeId,
-                    Status = messageDto.Status
+                    Status = messageDto.Status,
+                    ReferenceId = messageDto.ReferenceId
                 };
 
                 var result = await _repo.UpdateMessageAsync(message);
@@ -371,6 +377,115 @@ namespace BocciaCoaching.Services
             {
                 Console.WriteLine($"Error en GetMessagesByAthlete: {ex.Message}\nStackTrace: {ex.StackTrace}");
                 return ResponseContract<IEnumerable<NotificationMessageDto>>.Fail("Error obteniendo mensajes por atleta");
+            }
+        }
+
+        /// <summary>
+        /// Enviar invitación a un atleta para unirse a un equipo
+        /// </summary>
+        public async Task<ResponseContract<bool>> SendTeamInvitation(int coachId, string athleteEmail, int teamId, string? message = null)
+        {
+            try
+            {
+                // Validar email
+                if (string.IsNullOrWhiteSpace(athleteEmail))
+                    return ResponseContract<bool>.Fail("El email del atleta es requerido");
+
+                // Validar que el coach exista
+                var (coachExists, _) = await GetUserInfo(coachId);
+                if (!coachExists)
+                    return ResponseContract<bool>.Fail("Entrenador no encontrado");
+
+                // Buscar atleta por email
+                var athleteResult = await _userRepo.GetUserByEmail(athleteEmail);
+                if (!athleteResult.Success || athleteResult.Data == null)
+                    return ResponseContract<bool>.Fail($"No se encontró un atleta con el email: {athleteEmail}");
+
+                var athlete = athleteResult.Data;
+
+                // Crear mensaje de invitación
+                var defaultMessage = message ?? $"Has sido invitado a unirte al equipo. ¡Acepta la invitación para formar parte del equipo!";
+                
+                var notificationDto = new RequestCreateNotificationMessageDto
+                {
+                    SenderId = coachId,
+                    ReceiverId = athlete.UserId,
+                    NotificationTypeId = 2, // Tipo 2 para invitaciones de equipo
+                    Message = defaultMessage,
+                    ReferenceId = teamId,
+                    Status = true
+                };
+
+                var result = await CreateMessage(notificationDto);
+                
+                if (result.Success)
+                    return ResponseContract<bool>.Ok(true, $"Invitación enviada exitosamente a {athleteEmail}");
+                
+                return ResponseContract<bool>.Fail("Error al enviar la invitación");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en SendTeamInvitation: {ex.Message}\nStackTrace: {ex.StackTrace}");
+                return ResponseContract<bool>.Fail($"Error al enviar invitación: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Aceptar invitación de equipo y agregar atleta al equipo
+        /// </summary>
+        public async Task<ResponseContract<bool>> AcceptTeamInvitation(int notificationMessageId)
+        {
+            try
+            {
+                // Obtener el mensaje de notificación
+                var messageResult = await GetMessageById(notificationMessageId);
+                
+                if (!messageResult.Success || messageResult.Data == null)
+                    return ResponseContract<bool>.Fail("Notificación no encontrada");
+
+                var notification = messageResult.Data;
+
+                // Validar que tenga un ReferenceId (TeamId)
+                if (!notification.ReferenceId.HasValue)
+                    return ResponseContract<bool>.Fail("La notificación no tiene un equipo asociado");
+
+                // Validar que sea una invitación de equipo (tipo 2)
+                if (notification.NotificationTypeId != 2)
+                    return ResponseContract<bool>.Fail("Esta notificación no es una invitación de equipo");
+
+                // Agregar el atleta al equipo
+                var teamMemberDto = new RequestTeamMemberDto
+                {
+                    TeamId = notification.ReferenceId.Value,
+                    UserId = notification.ReceiverId
+                };
+
+                var addMemberResult = await _teamService.AddTeamMember(teamMemberDto);
+
+                if (!addMemberResult.Success)
+                    return ResponseContract<bool>.Fail($"Error al agregar al equipo: {addMemberResult.Message}");
+
+                // Marcar la notificación como leída/procesada (Status = false)
+                var updateDto = new RequestUpdateNotificationMessageDto
+                {
+                    NotificationMessageId = notificationMessageId,
+                    Message = notification.Message,
+                    Image = notification.Image,
+                    SenderId = notification.SenderId,
+                    ReceiverId = notification.ReceiverId,
+                    NotificationTypeId = notification.NotificationTypeId,
+                    ReferenceId = notification.ReferenceId,
+                    Status = false // Marcar como procesada
+                };
+
+                await UpdateMessage(updateDto);
+
+                return ResponseContract<bool>.Ok(true, "Te has unido al equipo exitosamente");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en AcceptTeamInvitation: {ex.Message}\nStackTrace: {ex.StackTrace}");
+                return ResponseContract<bool>.Fail($"Error al aceptar invitación: {ex.Message}");
             }
         }
     }

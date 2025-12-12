@@ -16,6 +16,11 @@ namespace BocciaCoaching.Repositories.Interfaces
         Task<ResponseContract<ValidateEmailDto>> ValidateEmail(ValidateEmailDto email);
 
         /// <summary>
+        /// Obtener usuario por correo electrónico
+        /// </summary>
+        Task<ResponseContract<User>> GetUserByEmail(string email);
+
+        /// <summary>
         /// Método para la busqueda de los atletas por nombre
         /// </summary>
         /// <param name="user"></param>

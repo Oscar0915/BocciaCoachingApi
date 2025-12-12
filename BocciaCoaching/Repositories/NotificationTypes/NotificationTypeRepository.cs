@@ -109,6 +109,7 @@ namespace BocciaCoaching.Repositories.NotificationTypes
                 existing.SenderId = message.SenderId;
                 existing.ReceiverId = message.ReceiverId;
                 existing.NotificationTypeId = message.NotificationTypeId;
+                existing.ReferenceId = message.ReferenceId;
 
                 _context.NotificationMessage.Update(existing);
                 await _context.SaveChangesAsync();
