@@ -119,9 +119,9 @@ namespace BocciaCoaching.Services
                     var notificationMessage = new RequestCreateNotificationMessageDto
                     {
                         Message = "Tu evaluación de fuerza ha sido completada. Revisa tus estadísticas.",
-                        CoachId = coachId.Value,
-                        AthleteId = requestAddDetailToEvaluationForAthlete.AthleteId,
-                        NotificationTypeId = 1, // Tipo de notificación para evaluación completada
+                        SenderId = coachId.Value,
+                        ReceiverId = requestAddDetailToEvaluationForAthlete.AthleteId,
+                        NotificationTypeId = 2, // Tipo de notificación para evaluación completada
                         Status = true
                     };
 

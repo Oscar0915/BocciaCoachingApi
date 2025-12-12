@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BocciaCoaching.Models.Entities
@@ -29,25 +29,25 @@ namespace BocciaCoaching.Models.Entities
         /// </summary>
         public string? Image {  get; set; }
         /// <summary>
-        /// ES:
-        /// EN: 
+        /// ES: ID del usuario que envía la notificación
+        /// EN: Sender user ID
         /// </summary>
-        public int CoachId { get; set; }
+        public int SenderId { get; set; }
         /// <summary>
-        /// ES:
-        /// EN: 
+        /// ES: Usuario que envía la notificación
+        /// EN: Sender user
         /// </summary>
-        public User Coach { get; set; }
+        public User Sender { get; set; }
         /// <summary>
-        /// ES:
-        /// EN: 
+        /// ES: ID del usuario que recibe la notificación
+        /// EN: Receiver user ID
         /// </summary>
-        public int AthleteId { get; set; }
+        public int ReceiverId { get; set; }
         /// <summary>
-        /// ES:
-        /// EN: 
+        /// ES: Usuario que recibe la notificación
+        /// EN: Receiver user
         /// </summary>
-        public User Athlete { get; set; }
+        public User Receiver { get; set; }
         /// <summary>
         /// ES:
         /// EN: 

@@ -50,8 +50,8 @@ namespace BocciaCoaching.Services
                 var notificationMessage = new RequestCreateNotificationMessageDto
                 {
                     NotificationTypeId = 1,
-                    AthleteId = result.Data,
-                    CoachId = atlheteInfoSave.CoachId,
+                    ReceiverId = result.Data,
+                    SenderId = atlheteInfoSave.CoachId,
                     Message = "Bienvenido a Boccia Coaching. Tu contraseña por defecto es: boccia123. Por favor, cámbiala en tu primer inicio de sesión.",
                     Status = true
                 };

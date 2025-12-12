@@ -106,8 +106,8 @@ namespace BocciaCoaching.Repositories.NotificationTypes
                 existing.Message = message.Message;
                 existing.Status = message.Status;
                 existing.Image = message.Image;
-                existing.CoachId = message.CoachId;
-                existing.AthleteId = message.AthleteId;
+                existing.SenderId = message.SenderId;
+                existing.ReceiverId = message.ReceiverId;
                 existing.NotificationTypeId = message.NotificationTypeId;
 
                 _context.NotificationMessage.Update(existing);
@@ -125,8 +125,8 @@ namespace BocciaCoaching.Repositories.NotificationTypes
         public async Task<NotificationMessage?> GetMessageByIdAsync(int id)
         {
             return await _context.NotificationMessage
-                .Include(nm => nm.Coach)
-                .Include(nm => nm.Athlete)
+                .Include(nm => nm.Sender)
+                .Include(nm => nm.Receiver)
                 .Include(nm => nm.NotificationType)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(nm => nm.NotificationMessageId == id);
@@ -135,9 +135,10 @@ namespace BocciaCoaching.Repositories.NotificationTypes
         public async Task<IEnumerable<NotificationMessage>> GetMessagesByCoachAsync(int coachId)
         {
             return await _context.NotificationMessage
-                .Where(m => m.CoachId == coachId)
+                .Where(m => m.SenderId == coachId)
                 .Include(m => m.NotificationType)
-                .Include(m => m.Athlete)
+                .Include(m => m.Receiver)
+                .Include(m => m.Sender)
                 .AsNoTracking()
                 .ToListAsync();
         }
@@ -145,10 +146,10 @@ namespace BocciaCoaching.Repositories.NotificationTypes
         public async Task<IEnumerable<NotificationMessage>> GetMessagesByAthleteAsync(int athleteId)
         {
             return await _context.NotificationMessage
-                .Where(m => m.AthleteId == athleteId)
+                .Where(m => m.ReceiverId == athleteId)
                 .Include(m => m.NotificationType)
-                .Include(m => m.Coach)
-                .Include(m => m.Athlete)
+                .Include(m => m.Sender)
+                .Include(m => m.Receiver)
                 .AsNoTracking()
                 .ToListAsync();
         }

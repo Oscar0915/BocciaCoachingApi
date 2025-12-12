@@ -38,15 +38,15 @@ namespace BocciaCoaching.Services
                 NotificationMessageId = m.NotificationMessageId,
                 Message = m.Message,
                 Image = m.Image,
-                CoachId = m.CoachId,
-                // La entidad User tiene FirstName/LastName - validar que Coach no sea null
-                CoachName = m.Coach?.FirstName != null ? (m.Coach.FirstName + (string.IsNullOrWhiteSpace(m.Coach.LastName) ? "" : " " + m.Coach.LastName)) : null,
+                SenderId = m.SenderId,
+                // La entidad User tiene FirstName/LastName - validar que Sender no sea null
+                SenderName = m.Sender?.FirstName != null ? (m.Sender.FirstName + (string.IsNullOrWhiteSpace(m.Sender.LastName) ? "" : " " + m.Sender.LastName)) : null,
                 NotificationTypeId = m.NotificationTypeId,
-                // Validar que Athlete no sea null
-                AthleteName = m.Athlete?.FirstName != null ? (m.Athlete.FirstName + (string.IsNullOrWhiteSpace(m.Athlete.LastName) ? "" : " " + m.Athlete.LastName)) : null,
+                // Validar que Receiver no sea null
+                ReceiverName = m.Receiver?.FirstName != null ? (m.Receiver.FirstName + (string.IsNullOrWhiteSpace(m.Receiver.LastName) ? "" : " " + m.Receiver.LastName)) : null,
                 // Validar que NotificationType no sea null
                 NotificationTypeName = m.NotificationType?.Name,
-                AthleteId = m.AthleteId
+                ReceiverId = m.ReceiverId
             };
         }
 
@@ -54,27 +54,27 @@ namespace BocciaCoaching.Services
         {
             var dto = MapMessage(m);
 
-            if (string.IsNullOrWhiteSpace(dto.CoachName))
+            if (string.IsNullOrWhiteSpace(dto.SenderName))
             {
-                var coachResponse = await _userRepo.GetByIdAsync(m.CoachId);
-                if (coachResponse.Success && coachResponse.Data != null)
+                var senderResponse = await _userRepo.GetByIdAsync(m.SenderId);
+                if (senderResponse.Success && senderResponse.Data != null)
                 {
-                    var firstName = coachResponse.Data.Name ?? string.Empty;
-                    var lastName = coachResponse.Data.LastName;
-                    dto.CoachName = string.IsNullOrWhiteSpace(lastName) 
+                    var firstName = senderResponse.Data.Name ?? string.Empty;
+                    var lastName = senderResponse.Data.LastName;
+                    dto.SenderName = string.IsNullOrWhiteSpace(lastName) 
                         ? firstName.Trim() 
                         : (firstName + " " + lastName).Trim();
                 }
             }
 
-            if (string.IsNullOrWhiteSpace(dto.AthleteName))
+            if (string.IsNullOrWhiteSpace(dto.ReceiverName))
             {
-                var athleteResponse = await _userRepo.GetByIdAsync(m.AthleteId);
-                if (athleteResponse.Success && athleteResponse.Data != null)
+                var receiverResponse = await _userRepo.GetByIdAsync(m.ReceiverId);
+                if (receiverResponse.Success && receiverResponse.Data != null)
                 {
-                    var firstName = athleteResponse.Data.Name ?? string.Empty;
-                    var lastName = athleteResponse.Data.LastName;
-                    dto.AthleteName = string.IsNullOrWhiteSpace(lastName) 
+                    var firstName = receiverResponse.Data.Name ?? string.Empty;
+                    var lastName = receiverResponse.Data.LastName;
+                    dto.ReceiverName = string.IsNullOrWhiteSpace(lastName) 
                         ? firstName.Trim() 
                         : (firstName + " " + lastName).Trim();
                 }
@@ -216,18 +216,18 @@ namespace BocciaCoaching.Services
                 if (type == null)
                     return ResponseContract<bool>.Fail("Tipo de notificación inválido");
 
-                // Validar coach y athlete
-                var (coachExists, _) = await GetUserInfo(messageDto.CoachId);
-                if (!coachExists) return ResponseContract<bool>.Fail("Coach inválido");
-                var (athleteExists, _) = await GetUserInfo(messageDto.AthleteId);
-                if (!athleteExists) return ResponseContract<bool>.Fail("Atleta inválido");
+                // Validar sender y receiver
+                var (senderExists, _) = await GetUserInfo(messageDto.SenderId);
+                if (!senderExists) return ResponseContract<bool>.Fail("Remitente inválido");
+                var (receiverExists, _) = await GetUserInfo(messageDto.ReceiverId);
+                if (!receiverExists) return ResponseContract<bool>.Fail("Destinatario inválido");
 
                 var message = new NotificationMessage
                 {
                     Message = messageDto.Message,
                     Image = messageDto.Image,
-                    CoachId = messageDto.CoachId,
-                    AthleteId = messageDto.AthleteId,
+                    SenderId = messageDto.SenderId,
+                    ReceiverId = messageDto.ReceiverId,
                     NotificationTypeId = messageDto.NotificationTypeId,
                     Status = messageDto.Status
                 };
@@ -255,18 +255,18 @@ namespace BocciaCoaching.Services
                 if (type == null)
                     return ResponseContract<bool>.Fail("Tipo de notificación inválido");
 
-                var (coachExists, _) = await GetUserInfo(messageDto.CoachId);
-                if (!coachExists) return ResponseContract<bool>.Fail("Coach inválido");
-                var (athleteExists, _) = await GetUserInfo(messageDto.AthleteId);
-                if (!athleteExists) return ResponseContract<bool>.Fail("Atleta inválido");
+                var (senderExists, _) = await GetUserInfo(messageDto.SenderId);
+                if (!senderExists) return ResponseContract<bool>.Fail("Remitente inválido");
+                var (receiverExists, _) = await GetUserInfo(messageDto.ReceiverId);
+                if (!receiverExists) return ResponseContract<bool>.Fail("Destinatario inválido");
 
                 var message = new NotificationMessage
                 {
                     NotificationMessageId = messageDto.NotificationMessageId,
                     Message = messageDto.Message,
                     Image = messageDto.Image,
-                    CoachId = messageDto.CoachId,
-                    AthleteId = messageDto.AthleteId,
+                    SenderId = messageDto.SenderId,
+                    ReceiverId = messageDto.ReceiverId,
                     NotificationTypeId = messageDto.NotificationTypeId,
                     Status = messageDto.Status
                 };
