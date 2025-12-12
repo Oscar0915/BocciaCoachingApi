@@ -91,15 +91,24 @@ namespace BocciaCoaching.Repositories
         private async Task<User?> GetUserByEmailAsync(string email)
         {
             return await context.Users
-     .Select(u => new User
-     {
-         UserId = u.UserId,
-         Email = u.Email ?? string.Empty,
-         Password = u.Password ?? string.Empty,
-         FirstName = u.FirstName ?? string.Empty,
-         LastName = u.LastName ?? string.Empty
-     })
-     .FirstOrDefaultAsync(u => u.Email == email);
+                .Select(u => new User
+                {
+                    UserId = u.UserId,
+                    Dni = u.Dni,
+                    FirstName = u.FirstName ?? string.Empty,
+                    LastName = u.LastName ?? string.Empty,
+                    Email = u.Email ?? string.Empty,
+                    Password = u.Password ?? string.Empty,
+                    Address = u.Address,
+                    Country = u.Country,
+                    Image = u.Image,
+                    Category = u.Category,
+                    Seniority = u.Seniority,
+                    Status = u.Status,
+                    CreatedAt = u.CreatedAt,
+                    UpdatedAt = u.UpdatedAt
+                })
+                .FirstOrDefaultAsync(u => u.Email == email);
         }
 
         /// <summary>
@@ -128,8 +137,19 @@ namespace BocciaCoaching.Repositories
                 var response = new LoginResponseDto
                 {
                     UserId = user.UserId,
+                    Dni = user.Dni,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
                     Email = user.Email,
-                    RolId = roles[0].RolId
+                    Address = user.Address,
+                    Country = user.Country,
+                    Image = user.Image,
+                    Category = user.Category,
+                    Seniority = user.Seniority,
+                    Status = user.Status,
+                    RolId = roles[0].RolId,
+                    CreatedAt = user.CreatedAt,
+                    UpdatedAt = user.UpdatedAt
                 };
 
                 return ResponseContract<LoginResponseDto>.Ok(response, "Login exitoso");
