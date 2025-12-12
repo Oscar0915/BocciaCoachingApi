@@ -92,7 +92,7 @@ namespace BocciaCoaching.Controllers
         /// <summary>
         /// Aceptar invitación de equipo
         /// </summary>
-        [HttpPost("AcceptTeamInvitation/{notificationMessageId}")]
+        [HttpPut("AcceptTeamInvitation/{notificationMessageId}")]
         public async Task<ActionResult<ResponseContract<bool>>> AcceptTeamInvitation(int notificationMessageId)
         {
             var result = await _notificationService.AcceptTeamInvitation(notificationMessageId);
