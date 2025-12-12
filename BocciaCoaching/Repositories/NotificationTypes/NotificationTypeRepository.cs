@@ -136,7 +136,7 @@ namespace BocciaCoaching.Repositories.NotificationTypes
         public async Task<IEnumerable<NotificationMessage>> GetMessagesByCoachAsync(int coachId)
         {
             return await _context.NotificationMessage
-                .Where(m => m.SenderId == coachId)
+                .Where(m => m.ReceiverId == coachId)
                 .Include(m => m.NotificationType)
                 .Include(m => m.Receiver)
                 .Include(m => m.Sender)
