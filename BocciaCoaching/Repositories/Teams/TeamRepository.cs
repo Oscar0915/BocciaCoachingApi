@@ -23,6 +23,16 @@ namespace BocciaCoaching.Repositories.Teams
                     CoachId = requestTeamDto.CoachId,
                     NameTeam = requestTeamDto.NameTeam,
                     Description = requestTeamDto.Description,
+                    Image = requestTeamDto.Image,
+                    Bc1 = requestTeamDto.Bc1,
+                    Bc2 = requestTeamDto.Bc2,
+                    Bc3 = requestTeamDto.Bc3,
+                    Bc4 = requestTeamDto.Bc4,
+                    Pairs = requestTeamDto.Pairs,
+                    Teams = requestTeamDto.Teams,
+                    Country = requestTeamDto.Country,
+                    Region = requestTeamDto.Region,
+                    CreatedAt = DateTime.UtcNow
                 };
 
                 await context.Teams.AddAsync(team);
