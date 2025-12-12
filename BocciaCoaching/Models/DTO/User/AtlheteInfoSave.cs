@@ -1,6 +1,4 @@
-﻿using BocciaCoaching.Models.Entities;
-
-namespace BocciaCoaching.Models.DTO.User
+﻿namespace BocciaCoaching.Models.DTO.User
 {
     public class AtlheteInfoSave
     {
@@ -20,6 +18,7 @@ namespace BocciaCoaching.Models.DTO.User
 
         public bool Status { get; set; } = true;
 
+        public int CoachId { get; set; }
      
     }
 }

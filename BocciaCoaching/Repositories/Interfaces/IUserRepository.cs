@@ -1,4 +1,4 @@
-﻿using BocciaCoaching.Models.DTO.Auth;
+﻿﻿using BocciaCoaching.Models.DTO.Auth;
 using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.User;
 using BocciaCoaching.Models.DTO.User.Atlhete;
@@ -8,12 +8,12 @@ namespace BocciaCoaching.Repositories.Interfaces
 {
     public interface IUserRepository
     {
-        Task<IEnumerable<InfoBasicUserDto>> GetAllAsync();
-        Task<InfoBasicUserDto?> GetByIdAsync(int id);
-        Task<bool> AddUser(InfoUserRegisterDto userDto);
-        Task<LoginResponseDto?> Login(LoginRequestDto loginDto);
-        Task<bool> RegistrarAtleta(AtlheteInfoSave atlheteInfoSave);
-        Task<ValidateEmailDto> ValidateEmail(ValidateEmailDto email);
+        Task<ResponseContract<IEnumerable<InfoBasicUserDto>>> GetAllAsync();
+        Task<ResponseContract<InfoBasicUserDto>> GetByIdAsync(int id);
+        Task<ResponseContract<bool>> AddUser(InfoUserRegisterDto userDto);
+        Task<ResponseContract<LoginResponseDto>> Login(LoginRequestDto loginDto);
+        Task<ResponseContract<int>> RegistrarAtleta(AtlheteInfoSave atlheteInfoSave);
+        Task<ResponseContract<ValidateEmailDto>> ValidateEmail(ValidateEmailDto email);
 
         /// <summary>
         /// Método para la busqueda de los atletas por nombre

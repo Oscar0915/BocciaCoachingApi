@@ -1,4 +1,4 @@
-﻿using BocciaCoaching.Data;
+﻿﻿using BocciaCoaching.Data;
 using BocciaCoaching.Models.DTO.Auth;
 using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.User;
@@ -11,7 +11,7 @@ namespace BocciaCoaching.Repositories
 {
     public class UserRepository(ApplicationDbContext context) : IUserRepository
     {
-        public async Task<bool> AddUser(InfoUserRegisterDto userDto)
+        public async Task<ResponseContract<bool>> AddUser(InfoUserRegisterDto userDto)
         {
             try
             {
@@ -37,29 +37,55 @@ namespace BocciaCoaching.Repositories
                 await context.UserRoles.AddAsync(athlete);
                 await context.SaveChangesAsync();
 
-                return true;
+                return ResponseContract<bool>.Ok(true, "Usuario creado exitosamente");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error en AddUser: {ex.Message}");
-                return false;
+                return ResponseContract<bool>.Fail($"Error al crear usuario: {ex.Message}");
             }
         }
 
-        public async Task<IEnumerable<InfoBasicUserDto>> GetAllAsync()
+        public async Task<ResponseContract<IEnumerable<InfoBasicUserDto>>> GetAllAsync()
         {
-            var usersData = await context.Users.ToListAsync();
-            var infoUser = usersData.Select(u => new InfoBasicUserDto
+            try
             {
-                Name = u.FirstName
-            }).ToList();
+                var usersData = await context.Users.ToListAsync();
+                var infoUser = usersData.Select(u => new InfoBasicUserDto
+                {
+                    Name = u.FirstName
+                }).ToList();
 
-            return infoUser;
+                return ResponseContract<IEnumerable<InfoBasicUserDto>>.Ok(infoUser, "Usuarios obtenidos exitosamente");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en GetAllAsync: {ex.Message}");
+                return ResponseContract<IEnumerable<InfoBasicUserDto>>.Fail($"Error al obtener usuarios: {ex.Message}");
+            }
         }
 
-        public Task<InfoBasicUserDto?> GetByIdAsync(int id)
+        public async Task<ResponseContract<InfoBasicUserDto>> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var user = await context.Users.FindAsync(id);
+                
+                if (user == null)
+                    return ResponseContract<InfoBasicUserDto>.Fail("Usuario no encontrado");
+
+                var infoUser = new InfoBasicUserDto
+                {
+                    Name = user.FirstName
+                };
+
+                return ResponseContract<InfoBasicUserDto>.Ok(infoUser, "Usuario obtenido exitosamente");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en GetByIdAsync: {ex.Message}");
+                return ResponseContract<InfoBasicUserDto>.Fail($"Error al obtener usuario: {ex.Message}");
+            }
         }
 
         private async Task<User?> GetUserByEmailAsync(string email)
@@ -80,25 +106,39 @@ namespace BocciaCoaching.Repositories
         /// Método para iniciar sesión 
         /// </summary>
         /// <returns></returns>
-        public async Task<LoginResponseDto?> Login(LoginRequestDto loginDto)
+        public async Task<ResponseContract<LoginResponseDto>> Login(LoginRequestDto loginDto)
         {
-            var user = await GetUserByEmailAsync(loginDto.Email);
-            if (user == null) return null;
-
-            // Verificar contraseña
-            bool validPassword = BCrypt.Net.BCrypt.Verify(loginDto.Password, user.Password);
-            if (!validPassword) return null;
-
-            var roles =  context.UserRoles.Where(x=>x.UserId==user.UserId).ToList();
-
-
-            // Generar respuesta
-            return new LoginResponseDto
+            try
             {
-                UserId = user.UserId,
-                Email = user.Email,
-                RolId = roles[0].RolId
-            };
+                var user = await GetUserByEmailAsync(loginDto.Email);
+                if (user == null) 
+                    return ResponseContract<LoginResponseDto>.Fail("Usuario no encontrado");
+
+                // Verificar contraseña
+                bool validPassword = BCrypt.Net.BCrypt.Verify(loginDto.Password, user.Password);
+                if (!validPassword) 
+                    return ResponseContract<LoginResponseDto>.Fail("Contraseña incorrecta");
+
+                var roles = context.UserRoles.Where(x => x.UserId == user.UserId).ToList();
+
+                if (roles.Count == 0)
+                    return ResponseContract<LoginResponseDto>.Fail("Usuario sin roles asignados");
+
+                // Generar respuesta
+                var response = new LoginResponseDto
+                {
+                    UserId = user.UserId,
+                    Email = user.Email,
+                    RolId = roles[0].RolId
+                };
+
+                return ResponseContract<LoginResponseDto>.Ok(response, "Login exitoso");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en Login: {ex.Message}");
+                return ResponseContract<LoginResponseDto>.Fail($"Error al iniciar sesión: {ex.Message}");
+            }
         }
 
         /// <summary>
@@ -106,11 +146,13 @@ namespace BocciaCoaching.Repositories
         /// </summary>
         /// <param name="atlheteInfoSave"></param>
         /// <returns></returns>
-        public async Task<bool> RegistrarAtleta(AtlheteInfoSave atlheteInfoSave)
+        public async Task<ResponseContract<int>> RegistrarAtleta(AtlheteInfoSave atlheteInfoSave)
         {
             try
             {
-                string passwordHash = BCrypt.Net.BCrypt.HashPassword(atlheteInfoSave.Password);
+                // Contraseña por defecto
+                string defaultPassword = "boccia123";
+                string passwordHash = BCrypt.Net.BCrypt.HashPassword(defaultPassword);
 
                 var user = new User
                 {
@@ -128,39 +170,46 @@ namespace BocciaCoaching.Repositories
                 await context.Users.AddAsync(user);
                 await context.SaveChangesAsync();
 
-
-
                 var athlete = new UserRol
                 {
                     RolId = 3,
                     UserId = user.UserId
-
                 };
 
                 await context.UserRoles.AddAsync(athlete);
                 await context.SaveChangesAsync();
 
-
-
-
-                return true;
+                return ResponseContract<int>.Ok(user.UserId, "Atleta registrado exitosamente");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error en AddUser: {ex.Message}");
-                return false;
+                Console.WriteLine($"Error en RegistrarAtleta: {ex.Message}");
+                return ResponseContract<int>.Fail($"Error al registrar atleta: {ex.Message}");
             }
         }
 
-        public async Task<ValidateEmailDto> ValidateEmail(ValidateEmailDto email)
+        public async Task<ResponseContract<ValidateEmailDto>> ValidateEmail(ValidateEmailDto email)
         {
-            var isAvailable = await GetUserByEmailAsync(email.Email);
+            try
+            {
+                var isAvailable = await GetUserByEmailAsync(email.Email);
 
-            if (isAvailable != null)
-                return new ValidateEmailDto { Email = "No disponible" };
+                if (isAvailable != null)
+                    return ResponseContract<ValidateEmailDto>.Ok(
+                        new ValidateEmailDto { Email = "No disponible" }, 
+                        "Email no disponible"
+                    );
 
-            return new ValidateEmailDto { Email = email.Email };
-
+                return ResponseContract<ValidateEmailDto>.Ok(
+                    new ValidateEmailDto { Email = email.Email }, 
+                    "Email disponible"
+                );
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en ValidateEmail: {ex.Message}");
+                return ResponseContract<ValidateEmailDto>.Fail($"Error al validar email: {ex.Message}");
+            }
         }
 
         /// <summary>
@@ -173,7 +222,7 @@ namespace BocciaCoaching.Repositories
             try
             {
                 if (string.IsNullOrWhiteSpace(user?.FirstName))
-                    return ResponseContract<List<User>>.Fail("Debe proporcionar un nombre para la búsqueda.")!;
+                    return ResponseContract<List<User>>.Fail("Debe proporcionar un nombre para la búsqueda.");
 
                 var userInfo = await (from u in context.Users
                         join tu in context.TeamsUsers on u.UserId equals tu.UserId
@@ -192,7 +241,7 @@ namespace BocciaCoaching.Repositories
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return ResponseContract<List<User>>.Fail("Ocurrió un error realizando la búsqueda")!;
+                return ResponseContract<List<User>>.Fail("Ocurrió un error realizando la búsqueda");
             }
         }
     }

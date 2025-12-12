@@ -39,12 +39,16 @@ namespace BocciaCoaching.Services
                 Message = m.Message,
                 Image = m.Image,
                 CoachId = m.CoachId,
-                // La entidad User tiene FirstName/LastName
-                CoachName = m.Coach.FirstName != null ? (m.Coach.FirstName + (string.IsNullOrWhiteSpace(m.Coach.LastName) ? "" : " " + m.Coach.LastName)) : null,
+                // Manejo seguro de propiedades de navegación
+                CoachName = m.Coach != null && m.Coach.FirstName != null 
+                    ? (m.Coach.FirstName + (string.IsNullOrWhiteSpace(m.Coach.LastName) ? "" : " " + m.Coach.LastName)) 
+                    : null,
                 AthleteId = m.AthleteId,
-                AthleteName = m.Athlete.FirstName != null ? (m.Athlete.FirstName + (string.IsNullOrWhiteSpace(m.Athlete.LastName) ? "" : " " + m.Athlete.LastName)) : null,
+                AthleteName = m.Athlete != null && m.Athlete.FirstName != null 
+                    ? (m.Athlete.FirstName + (string.IsNullOrWhiteSpace(m.Athlete.LastName) ? "" : " " + m.Athlete.LastName)) 
+                    : null,
                 NotificationTypeId = m.NotificationTypeId,
-                NotificationTypeName = m.NotificationType.Name,
+                NotificationTypeName = m.NotificationType?.Name,
                 Status = m.Status
             };
         }
@@ -55,14 +59,28 @@ namespace BocciaCoaching.Services
 
             if (string.IsNullOrWhiteSpace(dto.CoachName))
             {
-                var coach = await _userRepo.GetByIdAsync(m.CoachId);
-                dto.CoachName = coach?.Name;
+                var coachResponse = await _userRepo.GetByIdAsync(m.CoachId);
+                if (coachResponse.Success && coachResponse.Data != null)
+                {
+                    var firstName = coachResponse.Data.Name ?? string.Empty;
+                    var lastName = coachResponse.Data.LastName;
+                    dto.CoachName = string.IsNullOrWhiteSpace(lastName) 
+                        ? firstName.Trim() 
+                        : (firstName + " " + lastName).Trim();
+                }
             }
 
             if (string.IsNullOrWhiteSpace(dto.AthleteName))
             {
-                var athlete = await _userRepo.GetByIdAsync(m.AthleteId);
-                dto.AthleteName = athlete?.Name;
+                var athleteResponse = await _userRepo.GetByIdAsync(m.AthleteId);
+                if (athleteResponse.Success && athleteResponse.Data != null)
+                {
+                    var firstName = athleteResponse.Data.Name ?? string.Empty;
+                    var lastName = athleteResponse.Data.LastName;
+                    dto.AthleteName = string.IsNullOrWhiteSpace(lastName) 
+                        ? firstName.Trim() 
+                        : (firstName + " " + lastName).Trim();
+                }
             }
 
             if (string.IsNullOrWhiteSpace(dto.NotificationTypeName))
@@ -178,11 +196,13 @@ namespace BocciaCoaching.Services
 
         private async Task<(bool exists, string? name)> GetUserInfo(int userId)
         {
-            // IUserRepository.GetByIdAsync devuelve InfoBasicUserDto (Name, LastName)
-            var user = await _userRepo.GetByIdAsync(userId);
-            if (user == null) return (false, null);
-            var first = user.Name ?? string.Empty;
-            var last = user.LastName; // LastName es no-nullable en InfoBasicUserDto
+            var userResponse = await _userRepo.GetByIdAsync(userId);
+            
+            if (!userResponse.Success || userResponse.Data == null) 
+                return (false, null);
+            
+            var first = userResponse.Data.Name ?? string.Empty;
+            var last = userResponse.Data.LastName;
             var fullName = string.IsNullOrWhiteSpace(last) ? first.Trim() : (first + " " + last).Trim();
             return (true, string.IsNullOrWhiteSpace(fullName) ? null : fullName);
         }
@@ -281,12 +301,13 @@ namespace BocciaCoaching.Services
                 var tasks = query.Select(m => MapMessageAsync(m)).ToList();
                 var dtoArray = await Task.WhenAll(tasks);
                 var dto = dtoArray.ToList();
-                return ResponseContract<IEnumerable<NotificationMessageDto>>.Ok(dto);
+                return ResponseContract<IEnumerable<NotificationMessageDto>>.Ok(dto, "Mensajes obtenidos exitosamente");
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                return ResponseContract<IEnumerable<NotificationMessageDto>>.Fail("Error obteniendo mensajes por coach");
+                Console.WriteLine($"Error en GetMessagesByCoach: {ex.Message}");
+                Console.WriteLine($"StackTrace: {ex.StackTrace}");
+                return ResponseContract<IEnumerable<NotificationMessageDto>>.Fail($"Error obteniendo mensajes por coach: {ex.Message}");
             }
         }
 
@@ -296,7 +317,7 @@ namespace BocciaCoaching.Services
             {
                 var messages = await _repo.GetMessagesByAthleteAsync(athleteId);
                 var query = messages.AsQueryable();
-                if (status.HasValue) query = query.Where(m => m.Status == status.Value);
+             //  if (status.HasValue) query = query.Where(m => m.Status == status.Value);
 
                 if (page.HasValue && pageSize.HasValue && page > 0 && pageSize > 0)
                 {
@@ -306,12 +327,13 @@ namespace BocciaCoaching.Services
                 var tasks = query.Select(m => MapMessageAsync(m)).ToList();
                 var dtoArray = await Task.WhenAll(tasks);
                 var dto = dtoArray.ToList();
-                return ResponseContract<IEnumerable<NotificationMessageDto>>.Ok(dto);
+                return ResponseContract<IEnumerable<NotificationMessageDto>>.Ok(dto, "Mensajes obtenidos exitosamente");
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                return ResponseContract<IEnumerable<NotificationMessageDto>>.Fail("Error obteniendo mensajes por atleta");
+                Console.WriteLine($"Error en GetMessagesByAthlete: {ex.Message}");
+                Console.WriteLine($"StackTrace: {ex.StackTrace}");
+                return ResponseContract<IEnumerable<NotificationMessageDto>>.Fail($"Error obteniendo mensajes por atleta: {ex.Message}");
             }
         }
     }

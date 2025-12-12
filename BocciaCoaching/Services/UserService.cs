@@ -1,10 +1,8 @@
-﻿using BocciaCoaching.Models.DTO;
-using BocciaCoaching.Models.DTO.AssessStrength;
-using BocciaCoaching.Models.DTO.Auth;
+﻿using BocciaCoaching.Models.DTO.Auth;
 using BocciaCoaching.Models.DTO.General;
+using BocciaCoaching.Models.DTO.Notification;
 using BocciaCoaching.Models.DTO.User;
 using BocciaCoaching.Models.DTO.User.Atlhete;
-using BocciaCoaching.Models.Entities;
 using BocciaCoaching.Repositories.Interfaces;
 using BocciaCoaching.Services.Interfaces;
 
@@ -13,42 +11,61 @@ namespace BocciaCoaching.Services
     public class UserService: IUserService
     {
         private readonly IUserRepository _repository;
+        private readonly INotificationService _notificationService;
 
-        public UserService(IUserRepository repository)
+        public UserService(IUserRepository repository, INotificationService notificationService)
         {
             _repository = repository;
+            _notificationService = notificationService;
         }
 
-        public async Task<bool> AddUser(InfoUserRegisterDto userDto)
+        public async Task<ResponseContract<bool>> AddUser(InfoUserRegisterDto userDto)
         {
             return await _repository.AddUser(userDto);
         }
 
         
-        public async Task<IEnumerable<InfoBasicUserDto>> GetAllAsync()
+        public async Task<ResponseContract<IEnumerable<InfoBasicUserDto>>> GetAllAsync()
         {
             return await _repository.GetAllAsync();
         }
 
-        public Task<InfoBasicUserDto?> GetByIdAsync(int id)
+        public async Task<ResponseContract<InfoBasicUserDto>> GetByIdAsync(int id)
         {
-            return _repository.GetByIdAsync(id);
+            return await _repository.GetByIdAsync(id);
         }
 
-        public Task<LoginResponseDto?> Login(LoginRequestDto loginDto)
+        public async Task<ResponseContract<LoginResponseDto>> Login(LoginRequestDto loginDto)
         {
-            return _repository.Login(loginDto);
+            return await _repository.Login(loginDto);
         }
 
-        public Task<bool> RegistrarAtleta(AtlheteInfoSave atlheteInfoSave)
+        public async Task<ResponseContract<int>> RegistrarAtleta(AtlheteInfoSave atlheteInfoSave)
         {
-            return _repository.RegistrarAtleta(atlheteInfoSave);
+            var result = await _repository.RegistrarAtleta(atlheteInfoSave);
+            
+            if (result.Success && result.Data > 0)
+            {
+                // Crear notificación para el atleta recién creado
+                var notificationMessage = new RequestCreateNotificationMessageDto
+                {
+                    NotificationTypeId = 1,
+                    AthleteId = result.Data,
+                    CoachId = atlheteInfoSave.CoachId,
+                    Message = "Bienvenido a Boccia Coaching. Tu contraseña por defecto es: boccia123. Por favor, cámbiala en tu primer inicio de sesión.",
+                    Status = true
+                };
+                
+                await _notificationService.CreateMessage(notificationMessage);
+            }
+            
+            return result;
         }
 
 
-        public Task<ValidateEmailDto> ValidateEmail(ValidateEmailDto email)
+        public async Task<ResponseContract<ValidateEmailDto>> ValidateEmail(ValidateEmailDto email)
         {
-            return _repository.ValidateEmail(email);
+            return await _repository.ValidateEmail(email);
         }
 
         public async Task<ResponseContract<List<AtlheteInfo>>> GetAthleteForName(SearchDataAthleteDto user)
@@ -56,7 +73,7 @@ namespace BocciaCoaching.Services
             var responseInfoAthletes = new List<AtlheteInfo>();
             var dataAthletes= await _repository.GetUserForName(user);
 
-            if (dataAthletes.Success && dataAthletes.Data.Count > 0)
+            if (dataAthletes.Success && dataAthletes.Data != null && dataAthletes.Data.Count > 0)
             {
                 foreach (var atlhete in dataAthletes.Data)
                 {
@@ -72,7 +89,7 @@ namespace BocciaCoaching.Services
                 );
             }
             
-            return ResponseContract<List<AtlheteInfo>>.Fail("No se encontraron atletas")!;
+            return ResponseContract<List<AtlheteInfo>>.Fail("No se encontraron atletas");
         }
     }
 }
