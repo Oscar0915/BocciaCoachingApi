@@ -148,6 +148,7 @@ namespace BocciaCoaching.Repositories.NotificationTypes
                 .Where(m => m.AthleteId == athleteId)
                 .Include(m => m.NotificationType)
                 .Include(m => m.Coach)
+                .Include(m => m.Athlete)
                 .AsNoTracking()
                 .ToListAsync();
         }

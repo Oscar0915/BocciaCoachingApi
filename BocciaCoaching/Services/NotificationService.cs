@@ -39,11 +39,13 @@ namespace BocciaCoaching.Services
                 Message = m.Message,
                 Image = m.Image,
                 CoachId = m.CoachId,
-                // La entidad User tiene FirstName/LastName
-                CoachName = m.Coach.FirstName != null ? (m.Coach.FirstName + (string.IsNullOrWhiteSpace(m.Coach.LastName) ? "" : " " + m.Coach.LastName)) : null,
+                // La entidad User tiene FirstName/LastName - validar que Coach no sea null
+                CoachName = m.Coach?.FirstName != null ? (m.Coach.FirstName + (string.IsNullOrWhiteSpace(m.Coach.LastName) ? "" : " " + m.Coach.LastName)) : null,
                 NotificationTypeId = m.NotificationTypeId,
-                AthleteName = m.Athlete.FirstName != null ? (m.Athlete.FirstName + (string.IsNullOrWhiteSpace(m.Athlete.LastName) ? "" : " " + m.Athlete.LastName)) : null,
-                NotificationTypeName = m.NotificationType.Name,
+                // Validar que Athlete no sea null
+                AthleteName = m.Athlete?.FirstName != null ? (m.Athlete.FirstName + (string.IsNullOrWhiteSpace(m.Athlete.LastName) ? "" : " " + m.Athlete.LastName)) : null,
+                // Validar que NotificationType no sea null
+                NotificationTypeName = m.NotificationType?.Name,
                 AthleteId = m.AthleteId
             };
         }
@@ -285,6 +287,15 @@ namespace BocciaCoaching.Services
             try
             {
                 var messages = await _repo.GetMessagesByCoachAsync(coachId);
+                
+                if (messages == null || !messages.Any())
+                {
+                    return ResponseContract<IEnumerable<NotificationMessageDto>>.Ok(
+                        new List<NotificationMessageDto>(), 
+                        "No se encontraron mensajes para este coach"
+                    );
+                }
+
                 var query = messages.AsQueryable();
                 if (status.HasValue) query = query.Where(m => m.Status == status.Value);
 
@@ -293,14 +304,26 @@ namespace BocciaCoaching.Services
                     query = query.Skip((page.Value - 1) * pageSize.Value).Take(pageSize.Value);
                 }
 
-                var tasks = query.Select(m => MapMessageAsync(m)).ToList();
-                var dtoArray = await Task.WhenAll(tasks);
-                var dto = dtoArray.ToList();
+                var dto = new List<NotificationMessageDto>();
+                foreach (var message in query)
+                {
+                    try
+                    {
+                        var mappedMessage = await MapMessageAsync(message);
+                        dto.Add(mappedMessage);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error mapeando mensaje {message.NotificationMessageId}: {ex.Message}");
+                        // Continuar con el siguiente mensaje
+                    }
+                }
+
                 return ResponseContract<IEnumerable<NotificationMessageDto>>.Ok(dto);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine($"Error en GetMessagesByCoach: {ex.Message}\nStackTrace: {ex.StackTrace}");
                 return ResponseContract<IEnumerable<NotificationMessageDto>>.Fail("Error obteniendo mensajes por coach");
             }
         }
@@ -310,22 +333,43 @@ namespace BocciaCoaching.Services
             try
             {
                 var messages = await _repo.GetMessagesByAthleteAsync(athleteId);
+                
+                if (messages == null || !messages.Any())
+                {
+                    return ResponseContract<IEnumerable<NotificationMessageDto>>.Ok(
+                        new List<NotificationMessageDto>(), 
+                        "No se encontraron mensajes para este atleta"
+                    );
+                }
+
                 var query = messages.AsQueryable();
-             //  if (status.HasValue) query = query.Where(m => m.Status == status.Value);
+                //  if (status.HasValue) query = query.Where(m => m.Status == status.Value);
 
                 if (page.HasValue && pageSize.HasValue && page > 0 && pageSize > 0)
                 {
                     query = query.Skip((page.Value - 1) * pageSize.Value).Take(pageSize.Value);
                 }
 
-                var tasks = query.Select(m => MapMessageAsync(m)).ToList();
-                var dtoArray = await Task.WhenAll(tasks);
-                var dto = dtoArray.ToList();
+                var dto = new List<NotificationMessageDto>();
+                foreach (var message in query)
+                {
+                    try
+                    {
+                        var mappedMessage = await MapMessageAsync(message);
+                        dto.Add(mappedMessage);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error mapeando mensaje {message.NotificationMessageId}: {ex.Message}");
+                        // Continuar con el siguiente mensaje
+                    }
+                }
+
                 return ResponseContract<IEnumerable<NotificationMessageDto>>.Ok(dto);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine($"Error en GetMessagesByAthlete: {ex.Message}\nStackTrace: {ex.StackTrace}");
                 return ResponseContract<IEnumerable<NotificationMessageDto>>.Fail("Error obteniendo mensajes por atleta");
             }
         }
