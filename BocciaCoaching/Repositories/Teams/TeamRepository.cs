@@ -111,7 +111,7 @@ namespace BocciaCoaching.Repositories.Teams
         /// </summary>
         /// <param name="requestGetUserForTeamDto"></param>
         /// <returns></returns>
-        public async Task<ResponseContract<List<User>>> GetUsersForTeam(RequestGetUserForTeamDto requestGetUserForTeamDto)
+        public async Task<ResponseContract<List<TeamMemberDto>>> GetUsersForTeam(RequestGetUserForTeamDto requestGetUserForTeamDto)
         {
             try
             {
@@ -129,12 +129,30 @@ namespace BocciaCoaching.Repositories.Teams
                     .Select(tu => tu.User!)
                     .ToList();
 
-                return ResponseContract<List<User>>.Ok(users, "Ususarios obtenidos satisfactoriamente");
+                // Mapear a TeamMemberDto sin incluir la contraseña
+                var teamMembers = users.Select(u => new TeamMemberDto
+                {
+                    UserId = u.UserId,
+                    Dni = u.Dni,
+                    FirstName = u.FirstName,
+                    LastName = u.LastName,
+                    Email = u.Email,
+                    Address = u.Address,
+                    Country = u.Country,
+                    Image = u.Image,
+                    Category = u.Category,
+                    Seniority = u.Seniority,
+                    Status = u.Status,
+                    CreatedAt = u.CreatedAt,
+                    UpdatedAt = u.UpdatedAt
+                }).ToList();
+
+                return ResponseContract<List<TeamMemberDto>>.Ok(teamMembers, "Usuarios obtenidos satisfactoriamente");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error en GetUsersForTeam: {ex.Message}");
-                return ResponseContract<List<User>>.Fail(ex.Message);
+                return ResponseContract<List<TeamMemberDto>>.Fail(ex.Message);
             }
         }
 

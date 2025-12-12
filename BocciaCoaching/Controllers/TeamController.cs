@@ -41,9 +41,9 @@ namespace BocciaCoaching.Controllers
 
 
         [HttpPost("GetUsersForTeam")]
-        public async Task<ActionResult<ResponseContract<List<User>>>> GetUsersForTeam(RequestGetUserForTeamDto requestGetUserForTeamDto)
+        public async Task<ActionResult<ResponseContract<List<TeamMemberDto>>>> GetUsersForTeam(RequestGetUserForTeamDto requestGetUserForTeamDto)
         {
-            var  teams = await _team.GetUsersForTeam(requestGetUserForTeamDto);
+            var teams = await _team.GetUsersForTeam(requestGetUserForTeamDto);
             return Ok(teams);
         }
 

@@ -16,7 +16,7 @@ namespace BocciaCoaching.Services.Interfaces
         Task<ResponseContract<bool>> AddTeamMember(RequestTeamMemberDto requestTeamMemberDto);
 
         Task<List<Team>> GetTeamsForUser(RequestTeamDto requestTeamDto);
-        Task<ResponseContract<List<User>>> GetUsersForTeam(RequestGetUserForTeamDto requestGetUserForTeamDto);
+        Task<ResponseContract<List<TeamMemberDto>>> GetUsersForTeam(RequestGetUserForTeamDto requestGetUserForTeamDto);
         Task<bool> UpdateTeam(RequestUpdateTeamDto requestUpdateImageTeamDto);
 
         Task<ResponseContract<List<StrengthTestSummaryDto>>> GetRecentStatistics(
