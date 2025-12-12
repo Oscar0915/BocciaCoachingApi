@@ -20,10 +20,10 @@ namespace BocciaCoaching.Controllers
 
 
         [HttpPost("AddEvaluation")]
-        public async Task<ActionResult<IEnumerable<ResponseContract<ResponseAddAssessStrengthDto>>>> NewEvaluation(AddAssessStrengthDto user)
+        public async Task<ActionResult<ResponseContract<ResponseAddAssessStrengthDto>>> NewEvaluation(AddAssessStrengthDto user)
         {
-            var users = await _assessStrengthService.CreateEvaluation(user);
-            return Ok(users);
+            var result = await _assessStrengthService.CreateEvaluation(user);
+            return Ok(result);
         }
 
 

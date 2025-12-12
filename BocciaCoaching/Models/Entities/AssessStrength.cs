@@ -23,15 +23,19 @@ namespace BocciaCoaching.Models.Entities
         /// ES:
         /// EN: 
         /// </summary>
-        public string Description { get; set; }
+        public string? Description { get; set; }
         /// <summary>
         /// ES:
         /// EN: 
         /// </summary>
-        public string State { get; set; }
+        public string? State { get; set; }
 
         public int TeamId { get; set; }
 
-        public Team Team { get; set; }
+        public Team? Team { get; set; }
+
+        // Timestamps
+        public DateTime CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
     }
 }

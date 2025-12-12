@@ -14,11 +14,7 @@ namespace BocciaCoaching.Services
         private readonly IValidationsAssetsStrength _validationsAssetsStrength;
 
 
-        /// <summary>
-        ///  Método constructor
-        /// </summary>
-        /// <param name="assessStrengthRepository"></param>
-        /// <param name="teamValidationRepository"></param>
+        // Constructor
         public AssessStrengthService(IAssessStrengthRepository assessStrengthRepository, ITeamValidationRepository teamValidationRepository,
             IValidationsAssetsStrength validationsAssetsStrength)
         {
@@ -135,22 +131,24 @@ namespace BocciaCoaching.Services
                         "El equipo no está activo"
                     );
                 }
+ 
+                // Llama al repositorio para crear la evaluación de forma atómica (verifica por TeamId)
+                var repoResult = await _assessStrengthRepository.CreateAssessmentIfNoneActiveAsync(addAssessStrengthDto);
+                if (repoResult == null || !repoResult.Success)
+                {
+                    return ResponseContract<ResponseAddAssessStrengthDto>.Fail(repoResult?.Message ?? "Error al crear la evaluación");
+                }
 
-                // Llama al repositorio que ya retorna ResponseContract<ResponseAddAssessStrengthDto>
-                return await _assessStrengthRepository.CrearEvaluacion(addAssessStrengthDto);
+                return ResponseContract<ResponseAddAssessStrengthDto>.Ok(repoResult.Data, repoResult.Message);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+ 
+                   return ResponseContract<ResponseAddAssessStrengthDto>.Fail(
+                      $"Error al crear la evaluación: {e.Message}"
+                  );
+                }
             }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-
-                return ResponseContract<ResponseAddAssessStrengthDto>.Fail(
-                    $"Error al crear la evaluación: {e.Message}"
-                );
-            }
-        }
-
-        
-        
-        
     }
 }

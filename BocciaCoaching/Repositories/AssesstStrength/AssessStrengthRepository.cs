@@ -3,7 +3,6 @@ using BocciaCoaching.Models.DTO.AssessStrength;
 using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.Team;
 using BocciaCoaching.Models.Entities;
-using BocciaCoaching.Repositories.Interfaces;
 using BocciaCoaching.Repositories.Interfaces.IAssesstStrength;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,11 +28,15 @@ namespace BocciaCoaching.Repositories.AssesstStrength
         {
             try
             {
+                // (La validación de evaluación activa se realiza en el service)
+
                 var assessStrength = new AssessStrength()
                 {
                     EvaluationDate = DateTime.Now,
                     Description = requestEvaluationForceDto.Description,
-                    State = requestEvaluationForceDto.State
+                    // Asegurar que la evaluación iniciada quede en estado 'A' (Activa)
+                    State = "A",
+                    CreatedAt = DateTime.Now
                 };
 
                 await _context.AssessStrengths.AddAsync(assessStrength);
@@ -64,6 +67,8 @@ namespace BocciaCoaching.Repositories.AssesstStrength
         {
             try
             {
+                // (La validación de evaluación activa se realiza en el service)
+
                 var assessStrength = new AssessStrength
                 {
                     EvaluationDate = DateTime.Now,
@@ -93,7 +98,61 @@ namespace BocciaCoaching.Repositories.AssesstStrength
 
                 return ResponseContract<ResponseAddAssessStrengthDto>.Fail(
                     $"Error al crear la evaluación: {ex.Message}"
-                )!;
+                );
+             }
+         }
+
+        // Crear evaluación de forma atómica solo si no hay evaluación activa en el mismo team
+        public async Task<ResponseContract<ResponseAddAssessStrengthDto>> CreateAssessmentIfNoneActiveAsync(AddAssessStrengthDto addAssessStrengthDto)
+        {
+            try
+            {
+                await using var transaction = await _context.Database.BeginTransactionAsync();
+
+                // Verificar si existe evaluación activa para el mismo Team
+                var existsActiveForTeam = await _context.AssessStrengths.AnyAsync(a => a.TeamId == addAssessStrengthDto.TeamId && a.State == "A");
+                if (existsActiveForTeam)
+                {
+                    await transaction.RollbackAsync();
+                    return ResponseContract<ResponseAddAssessStrengthDto>.Fail("Ya existe una evaluación activa para este equipo. Finaliza o cancela antes de crear una nueva.");
+                }
+
+                var assessStrength = new AssessStrength
+                {
+                    EvaluationDate = DateTime.Now,
+                    Description = addAssessStrengthDto.Description,
+                    State = "A",
+                    TeamId = addAssessStrengthDto.TeamId,
+                    CreatedAt = DateTime.Now
+                };
+
+                await _context.AssessStrengths.AddAsync(assessStrength);
+                await _context.SaveChangesAsync();
+
+                var resultDto = new ResponseAddAssessStrengthDto
+                {
+                    AssessStrengthId = assessStrength.AssessStrengthId,
+                    DateEvaluation = assessStrength.EvaluationDate,
+                    State = true
+                };
+
+                await transaction.CommitAsync();
+
+                return ResponseContract<ResponseAddAssessStrengthDto>.Ok(resultDto, "Evaluación creada correctamente");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en CreateAssessmentIfNoneActiveAsync: {ex.Message}");
+                try
+                {
+                    await _context.Database.RollbackTransactionAsync();
+                }
+                catch (Exception rollbackEx)
+                {
+                    Console.WriteLine($"Error al hacer rollback en CreateAssessmentIfNoneActiveAsync: {rollbackEx.Message}");
+                }
+
+                return ResponseContract<ResponseAddAssessStrengthDto>.Fail($"Error al crear la evaluación: {ex.Message}");
             }
         }
 
@@ -119,32 +178,39 @@ namespace BocciaCoaching.Repositories.AssesstStrength
             catch (Exception ex)
             {
                 Console.WriteLine($"Error en AddUser: {ex.Message}");
-                return ResponseContract<AthletesToEvaluated>.Fail("Error al agregar al atleta")!;
-
+                return ResponseContract<AthletesToEvaluated>.Fail("Error al agregar al atleta");
+ 
             }
         }
         /// <summary>
         /// Funcion que permite agregar el detalle de la evaluacion de fuerza
         /// </summary>
-        /// <param name="requestAddDetailToEvaluationForAthlete"></param>
-        /// <returns></returns>
+        /// <param name="request">Detalle de la evaluación (lanzamiento)</param>
+        /// <param name="isUpdate">Indica si es actualización o inserción</param>
+        /// <returns>True si la operación fue exitosa</returns>
         public async Task<bool> AgregarDetalleDeEvaluacion(
             RequestAddDetailToEvaluationForAthlete request,
             bool isUpdate)
         {
             try
             {
+                // Iniciar transacción para garantizar atomicidad
+                await using var transaction = await _context.Database.BeginTransactionAsync();
+
                 if (isUpdate)
                 {
                     // 1. Buscar registro existente
                     var entity = await _context.EvaluationDetailStrengths
                         .FirstOrDefaultAsync(x =>
                             x.AssessStrengthId == request.AssessStrengthId &&
-                            x.AthleteId == request.AthleteId&&
-                            x.ThrowOrder==request.ThrowOrder);
+                            x.AthleteId == request.AthleteId &&
+                            x.ThrowOrder == request.ThrowOrder);
 
                     if (entity == null)
+                    {
+                        await transaction.RollbackAsync();
                         return false;
+                    }
 
                     // 2. Actualizar campos
                     entity.BoxNumber = request.BoxNumber;
@@ -174,18 +240,43 @@ namespace BocciaCoaching.Repositories.AssesstStrength
                     await _context.EvaluationDetailStrengths.AddAsync(newEntity);
                 }
 
+                // Si se completó el lanzamiento 36, preparar la actualización del estado de la evaluación
+                if (request.ThrowOrder == 36)
+                {
+                    var assess = await _context.AssessStrengths.FirstOrDefaultAsync(a => a.AssessStrengthId == request.AssessStrengthId);
+                    if (assess != null && assess.State != "T")
+                    {
+                        assess.State = "T";
+                        assess.UpdatedAt = DateTime.Now;
+                        _context.AssessStrengths.Update(assess);
+                    }
+                }
+
+                // Guardar todos los cambios juntos
                 await _context.SaveChangesAsync();
+
+                // Commit de la transacción
+                await transaction.CommitAsync();
+
                 return true;
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
+                try
+                {
+                    await _context.Database.RollbackTransactionAsync();
+                }
+                catch (Exception rollbackEx)
+                {
+                    Console.WriteLine($"Error al hacer rollback de la transacción: {rollbackEx.Message}");
+                }
                 return false;
             }
         }
 
 
-        public async Task<bool> UpdateState(UpdateAssessStregthDto updateAssessStregthDto)
+        public async Task<ResponseContract<bool>> UpdateState(UpdateAssessStregthDto updateAssessStregthDto)
         {
             try
             {
@@ -194,20 +285,21 @@ namespace BocciaCoaching.Repositories.AssesstStrength
 
                 if (existing == null)
                 {
-                    Console.WriteLine($"No se encontró el registro con ID {updateAssessStregthDto.Id}");
-                    return false;
+                    var message = $"No se encontró el registro con ID {updateAssessStregthDto.Id}";
+                    Console.WriteLine(message);
+                    return ResponseContract<bool>.Fail(message);
                 }
 
                 existing.State = updateAssessStregthDto.State;
 
                 await _context.SaveChangesAsync();
 
-                return true;
+                return ResponseContract<bool>.Ok(true, "Estado actualizado correctamente");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error en UpdateState: {ex.Message}");
-                return false;
+                return ResponseContract<bool>.Fail($"Error al actualizar el estado: {ex.Message}");
             }
         }
 
@@ -263,8 +355,10 @@ namespace BocciaCoaching.Repositories.AssesstStrength
         {
             try
             {
-                  var listEvaluationDetail = await  _context.EvaluationDetailStrengths.Where(e=> e.AssessStrengthId == evaluationDetail.AssessStrengthId).ToListAsync();
-                  return listEvaluationDetail;
+                var listEvaluationDetail = await _context.EvaluationDetailStrengths
+                    .Where(e => e.AssessStrengthId == evaluationDetail.AssessStrengthId)
+                    .ToListAsync();
+                return listEvaluationDetail;
             }
             catch (Exception e)
             {
@@ -272,7 +366,11 @@ namespace BocciaCoaching.Repositories.AssesstStrength
                 return new List<EvaluationDetailStrength>();
             }
         }
-        
-        
+
+        // Nuevo: implementación para consultar si existe evaluación activa
+        public async Task<bool> HasActiveAssessmentAsync()
+        {
+            return await _context.AssessStrengths.AnyAsync(a => a.State == "A");
+        }
     }
 }

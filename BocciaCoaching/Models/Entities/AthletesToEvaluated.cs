@@ -23,7 +23,7 @@ namespace BocciaCoaching.Models.Entities
         /// ES:
         /// EN: 
         /// </summary>
-        public User Coach {  get; set; }
+        public User? Coach {  get; set; }
         /// <summary>
         /// ES:
         /// EN: 
@@ -33,7 +33,7 @@ namespace BocciaCoaching.Models.Entities
         /// ES:
         /// EN: 
         /// </summary>
-        public User Athlete { get; set; }
+        public User? Athlete { get; set; }
         /// <summary>
         /// ES:
         /// EN: 
@@ -43,7 +43,7 @@ namespace BocciaCoaching.Models.Entities
         /// ES:
         /// EN: 
         /// </summary>
-        public AssessStrength AssessStrength { get; set; }
+        public AssessStrength? AssessStrength { get; set; }
 
 
 

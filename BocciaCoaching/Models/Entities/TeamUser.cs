@@ -19,18 +19,23 @@ namespace BocciaCoaching.Models.Entities
         /// EN: 
         /// </summary>
         public int UserId { get; set; }
-        public User User { get; set; }
+        public User? User { get; set; }
         /// <summary>
         /// ES: Identificador del equipo
         /// EN: 
         /// </summary>
         public int TeamId { get; set; }
-        public Team Team { get; set; }
+        public Team? Team { get; set; }
 
         /// <summary>
         /// ES: Fecha de creación del equipo
         /// EN: 
         /// </summary>
         public DateTime DateCreation { get; set; }
+
+        public TeamUser()
+        {
+            DateCreation = DateTime.Now;
+        }
     }
 }

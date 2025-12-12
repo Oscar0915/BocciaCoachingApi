@@ -4,6 +4,7 @@ using BocciaCoaching.Repositories.AssesstStrength;
 using BocciaCoaching.Repositories.Interfaces;
 using BocciaCoaching.Repositories.Interfaces.IAssesstStrength;
 using BocciaCoaching.Repositories.Interfaces.ITeams;
+using BocciaCoaching.Repositories.NotificationTypes;
 using BocciaCoaching.Repositories.Statistic;
 using BocciaCoaching.Repositories.Statistic.Interfce;
 using BocciaCoaching.Repositories.Teams;
@@ -46,6 +47,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ITeamService, TeamService>();
 builder.Services.AddScoped<IAssessStrengthService, AssessStrengthService>();
+builder.Services.AddScoped<BocciaCoaching.Services.Interfaces.INotificationService, BocciaCoaching.Services.NotificationService>();
 
 /*
 Repositories - Repositorios
@@ -64,6 +66,9 @@ builder.Services.AddScoped<IValidationsAssetsStrength, ValidatiosStrenthReposito
 
 // Statistic - Estadisticas
 builder.Services.AddScoped<IStatisticAssessStrength, StatisticAssessStrength>();
+
+// NotificationType - Tipos de notificación
+builder.Services.AddScoped<INotificationTypeRepository, NotificationTypeRepository>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

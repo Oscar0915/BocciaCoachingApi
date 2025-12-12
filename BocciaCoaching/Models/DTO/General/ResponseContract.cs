@@ -25,8 +25,8 @@ public class ResponseContract<T>
         return new ResponseContract<T>(true, message, data);
     }
 
-    public static ResponseContract<T?> Fail(string message = "Error en la operación")
+    public static ResponseContract<T> Fail(string message = "Error en la operación")
     {
-        return new ResponseContract<T?>(false, message, default(T));
+        return new ResponseContract<T>(false, message, default(T)!);
     }
 }
