@@ -288,7 +288,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<IEnumerable<NotificationMessageDto>>> GetMessagesByCoach(int coachId, int? page = null, int? pageSize = null, bool? status = null)
+        public async Task<ResponseContract<IEnumerable<NotificationMessageDto>>> GetMessagesByCoach(int coachId, int? page = null, int? pageSize = null)
         {
             try
             {
@@ -303,7 +303,8 @@ namespace BocciaCoaching.Services
                 }
 
                 var query = messages.AsQueryable();
-                if (status.HasValue) query = query.Where(m => m.Status == status.Value);
+                // Filtrar solo notificaciones activas (Status = true) por defecto
+                query = query.Where(m => m.Status == true);
 
                 if (page.HasValue && pageSize.HasValue && page > 0 && pageSize > 0)
                 {
@@ -334,7 +335,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<IEnumerable<NotificationMessageDto>>> GetMessagesByAthlete(int athleteId, int? page = null, int? pageSize = null, bool? status = null)
+        public async Task<ResponseContract<IEnumerable<NotificationMessageDto>>> GetMessagesByAthlete(int athleteId, int? page = null, int? pageSize = null)
         {
             try
             {
@@ -349,7 +350,8 @@ namespace BocciaCoaching.Services
                 }
 
                 var query = messages.AsQueryable();
-                //  if (status.HasValue) query = query.Where(m => m.Status == status.Value);
+                // Filtrar solo notificaciones activas (Status = true) por defecto
+                query = query.Where(m => m.Status == true);
 
                 if (page.HasValue && pageSize.HasValue && page > 0 && pageSize > 0)
                 {

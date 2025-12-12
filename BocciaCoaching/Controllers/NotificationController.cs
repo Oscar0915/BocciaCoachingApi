@@ -66,16 +66,16 @@ namespace BocciaCoaching.Controllers
         }
 
         [HttpGet("GetMessagesByCoach/{coachId}")]
-        public async Task<ActionResult<ResponseContract<IEnumerable<NotificationMessageDto>>>> GetMessagesByCoach(int coachId, [FromQuery] int? page = null, [FromQuery] int? pageSize = null, [FromQuery] bool? status = null)
+        public async Task<ActionResult<ResponseContract<IEnumerable<NotificationMessageDto>>>> GetMessagesByCoach(int coachId, [FromQuery] int? page = null, [FromQuery] int? pageSize = null)
         {
-            var result = await _notificationService.GetMessagesByCoach(coachId, page, pageSize, status);
+            var result = await _notificationService.GetMessagesByCoach(coachId, page, pageSize);
             return Ok(result);
         }
 
         [HttpGet("GetMessagesByAthlete/{athleteId}")]
-        public async Task<ActionResult<ResponseContract<IEnumerable<NotificationMessageDto>>>> GetMessagesByAthlete(int athleteId, [FromQuery] int? page = null, [FromQuery] int? pageSize = null, [FromQuery] bool? status = null)
+        public async Task<ActionResult<ResponseContract<IEnumerable<NotificationMessageDto>>>> GetMessagesByAthlete(int athleteId, [FromQuery] int? page = null, [FromQuery] int? pageSize = null)
         {
-            var result = await _notificationService.GetMessagesByAthlete(athleteId, page, pageSize, status);
+            var result = await _notificationService.GetMessagesByAthlete(athleteId, page, pageSize);
             return Ok(result);
         }
 
