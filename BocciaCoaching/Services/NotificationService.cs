@@ -4,6 +4,7 @@ using BocciaCoaching.Models.DTO.Notification;
 using BocciaCoaching.Models.DTO.Team;
 using BocciaCoaching.Repositories.NotificationTypes;
 using BocciaCoaching.Repositories.Interfaces;
+using BocciaCoaching.Repositories.Interfaces.ITeams;
 using BocciaCoaching.Services.Interfaces;
 
 namespace BocciaCoaching.Services
@@ -13,12 +14,14 @@ namespace BocciaCoaching.Services
         private readonly INotificationTypeRepository _repo;
         private readonly IUserRepository _userRepo;
         private readonly ITeamService _teamService;
+        private readonly ITeamRepository _teamRepo;
 
-        public NotificationService(INotificationTypeRepository repo, IUserRepository userRepo, ITeamService teamService)
+        public NotificationService(INotificationTypeRepository repo, IUserRepository userRepo, ITeamService teamService, ITeamRepository teamRepo)
         {
             _repo = repo;
             _userRepo = userRepo;
             _teamService = teamService;
+            _teamRepo = teamRepo;
         }
 
         private NotificationTypeDto MapType(NotificationType t)
@@ -404,6 +407,11 @@ namespace BocciaCoaching.Services
                     return ResponseContract<bool>.Fail($"No se encontró un atleta con el email: {athleteEmail}");
 
                 var athlete = athleteResult.Data;
+
+                // Validar si el atleta ya pertenece al equipo
+                var isAlreadyInTeam = await _teamRepo.IsUserInTeam(athlete.UserId, teamId);
+                if (isAlreadyInTeam)
+                    return ResponseContract<bool>.Fail("El atleta ya pertenece a este equipo");
 
                 // Crear mensaje de invitación
                 var defaultMessage = message ?? $"Has sido invitado a unirte al equipo. ¡Acepta la invitación para formar parte del equipo!";
