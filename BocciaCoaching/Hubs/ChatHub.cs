@@ -144,8 +144,30 @@ namespace BocciaCoaching.Hubs
         // Indicador de escritura
         public async Task Typing(string conversationId, string userName)
         {
-            await Clients.OthersInGroup(conversationId)
-                .SendAsync("UserTyping", userName);
+            try
+            {
+                if (string.IsNullOrEmpty(conversationId))
+                {
+                    _logger.LogWarning("ConversationId is required for Typing indicator");
+                    return;
+                }
+
+                if (string.IsNullOrEmpty(userName))
+                {
+                    _logger.LogWarning("UserName is required for Typing indicator");
+                    return;
+                }
+
+                _logger.LogInformation($"User {userName} is typing in conversation {conversationId}");
+
+                await Clients.OthersInGroup(conversationId)
+                    .SendAsync("UserTyping", userName);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error sending typing indicator for conversation {ConversationId}", conversationId);
+                await Clients.Caller.SendAsync("Error", "Failed to send typing indicator");
+            }
         }
 
         // Marcar mensaje como leído
