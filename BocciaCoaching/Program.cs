@@ -22,7 +22,8 @@ builder.Services.AddCors(options =>
         {
             policy.WithOrigins("https://bocciacoaching.com", "http://localhost:4200")
                   .AllowAnyHeader()
-                  .AllowAnyMethod();
+                  .AllowAnyMethod()
+                  .AllowCredentials(); // Importante para SignalR
         });
 });
 
@@ -42,12 +43,16 @@ builder.Services.AddControllers()
 
 builder.Services.AddMemoryCache();
 
+// SignalR
+builder.Services.AddSignalR();
+
 //Services
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ITeamService, TeamService>();
 builder.Services.AddScoped<IAssessStrengthService, AssessStrengthService>();
 builder.Services.AddScoped<BocciaCoaching.Services.Interfaces.INotificationService, BocciaCoaching.Services.NotificationService>();
+builder.Services.AddScoped<IChatService, ChatService>();
 
 /*
 Repositories - Repositorios
@@ -93,5 +98,8 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// Mapear SignalR Hub
+app.MapHub<BocciaCoaching.Hubs.ChatHub>("/chatHub");
 
 app.Run();

@@ -110,6 +110,38 @@ namespace BocciaCoaching.Migrations
                     b.ToTable("AthletesToEvaluated");
                 });
 
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.Conversation", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("LastMessageId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Participants")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ParticipantsData")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("UnreadCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LastMessageId");
+
+                    b.ToTable("Conversation");
+                });
+
             modelBuilder.Entity("BocciaCoaching.Models.Entities.EvaluationDetailStrength", b =>
                 {
                     b.Property<int>("EvaluationDetailStrengthId")
@@ -253,6 +285,47 @@ namespace BocciaCoaching.Migrations
                     b.HasIndex("ModuleErrorId");
 
                     b.ToTable("LogError");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.Message", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("ConversationId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("SenderId")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("SenderName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("SenderPhoto")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("varchar(2000)");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConversationId");
+
+                    b.ToTable("Message");
                 });
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.ModuleError", b =>
@@ -664,6 +737,16 @@ namespace BocciaCoaching.Migrations
                     b.Navigation("Coach");
                 });
 
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.Conversation", b =>
+                {
+                    b.HasOne("BocciaCoaching.Models.Entities.Message", "LastMessage")
+                        .WithMany()
+                        .HasForeignKey("LastMessageId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("LastMessage");
+                });
+
             modelBuilder.Entity("BocciaCoaching.Models.Entities.EvaluationDetailStrength", b =>
                 {
                     b.HasOne("BocciaCoaching.Models.Entities.AssessStrength", "AssessStrength")
@@ -711,6 +794,17 @@ namespace BocciaCoaching.Migrations
                         .IsRequired();
 
                     b.Navigation("ModuleError");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.Message", b =>
+                {
+                    b.HasOne("BocciaCoaching.Models.Entities.Conversation", "Conversation")
+                        .WithMany("Messages")
+                        .HasForeignKey("ConversationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Conversation");
                 });
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.NotificationMessage", b =>
@@ -817,6 +911,11 @@ namespace BocciaCoaching.Migrations
                     b.Navigation("Rol");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.Conversation", b =>
+                {
+                    b.Navigation("Messages");
                 });
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.User", b =>

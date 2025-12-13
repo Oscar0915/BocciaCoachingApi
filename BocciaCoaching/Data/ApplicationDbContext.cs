@@ -1,4 +1,4 @@
-﻿﻿using BocciaCoaching.Models.Entities;
+﻿﻿﻿using BocciaCoaching.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace BocciaCoaching.Data
@@ -25,22 +25,8 @@ namespace BocciaCoaching.Data
         public DbSet<Achievement> Achievement { get; set; }
         public DbSet<StrengthStatistics> StrengthStatistics { get; set; }
 
-        #region Required
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            // Configurar relaciones para NotificationMessage
-            modelBuilder.Entity<NotificationMessage>()
-                .HasOne(nm => nm.Sender)
-                .WithMany()
-                .HasForeignKey(nm => nm.SenderId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<NotificationMessage>()
-                .HasOne(nm => nm.Receiver)
-                .WithMany()
-                .HasForeignKey(nm => nm.ReceiverId)
-                .OnDelete(DeleteBehavior.Restrict);
-        }
-        #endregion
+        // Chat entities
+        public DbSet<Conversation> Conversations { get; set; }
+        public DbSet<Message> Messages { get; set; }
     }
 }
