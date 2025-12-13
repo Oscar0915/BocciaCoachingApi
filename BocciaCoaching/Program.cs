@@ -12,7 +12,27 @@ using BocciaCoaching.Services;
 using BocciaCoaching.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-var builder = WebApplication.CreateBuilder(args);
+// Configurar WebApplicationOptions para evitar el error de inotify
+var options = new WebApplicationOptions
+{
+    Args = args,
+    ContentRootPath = Directory.GetCurrentDirectory()
+};
+
+var builder = WebApplication.CreateBuilder(options);
+
+// Deshabilitar el monitoreo de archivos de configuración para evitar el límite de inotify
+builder.Configuration.Sources.Clear();
+builder.Configuration
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: false)
+    .AddEnvironmentVariables();
+
+if (args != null)
+{
+    builder.Configuration.AddCommandLine(args);
+}
 
 // Add services to the container.
 builder.Services.AddCors(options =>
