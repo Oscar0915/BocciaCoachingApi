@@ -1,4 +1,4 @@
-﻿﻿using BocciaCoaching.Data;
+﻿using BocciaCoaching.Data;
 using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.Team;
 using BocciaCoaching.Models.Entities;
@@ -67,6 +67,16 @@ namespace BocciaCoaching.Repositories.Teams
         {
             try
             {
+                // Validar si el usuario ya pertenece al equipo
+                var existingMember = await context.TeamsUsers
+                    .FirstOrDefaultAsync(tu => tu.TeamId == requestTeamMemberDto.TeamId 
+                                            && tu.UserId == requestTeamMemberDto.UserId);
+
+                if (existingMember != null)
+                {
+                    return ResponseContract<bool>.Fail("El atleta ya pertenece a este equipo");
+                }
+
                 var teamUser = new TeamUser()
                 {
                     TeamId = requestTeamMemberDto.TeamId,
@@ -212,7 +222,13 @@ namespace BocciaCoaching.Repositories.Teams
             return Convert.TryFromBase64String(base64, buffer, out _);
         }
 
-
-
+        /// <summary>
+        /// Verificar si un usuario ya pertenece a un equipo
+        /// </summary>
+        public async Task<bool> IsUserInTeam(int userId, int teamId)
+        {
+            return await context.TeamsUsers
+                .AnyAsync(tu => tu.UserId == userId && tu.TeamId == teamId);
+        }
     }
 }

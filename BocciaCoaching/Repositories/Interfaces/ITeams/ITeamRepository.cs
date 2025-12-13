@@ -1,4 +1,4 @@
-﻿﻿using BocciaCoaching.Models.DTO.General;
+﻿using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.Team;
 using BocciaCoaching.Models.Entities;
 
@@ -30,5 +30,10 @@ namespace BocciaCoaching.Repositories.Interfaces.ITeams
 
         Task<ResponseContract<List<TeamMemberDto>>> GetUsersForTeam(RequestGetUserForTeamDto requestGetUserForTeamDto);
         Task<bool> UpdateTeam(RequestUpdateTeamDto requestUpdateImageTeamDto);
+        
+        /// <summary>
+        /// Verificar si un usuario ya pertenece a un equipo
+        /// </summary>
+        Task<bool> IsUserInTeam(int userId, int teamId);
     }
 }
