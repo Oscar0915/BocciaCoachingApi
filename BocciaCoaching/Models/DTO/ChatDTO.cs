@@ -2,6 +2,7 @@ namespace BocciaCoaching.Models.DTO
 {
     public class CreateConversationRequest
     {
+        public string? CurrentUserId { get; set; }
         public string ParticipantId { get; set; } = string.Empty;
     }
 

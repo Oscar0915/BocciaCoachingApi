@@ -19,20 +19,37 @@ namespace BocciaCoaching.Controllers
         }
 
         // GET: api/chat/conversations?userId=123
+        // GET: api/chat/conversations?currentUserId=123&participantId=456 (obtiene o crea conversación)
         [HttpGet("conversations")]
-        public async Task<ActionResult<List<Conversation>>> GetUserConversations([FromQuery] string userId)
+        public async Task<ActionResult> GetUserConversations(
+            [FromQuery] string? userId = null, 
+            [FromQuery] string? currentUserId = null,
+            [FromQuery] string? participantId = null)
         {
             try
             {
-                if (string.IsNullOrEmpty(userId))
+                // Si se proporciona participantId, crear o obtener conversación específica
+                if (!string.IsNullOrEmpty(participantId))
+                {
+                    var currentUser = currentUserId ?? userId;
+                    if (string.IsNullOrEmpty(currentUser))
+                        return BadRequest("Current user ID is required");
+
+                    var conversation = await _chatService.CreateConversationAsync(currentUser, participantId);
+                    return Ok(conversation);
+                }
+
+                // Si solo se proporciona userId o currentUserId, obtener todas las conversaciones
+                var userIdToUse = userId ?? currentUserId;
+                if (string.IsNullOrEmpty(userIdToUse))
                     return BadRequest("User ID is required");
 
-                var conversations = await _chatService.GetUserConversationsAsync(userId);
+                var conversations = await _chatService.GetUserConversationsAsync(userIdToUse);
                 return Ok(conversations);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error getting conversations for user {UserId}", userId);
+                _logger.LogError(ex, "Error getting conversations for user");
                 return StatusCode(500, "Internal server error");
             }
         }
@@ -54,28 +71,42 @@ namespace BocciaCoaching.Controllers
         }
 
         // POST: api/chat/conversations
+        // POST: api/chat/conversations?currentUserId=123
         [HttpPost("conversations")]
         public async Task<ActionResult<Conversation>> CreateConversation(
-            [FromBody] CreateConversationRequest request)
+            [FromBody] CreateConversationRequest request,
+            [FromQuery] string? currentUserId = null)
         {
             try
             {
-                // En este caso, asumimos que currentUserId viene en el header o query string
-                var currentUserId = Request.Headers["X-User-Id"].ToString();
+                // Intentar obtener currentUserId de múltiples fuentes (en orden de prioridad)
+                string? userId = null;
                 
-                if (string.IsNullOrEmpty(currentUserId))
+                // 1. Intentar desde el body del request
+                if (!string.IsNullOrWhiteSpace(request.CurrentUserId))
                 {
-                    currentUserId = Request.Query["currentUserId"].ToString();
+                    userId = request.CurrentUserId;
+                }
+                // 2. Intentar desde query string
+                else if (!string.IsNullOrWhiteSpace(currentUserId))
+                {
+                    userId = currentUserId;
+                }
+                // 3. Intentar desde header X-User-Id
+                else if (Request.Headers.TryGetValue("X-User-Id", out var headerValue) && 
+                         !string.IsNullOrWhiteSpace(headerValue.ToString()))
+                {
+                    userId = headerValue.ToString();
                 }
 
-                if (string.IsNullOrEmpty(currentUserId))
-                    return BadRequest("Current user ID is required");
+                if (string.IsNullOrEmpty(userId))
+                    return BadRequest("Current user ID is required (provide in query string, header X-User-Id, or request body)");
 
                 if (string.IsNullOrEmpty(request.ParticipantId))
                     return BadRequest("Participant ID is required");
 
                 var conversation = await _chatService.CreateConversationAsync(
-                    currentUserId,
+                    userId,
                     request.ParticipantId
                 );
 
