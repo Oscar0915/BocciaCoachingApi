@@ -1,4 +1,4 @@
-﻿using BocciaCoaching.Models.DTO.AssessStrength;
+﻿﻿using BocciaCoaching.Models.DTO.AssessStrength;
 using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.Notification;
 using BocciaCoaching.Models.Entities;
@@ -171,5 +171,56 @@ namespace BocciaCoaching.Services
                   );
                 }
             }
+
+        /// <summary>
+        /// Obtiene la evaluación de fuerza activa para un equipo con todos sus detalles
+        /// </summary>
+        /// <param name="teamId">ID del equipo</param>
+        /// <returns>Información completa de la evaluación activa o null si no hay ninguna</returns>
+        public async Task<ResponseContract<ActiveEvaluationDto>> GetActiveEvaluationWithDetails(int teamId)
+        {
+            try
+            {
+                // Validar que el equipo existe
+                var isValidTeam = await _teamValidationRepository.ValidateTeam(new Team { TeamId = teamId });
+                if (!isValidTeam)
+                {
+                    return ResponseContract<ActiveEvaluationDto>.Fail("El equipo no existe o no está activo");
+                }
+
+                // Obtener la evaluación activa del repositorio
+                var activeEvaluation = await _assessStrengthRepository.GetActiveEvaluationWithDetailsAsync(teamId);
+                
+                if (activeEvaluation == null)
+                {
+                    return ResponseContract<ActiveEvaluationDto>.Fail("No hay evaluación de fuerza activa para este equipo");
+                }
+
+                return ResponseContract<ActiveEvaluationDto>.Ok(activeEvaluation, "Evaluación activa encontrada");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return ResponseContract<ActiveEvaluationDto>.Fail($"Error al obtener la evaluación activa: {e.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Obtiene información de debugging sobre las evaluaciones de un equipo
+        /// </summary>
+        /// <param name="teamId">ID del equipo</param>
+        /// <returns>Información de debugging</returns>
+        public async Task<object> GetEvaluationDebugInfo(int teamId)
+        {
+            try
+            {
+                return await _assessStrengthRepository.GetEvaluationDebugInfoAsync(teamId);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return new { Error = e.Message };
+            }
+        }
     }
 }

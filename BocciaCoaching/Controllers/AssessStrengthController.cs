@@ -46,5 +46,29 @@ namespace BocciaCoaching.Controllers
             var users = await _assessStrengthService.AgregarDetalleDeEvaluacion(user);
             return Ok(users);
         }
+
+        /// <summary>
+        /// Valida si hay una evaluación de fuerza activa y devuelve toda la información de la evaluación con todos los lanzamientos
+        /// </summary>
+        /// <param name="teamId">ID del equipo para buscar evaluación activa</param>
+        /// <returns>Información completa de la evaluación activa o null si no hay ninguna</returns>
+        [HttpGet("GetActiveEvaluation/{teamId}")]
+        public async Task<ActionResult<ResponseContract<ActiveEvaluationDto>>> GetActiveEvaluation(int teamId)
+        {
+            var result = await _assessStrengthService.GetActiveEvaluationWithDetails(teamId);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Endpoint de debugging para verificar qué datos hay en las tablas relacionadas con evaluaciones
+        /// </summary>
+        /// <param name="teamId">ID del equipo</param>
+        /// <returns>Información de debugging sobre las evaluaciones del equipo</returns>
+        [HttpGet("DebugEvaluations/{teamId}")]
+        public async Task<ActionResult> DebugEvaluations(int teamId)
+        {
+            var debugInfo = await _assessStrengthService.GetEvaluationDebugInfo(teamId);
+            return Ok(debugInfo);
+        }
     }
 }

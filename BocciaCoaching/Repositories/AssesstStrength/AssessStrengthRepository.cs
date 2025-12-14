@@ -1,4 +1,4 @@
-﻿﻿using BocciaCoaching.Data;
+﻿using BocciaCoaching.Data;
 using BocciaCoaching.Models.DTO.AssessStrength;
 using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.Team;
@@ -392,6 +392,208 @@ namespace BocciaCoaching.Repositories.AssesstStrength
             {
                 Console.WriteLine($"Error obteniendo CoachId: {e.Message}");
                 return null;
+            }
+        }
+
+        /// <summary>
+        /// Obtiene la evaluación de fuerza activa para un equipo con todos sus detalles
+        /// </summary>
+        /// <param name="teamId">ID del equipo</param>
+        /// <returns>Información completa de la evaluación activa o null si no hay ninguna</returns>
+        public async Task<ActiveEvaluationDto?> GetActiveEvaluationWithDetailsAsync(int teamId)
+        {
+            try
+            {
+                Console.WriteLine($"🔍 Buscando evaluación activa para el equipo: {teamId}");
+                
+                // Buscar evaluación activa para el equipo
+                var activeAssessment = await _context.AssessStrengths
+                    .Include(a => a.Team)
+                    .FirstOrDefaultAsync(a => a.TeamId == teamId && a.State == "A");
+
+                if (activeAssessment == null)
+                {
+                    Console.WriteLine($"❌ No se encontró evaluación activa para el equipo {teamId}");
+                    
+                    // Verificar si hay evaluaciones para este equipo en otros estados
+                    var allEvaluations = await _context.AssessStrengths
+                        .Where(a => a.TeamId == teamId)
+                        .Select(a => new { a.AssessStrengthId, a.State, a.EvaluationDate })
+                        .ToListAsync();
+                    
+                    Console.WriteLine($"📋 Evaluaciones encontradas para el equipo {teamId}: {allEvaluations.Count}");
+                    foreach (var eval in allEvaluations)
+                    {
+                        Console.WriteLine($"  - ID: {eval.AssessStrengthId}, Estado: {eval.State}, Fecha: {eval.EvaluationDate}");
+                    }
+                    
+                    return null;
+                }
+
+                Console.WriteLine($"✅ Evaluación activa encontrada - ID: {activeAssessment.AssessStrengthId}");
+
+                // Obtener atletas participantes
+                Console.WriteLine($"🏃‍♂️ Buscando atletas para la evaluación {activeAssessment.AssessStrengthId}");
+                
+                var athletesQuery = await _context.AthletesToEvaluated
+                    .Where(ate => ate.AssessStrengthId == activeAssessment.AssessStrengthId)
+                    .ToListAsync();
+
+                Console.WriteLine($"📊 Atletas encontrados en AthletesToEvaluated: {athletesQuery.Count}");
+
+                var athletes = new List<AthleteInEvaluationDto>();
+                foreach (var athlete in athletesQuery)
+                {
+                    var athleteUser = await _context.Users.FindAsync(athlete.AthleteId);
+                    var coachUser = await _context.Users.FindAsync(athlete.CoachId);
+                    
+                    if (athleteUser != null && coachUser != null)
+                    {
+                        athletes.Add(new AthleteInEvaluationDto
+                        {
+                            AthleteId = athlete.AthleteId,
+                            AthleteName = $"{athleteUser.FirstName} {athleteUser.LastName}",
+                            AthleteEmail = athleteUser.Email,
+                            CoachId = athlete.CoachId,
+                            CoachName = $"{coachUser.FirstName} {coachUser.LastName}"
+                        });
+                    }
+                }
+
+                Console.WriteLine($"👥 Atletas procesados correctamente: {athletes.Count}");
+
+                // Obtener todos los lanzamientos de la evaluación
+                Console.WriteLine($"🎯 Buscando lanzamientos para la evaluación {activeAssessment.AssessStrengthId}");
+                
+                var throwsQuery = await _context.EvaluationDetailStrengths
+                    .Where(eds => eds.AssessStrengthId == activeAssessment.AssessStrengthId)
+                    .OrderBy(eds => eds.AthleteId)
+                    .ThenBy(eds => eds.ThrowOrder)
+                    .ToListAsync();
+
+                Console.WriteLine($"🎯 Lanzamientos encontrados: {throwsQuery.Count}");
+
+                var throws = new List<EvaluationThrowDto>();
+                foreach (var throwDetail in throwsQuery)
+                {
+                    var athleteUser = await _context.Users.FindAsync(throwDetail.AthleteId);
+                    
+                    throws.Add(new EvaluationThrowDto
+                    {
+                        EvaluationDetailStrengthId = throwDetail.EvaluationDetailStrengthId,
+                        BoxNumber = throwDetail.BoxNumber,
+                        ThrowOrder = throwDetail.ThrowOrder,
+                        TargetDistance = throwDetail.TargetDistance,
+                        ScoreObtained = throwDetail.ScoreObtained,
+                        Observations = throwDetail.Observations,
+                        Status = throwDetail.Status,
+                        AthleteId = throwDetail.AthleteId,
+                        AthleteName = athleteUser != null ? $"{athleteUser.FirstName} {athleteUser.LastName}" : "Atleta desconocido",
+                        CreatedAt = throwDetail.CreatedAt,
+                        UpdatedAt = throwDetail.UpdatedAt
+                    });
+                }
+
+                Console.WriteLine($"🎯 Lanzamientos procesados correctamente: {throws.Count}");
+
+                // Construir el DTO de respuesta
+                var result = new ActiveEvaluationDto
+                {
+                    AssessStrengthId = activeAssessment.AssessStrengthId,
+                    EvaluationDate = activeAssessment.EvaluationDate,
+                    Description = activeAssessment.Description,
+                    State = activeAssessment.State,
+                    TeamId = activeAssessment.TeamId,
+                    TeamName = activeAssessment.Team?.NameTeam,
+                    CreatedAt = activeAssessment.CreatedAt,
+                    UpdatedAt = activeAssessment.UpdatedAt,
+                    Athletes = athletes,
+                    Throws = throws
+                };
+
+                Console.WriteLine($"✅ Resultado final - Atletas: {result.Athletes.Count}, Lanzamientos: {result.Throws.Count}");
+                return result;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"❌ Error obteniendo evaluación activa: {e.Message}");
+                Console.WriteLine($"❌ StackTrace: {e.StackTrace}");
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Método de debugging para verificar datos relacionados con evaluaciones
+        /// </summary>
+        /// <param name="teamId">ID del equipo</param>
+        /// <returns>Información de debugging</returns>
+        public async Task<object> GetEvaluationDebugInfoAsync(int teamId)
+        {
+            try
+            {
+                // Obtener todas las evaluaciones del equipo
+                var evaluations = await _context.AssessStrengths
+                    .Where(a => a.TeamId == teamId)
+                    .Select(a => new 
+                    {
+                        a.AssessStrengthId,
+                        a.TeamId,
+                        a.State,
+                        a.EvaluationDate,
+                        a.Description
+                    })
+                    .ToListAsync();
+
+                // Para cada evaluación, obtener atletas y lanzamientos
+                var debugInfo = new List<object>();
+                
+                foreach (var eval in evaluations)
+                {
+                    var athletes = await _context.AthletesToEvaluated
+                        .Where(ate => ate.AssessStrengthId == eval.AssessStrengthId)
+                        .Select(ate => new
+                        {
+                            ate.AthleteId,
+                            ate.CoachId,
+                            AthleteName = ate.Athlete != null ? $"{ate.Athlete.FirstName} {ate.Athlete.LastName}" : "No cargado",
+                            CoachName = ate.Coach != null ? $"{ate.Coach.FirstName} {ate.Coach.LastName}" : "No cargado"
+                        })
+                        .ToListAsync();
+
+                    var throws = await _context.EvaluationDetailStrengths
+                        .Where(eds => eds.AssessStrengthId == eval.AssessStrengthId)
+                        .Select(eds => new
+                        {
+                            eds.EvaluationDetailStrengthId,
+                            eds.AthleteId,
+                            eds.ThrowOrder,
+                            eds.BoxNumber,
+                            eds.TargetDistance,
+                            eds.ScoreObtained
+                        })
+                        .ToListAsync();
+
+                    debugInfo.Add(new
+                    {
+                        Evaluation = eval,
+                        AthletesCount = athletes.Count,
+                        Athletes = athletes,
+                        ThrowsCount = throws.Count,
+                        Throws = throws.Take(5).ToList() // Solo los primeros 5 para no sobrecargar
+                    });
+                }
+
+                return new
+                {
+                    TeamId = teamId,
+                    TotalEvaluations = evaluations.Count,
+                    ActiveEvaluations = evaluations.Where(e => e.State == "A").Count(),
+                    Evaluations = debugInfo
+                };
+            }
+            catch (Exception e)
+            {
+                return new { Error = e.Message, StackTrace = e.StackTrace };
             }
         }
     }
