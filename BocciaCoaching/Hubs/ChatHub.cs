@@ -149,12 +149,14 @@ namespace BocciaCoaching.Hubs
                 if (string.IsNullOrEmpty(conversationId))
                 {
                     _logger.LogWarning("ConversationId is required for Typing indicator");
+                    await Clients.Caller.SendAsync("Error", "ConversationId is required");
                     return;
                 }
 
                 if (string.IsNullOrEmpty(userName))
                 {
                     _logger.LogWarning("UserName is required for Typing indicator");
+                    await Clients.Caller.SendAsync("Error", "UserName is required");
                     return;
                 }
 
@@ -166,7 +168,7 @@ namespace BocciaCoaching.Hubs
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error sending typing indicator for conversation {ConversationId}", conversationId);
-                await Clients.Caller.SendAsync("Error", "Failed to send typing indicator");
+                await Clients.Caller.SendAsync("Error", $"Failed to send typing indicator: {ex.Message}");
             }
         }
 

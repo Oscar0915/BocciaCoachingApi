@@ -37,13 +37,21 @@ if (args != null)
 // Add services to the container.
 builder.Services.AddCors(options =>
 {
+    options.AddPolicy("AllowSpecificOrigins",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:4200", "https://localhost:4200", "https://bocciacoaching.com", "http://localhost:3000")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials(); // Necesario para SignalR
+        });
+    
     options.AddPolicy("AllowAll",
         policy =>
         {
-            policy.WithOrigins("https://bocciacoaching.com", "http://localhost:4200")
+            policy.AllowAnyOrigin()
                   .AllowAnyHeader()
-                  .AllowAnyMethod()
-                  .AllowCredentials(); // Importante para SignalR
+                  .AllowAnyMethod();
         });
 });
 
@@ -105,7 +113,9 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 app.UseRouting(); 
-app.UseCors("AllowAll");
+
+// Use CORS - permitir credenciales para SignalR
+app.UseCors("AllowSpecificOrigins");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
