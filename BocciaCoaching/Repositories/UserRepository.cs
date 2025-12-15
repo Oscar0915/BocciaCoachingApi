@@ -215,8 +215,7 @@ namespace BocciaCoaching.Repositories
                 var isAvailable = await GetUserByEmailAsync(email.Email);
 
                 if (isAvailable != null)
-                    return ResponseContract<ValidateEmailDto>.Ok(
-                        new ValidateEmailDto { Email = "No disponible" }, 
+                    return ResponseContract<ValidateEmailDto>.Fail(
                         "Email no disponible"
                     );
 
