@@ -33,9 +33,16 @@ namespace BocciaCoaching.Models.Entities
         /// </summary>
         public DateTime DateCreation { get; set; }
 
+        /// <summary>
+        /// ES: Estado del usuario en el equipo (activo/inactivo)
+        /// EN: User status in the team (active/inactive)
+        /// </summary>
+        public bool Status { get; set; } = true;
+
         public TeamUser()
         {
             DateCreation = DateTime.Now;
+            Status = true;
         }
     }
 }
