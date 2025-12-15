@@ -1,4 +1,4 @@
-﻿﻿using BocciaCoaching.Data;
+﻿﻿﻿using BocciaCoaching.Data;
 using BocciaCoaching.Models.DTO.Auth;
 using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.User;
@@ -286,6 +286,127 @@ namespace BocciaCoaching.Repositories
             {
                 Console.WriteLine(e);
                 return ResponseContract<List<User>>.Fail("Ocurrió un error realizando la búsqueda");
+            }
+        }
+
+        public async Task<ResponseContract<bool>> UpdatePassword(UpdatePasswordDto updatePasswordDto)
+        {
+            try
+            {
+                // Buscar el usuario por ID
+                var user = await context.Users.FirstOrDefaultAsync(u => u.UserId == updatePasswordDto.UserId);
+                
+                if (user == null)
+                {
+                    return ResponseContract<bool>.Fail("Usuario no encontrado");
+                }
+
+                // Verificar la contraseña actual
+                bool validCurrentPassword = BCrypt.Net.BCrypt.Verify(updatePasswordDto.CurrentPassword, user.Password);
+                
+                if (!validCurrentPassword)
+                {
+                    return ResponseContract<bool>.Fail("La contraseña actual es incorrecta");
+                }
+
+                // Hashear la nueva contraseña
+                string newPasswordHash = BCrypt.Net.BCrypt.HashPassword(updatePasswordDto.NewPassword);
+                
+                // Actualizar la contraseña
+                user.Password = newPasswordHash;
+                user.UpdatedAt = DateTime.Now;
+                
+                context.Users.Update(user);
+                await context.SaveChangesAsync();
+
+                return ResponseContract<bool>.Ok(true, "Contraseña actualizada exitosamente");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en UpdatePassword: {ex.Message}");
+                return ResponseContract<bool>.Fail($"Error al actualizar la contraseña: {ex.Message}");
+            }
+        }
+
+        public async Task<ResponseContract<bool>> UpdateUserInfo(UpdateUserInfoDto updateUserInfoDto)
+        {
+            try
+            {
+                // Buscar el usuario por ID
+                var user = await context.Users.FirstOrDefaultAsync(u => u.UserId == updateUserInfoDto.UserId);
+                
+                if (user == null)
+                {
+                    return ResponseContract<bool>.Fail("Usuario no encontrado");
+                }
+
+                // Validar que el DNI sea único si se está actualizando
+                if (!string.IsNullOrWhiteSpace(updateUserInfoDto.Dni) && updateUserInfoDto.Dni != user.Dni)
+                {
+                    var existingUserWithDni = await context.Users
+                        .FirstOrDefaultAsync(u => u.Dni == updateUserInfoDto.Dni && u.UserId != updateUserInfoDto.UserId);
+                    
+                    if (existingUserWithDni != null)
+                    {
+                        return ResponseContract<bool>.Fail("Ya existe un usuario con ese DNI");
+                    }
+                }
+
+                // Validar que el email sea único si se está actualizando
+                if (!string.IsNullOrWhiteSpace(updateUserInfoDto.Email) && updateUserInfoDto.Email != user.Email)
+                {
+                    var existingUserWithEmail = await context.Users
+                        .FirstOrDefaultAsync(u => u.Email == updateUserInfoDto.Email && u.UserId != updateUserInfoDto.UserId);
+                    
+                    if (existingUserWithEmail != null)
+                    {
+                        return ResponseContract<bool>.Fail("Ya existe un usuario con ese email");
+                    }
+                }
+
+                // Actualizar solo los campos que no sean nulos
+                if (!string.IsNullOrWhiteSpace(updateUserInfoDto.Dni))
+                    user.Dni = updateUserInfoDto.Dni;
+                
+                if (!string.IsNullOrWhiteSpace(updateUserInfoDto.FirstName))
+                    user.FirstName = updateUserInfoDto.FirstName;
+                
+                if (!string.IsNullOrWhiteSpace(updateUserInfoDto.LastName))
+                    user.LastName = updateUserInfoDto.LastName;
+                
+                if (!string.IsNullOrWhiteSpace(updateUserInfoDto.Email))
+                    user.Email = updateUserInfoDto.Email;
+                
+                if (!string.IsNullOrWhiteSpace(updateUserInfoDto.Address))
+                    user.Address = updateUserInfoDto.Address;
+                
+                if (!string.IsNullOrWhiteSpace(updateUserInfoDto.Country))
+                    user.Country = updateUserInfoDto.Country;
+                
+                if (!string.IsNullOrWhiteSpace(updateUserInfoDto.Image))
+                    user.Image = updateUserInfoDto.Image;
+                
+                if (!string.IsNullOrWhiteSpace(updateUserInfoDto.Category))
+                    user.Category = updateUserInfoDto.Category;
+                
+                if (updateUserInfoDto.Seniority.HasValue)
+                    user.Seniority = updateUserInfoDto.Seniority;
+                
+                if (updateUserInfoDto.Status.HasValue)
+                    user.Status = updateUserInfoDto.Status;
+
+                // Actualizar fecha de modificación
+                user.UpdatedAt = DateTime.Now;
+                
+                context.Users.Update(user);
+                await context.SaveChangesAsync();
+
+                return ResponseContract<bool>.Ok(true, "Información de usuario actualizada exitosamente");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en UpdateUserInfo: {ex.Message}");
+                return ResponseContract<bool>.Fail($"Error al actualizar la información del usuario: {ex.Message}");
             }
         }
     }

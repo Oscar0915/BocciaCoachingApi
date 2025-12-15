@@ -1,4 +1,4 @@
-﻿﻿using BocciaCoaching.Models.DTO.Auth;
+﻿﻿﻿using BocciaCoaching.Models.DTO.Auth;
 using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.User;
 using BocciaCoaching.Models.DTO.User.Atlhete;
@@ -21,6 +21,20 @@ namespace BocciaCoaching.Services.Interfaces
         /// <param name="user"></param>
         /// <returns></returns>
         Task<ResponseContract<List<AtlheteInfo>>> GetAthleteForName(SearchDataAthleteDto user);
+
+        /// <summary>
+        /// Actualizar la contraseña de un usuario
+        /// </summary>
+        /// <param name="updatePasswordDto"></param>
+        /// <returns></returns>
+        Task<ResponseContract<bool>> UpdatePassword(UpdatePasswordDto updatePasswordDto);
+
+        /// <summary>
+        /// Actualizar la información de un usuario
+        /// </summary>
+        /// <param name="updateUserInfoDto"></param>
+        /// <returns></returns>
+        Task<ResponseContract<bool>> UpdateUserInfo(UpdateUserInfoDto updateUserInfoDto);
 
     }
 }

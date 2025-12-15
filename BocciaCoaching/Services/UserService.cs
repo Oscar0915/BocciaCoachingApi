@@ -107,5 +107,15 @@ namespace BocciaCoaching.Services
             
             return ResponseContract<List<AtlheteInfo>>.Fail("No se encontraron atletas");
         }
+
+        public async Task<ResponseContract<bool>> UpdatePassword(UpdatePasswordDto updatePasswordDto)
+        {
+            return await _repository.UpdatePassword(updatePasswordDto);
+        }
+
+        public async Task<ResponseContract<bool>> UpdateUserInfo(UpdateUserInfoDto updateUserInfoDto)
+        {
+            return await _repository.UpdateUserInfo(updateUserInfoDto);
+        }
     }
 }
