@@ -1,4 +1,4 @@
-﻿using BocciaCoaching.Data;
+﻿﻿using BocciaCoaching.Data;
 using BocciaCoaching.Models.Configuration;
 using BocciaCoaching.Models.DTO.Auth;
 using BocciaCoaching.Models.DTO.Email;
@@ -212,10 +212,47 @@ namespace BocciaCoaching.Services
         private async Task SendEmailAsync(MimeMessage message)
         {
             using var client = new SmtpClient();
-            await client.ConnectAsync(_emailSettings.SmtpServer, _emailSettings.Port, MailKit.Security.SecureSocketOptions.StartTls);
-            await client.AuthenticateAsync(_emailSettings.FromEmail, _emailSettings.Password);
-            await client.SendAsync(message);
-            await client.DisconnectAsync(true);
+            
+            try
+            {
+                Console.WriteLine($"🔗 Conectando a SMTP: {_emailSettings.SmtpServer}:{_emailSettings.Port}");
+                Console.WriteLine($"🔒 Usando SSL: {_emailSettings.UseSsl}");
+                
+                // Configurar el tipo de conexión según la configuración
+                if (_emailSettings.UseSsl && _emailSettings.Port == 465)
+                {
+                    Console.WriteLine("🔐 Usando SSL implícito (puerto 465)");
+                    await client.ConnectAsync(_emailSettings.SmtpServer, _emailSettings.Port, MailKit.Security.SecureSocketOptions.SslOnConnect);
+                }
+                else if (_emailSettings.Port == 587)
+                {
+                    Console.WriteLine("🔄 Usando STARTTLS (puerto 587)");
+                    await client.ConnectAsync(_emailSettings.SmtpServer, _emailSettings.Port, MailKit.Security.SecureSocketOptions.StartTls);
+                }
+                else
+                {
+                    Console.WriteLine("⚠️ Usando conexión sin cifrado (no recomendado)");
+                    await client.ConnectAsync(_emailSettings.SmtpServer, _emailSettings.Port, MailKit.Security.SecureSocketOptions.None);
+                }
+                
+                Console.WriteLine("✅ Conexión SMTP establecida");
+                Console.WriteLine($"🔑 Autenticando como: {_emailSettings.FromEmail}");
+                
+                await client.AuthenticateAsync(_emailSettings.FromEmail, _emailSettings.Password);
+                Console.WriteLine("✅ Autenticación exitosa");
+                
+                await client.SendAsync(message);
+                Console.WriteLine("📧 Email enviado exitosamente");
+                
+                await client.DisconnectAsync(true);
+                Console.WriteLine("🔌 Desconexión exitosa");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Error en SendEmailAsync: {ex.Message}");
+                Console.WriteLine($"📍 StackTrace: {ex.StackTrace}");
+                throw; // Re-lanzar la excepción para que se maneje en los métodos superiores
+            }
         }
 
         private async Task LogErrorAsync(string errorMessage, string location)
