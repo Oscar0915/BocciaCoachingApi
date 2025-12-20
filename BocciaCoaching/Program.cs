@@ -1,4 +1,5 @@
 using BocciaCoaching.Data;
+using BocciaCoaching.Models.Configuration;
 using BocciaCoaching.Repositories;
 using BocciaCoaching.Repositories.AssesstStrength;
 using BocciaCoaching.Repositories.Interfaces;
@@ -61,6 +62,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
     )
 );
+
+// Configurar EmailSettings
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>

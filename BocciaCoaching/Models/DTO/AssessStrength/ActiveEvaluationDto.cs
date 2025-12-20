@@ -8,6 +8,9 @@ namespace BocciaCoaching.Models.DTO.AssessStrength
         public string? State { get; set; }
         public int TeamId { get; set; }
         public string? TeamName { get; set; }
+        public int CreatedByCoachId { get; set; }
+        public string? CreatedByCoachName { get; set; }
+        public string? CreatedByCoachEmail { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         

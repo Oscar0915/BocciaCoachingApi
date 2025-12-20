@@ -1,4 +1,4 @@
-﻿﻿﻿using BocciaCoaching.Models.Entities;
+﻿using BocciaCoaching.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace BocciaCoaching.Data

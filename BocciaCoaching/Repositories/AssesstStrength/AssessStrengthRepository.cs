@@ -1,4 +1,4 @@
-﻿using BocciaCoaching.Data;
+﻿﻿using BocciaCoaching.Data;
 using BocciaCoaching.Models.DTO.AssessStrength;
 using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.Team;
@@ -409,6 +409,7 @@ namespace BocciaCoaching.Repositories.AssesstStrength
                 // Buscar evaluación activa para el equipo
                 var activeAssessment = await _context.AssessStrengths
                     .Include(a => a.Team)
+                        .ThenInclude(t => t != null ? t.Coach : null)
                     .FirstOrDefaultAsync(a => a.TeamId == teamId && a.State == "A");
 
                 if (activeAssessment == null)
@@ -505,6 +506,11 @@ namespace BocciaCoaching.Repositories.AssesstStrength
                     State = activeAssessment.State,
                     TeamId = activeAssessment.TeamId,
                     TeamName = activeAssessment.Team?.NameTeam,
+                    CreatedByCoachId = activeAssessment.Team?.CoachId ?? 0,
+                    CreatedByCoachName = activeAssessment.Team?.Coach != null 
+                        ? $"{activeAssessment.Team.Coach.FirstName} {activeAssessment.Team.Coach.LastName}" 
+                        : "Entrenador desconocido",
+                    CreatedByCoachEmail = activeAssessment.Team?.Coach?.Email,
                     CreatedAt = activeAssessment.CreatedAt,
                     UpdatedAt = activeAssessment.UpdatedAt,
                     Athletes = athletes,

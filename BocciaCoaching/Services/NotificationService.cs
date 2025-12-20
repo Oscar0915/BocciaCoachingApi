@@ -2,10 +2,13 @@ using BocciaCoaching.Models.Entities;
 using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.Notification;
 using BocciaCoaching.Models.DTO.Team;
+using BocciaCoaching.Models.DTO.Email;
 using BocciaCoaching.Repositories.NotificationTypes;
 using BocciaCoaching.Repositories.Interfaces;
 using BocciaCoaching.Repositories.Interfaces.ITeams;
 using BocciaCoaching.Services.Interfaces;
+using BocciaCoaching.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace BocciaCoaching.Services
 {
@@ -15,13 +18,17 @@ namespace BocciaCoaching.Services
         private readonly IUserRepository _userRepo;
         private readonly ITeamService _teamService;
         private readonly ITeamRepository _teamRepo;
+        private readonly IEmailService _emailService;
+        private readonly ApplicationDbContext _context;
 
-        public NotificationService(INotificationTypeRepository repo, IUserRepository userRepo, ITeamService teamService, ITeamRepository teamRepo)
+        public NotificationService(INotificationTypeRepository repo, IUserRepository userRepo, ITeamService teamService, ITeamRepository teamRepo, IEmailService emailService, ApplicationDbContext context)
         {
             _repo = repo;
             _userRepo = userRepo;
             _teamService = teamService;
             _teamRepo = teamRepo;
+            _emailService = emailService;
+            _context = context;
         }
 
         private NotificationTypeDto MapType(NotificationType t)
@@ -224,9 +231,9 @@ namespace BocciaCoaching.Services
                     return ResponseContract<bool>.Fail("Tipo de notificación inválido");
 
                 // Validar sender y receiver
-                var (senderExists, _) = await GetUserInfo(messageDto.SenderId);
+                var (senderExists, senderInfo) = await GetUserInfo(messageDto.SenderId);
                 if (!senderExists) return ResponseContract<bool>.Fail("Remitente inválido");
-                var (receiverExists, _) = await GetUserInfo(messageDto.ReceiverId);
+                var (receiverExists, receiverInfo) = await GetUserInfo(messageDto.ReceiverId);
                 if (!receiverExists) return ResponseContract<bool>.Fail("Destinatario inválido");
 
                 var message = new NotificationMessage
@@ -242,6 +249,40 @@ namespace BocciaCoaching.Services
 
                 var result = await _repo.AddMessageAsync(message);
                 if (!result) return ResponseContract<bool>.Fail("No se pudo crear el mensaje");
+
+                // Enviar email de notificación si no es una invitación de equipo (tipo 2)
+                if (messageDto.NotificationTypeId != 2)
+                {
+                    try
+                    {
+                        // Obtener información del receptor para el email
+                        var receiverResult = await _userRepo.GetByIdAsync(messageDto.ReceiverId);
+                        if (receiverResult.Success && receiverResult.Data != null)
+                        {
+                            var receiverName = $"{receiverResult.Data.Name} {receiverResult.Data.LastName}".Trim();
+
+                            var notificationEmail = new GeneralNotificationEmailDto
+                            {
+                                ToEmail = receiverResult.Data.Email ?? "",
+                                RecipientName = receiverName,
+                                NotificationTitle = type.Name ?? "Nueva Notificación",
+                                NotificationMessage = messageDto.Message ?? "",
+                                NotificationType = type.Name ?? "Notificación"
+                            };
+
+                            if (!string.IsNullOrWhiteSpace(notificationEmail.ToEmail))
+                            {
+                                await _emailService.SendGeneralNotificationEmailAsync(notificationEmail);
+                            }
+                        }
+                    }
+                    catch (Exception emailEx)
+                    {
+                        Console.WriteLine($"Error enviando email de notificación: {emailEx.Message}");
+                        // No fallar la notificación si el email no se puede enviar
+                    }
+                }
+
                 return ResponseContract<bool>.Ok(true, "Mensaje creado");
             }
             catch (Exception ex)
@@ -401,6 +442,16 @@ namespace BocciaCoaching.Services
                 if (!coachExists)
                     return ResponseContract<bool>.Fail("Entrenador no encontrado");
 
+                // Obtener información completa del coach
+                var coachResult = await _userRepo.GetByIdAsync(coachId);
+                if (!coachResult.Success || coachResult.Data == null)
+                    return ResponseContract<bool>.Fail("No se pudo obtener información del entrenador");
+
+                // Obtener información del equipo usando Entity Framework
+                var team = await _context.Teams.FirstOrDefaultAsync(t => t.TeamId == teamId);
+                if (team == null)
+                    return ResponseContract<bool>.Fail("Equipo no encontrado");
+
                 // Buscar atleta por email
                 var athleteResult = await _userRepo.GetUserByEmail(athleteEmail);
                 if (!athleteResult.Success || athleteResult.Data == null)
@@ -429,7 +480,33 @@ namespace BocciaCoaching.Services
                 var result = await CreateMessage(notificationDto);
                 
                 if (result.Success)
+                {
+                    // Enviar email de invitación
+                    try
+                    {
+                        var athleteName = $"{athlete.FirstName} {athlete.LastName}".Trim();
+                        var coachName = $"{coachResult.Data.Name} {coachResult.Data.LastName}".Trim();
+                        var teamName = team.NameTeam ?? "Equipo";
+
+                        var invitationEmail = new TeamInvitationEmailDto
+                        {
+                            ToEmail = athleteEmail,
+                            AthleteName = athleteName,
+                            TeamName = teamName,
+                            CoachName = coachName,
+                            InvitationLink = $"https://app.bocciacoaching.com/accept-invitation?teamId={teamId}&athleteId={athlete.UserId}"
+                        };
+
+                        await _emailService.SendTeamInvitationEmailAsync(invitationEmail);
+                    }
+                    catch (Exception emailEx)
+                    {
+                        Console.WriteLine($"Error enviando email de invitación: {emailEx.Message}");
+                        // No fallar la notificación si el email no se puede enviar
+                    }
+
                     return ResponseContract<bool>.Ok(true, $"Invitación enviada exitosamente a {athleteEmail}");
+                }
                 
                 return ResponseContract<bool>.Fail("Error al enviar la invitación");
             }
