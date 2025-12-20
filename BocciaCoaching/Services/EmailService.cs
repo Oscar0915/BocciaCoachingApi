@@ -10,6 +10,8 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using System.Reflection;
+using System.Net.Sockets;
+using System.Security.Authentication;
 
 namespace BocciaCoaching.Services
 {
@@ -215,6 +217,9 @@ namespace BocciaCoaching.Services
             
             try
             {
+                // Configurar timeout más corto para evitar que se cuelgue
+                client.Timeout = 15000; // 15 segundos
+                
                 Console.WriteLine($"🔗 Conectando a SMTP: {_emailSettings.SmtpServer}:{_emailSettings.Port}");
                 Console.WriteLine($"🔒 Usando SSL: {_emailSettings.UseSsl}");
                 
@@ -247,11 +252,28 @@ namespace BocciaCoaching.Services
                 await client.DisconnectAsync(true);
                 Console.WriteLine("🔌 Desconexión exitosa");
             }
+            catch (SocketException ex)
+            {
+                Console.WriteLine($"❌ Error de conexión de red: {ex.Message}");
+                Console.WriteLine($"💡 Puerto {_emailSettings.Port} puede estar bloqueado por firewall");
+                throw new Exception($"No se puede conectar al servidor SMTP en puerto {_emailSettings.Port}: {ex.Message}");
+            }
+            catch (AuthenticationException ex)
+            {
+                Console.WriteLine($"❌ Error de autenticación: {ex.Message}");
+                throw new Exception($"Credenciales SMTP inválidas: {ex.Message}");
+            }
+            catch (TimeoutException ex)
+            {
+                Console.WriteLine($"❌ Timeout de conexión: {ex.Message}");
+                Console.WriteLine($"💡 El puerto {_emailSettings.Port} puede estar bloqueado. Intente puerto 587 si está usando 465.");
+                throw new Exception($"Timeout conectando al servidor SMTP en puerto {_emailSettings.Port}: {ex.Message}");
+            }
             catch (Exception ex)
             {
                 Console.WriteLine($"❌ Error en SendEmailAsync: {ex.Message}");
                 Console.WriteLine($"📍 StackTrace: {ex.StackTrace}");
-                throw; // Re-lanzar la excepción para que se maneje en los métodos superiores
+                throw;
             }
         }
 
