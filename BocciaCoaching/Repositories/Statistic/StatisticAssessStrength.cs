@@ -433,4 +433,375 @@ public class StatisticAssessStrength(ApplicationDbContext context) : IStatisticA
             return ResponseContract<TeamStrengthStatisticsDto>.Fail($"Error al obtener las estadísticas individualizadas: {e.Message}");
         }
     }
+
+    public async Task<ResponseContract<DashboardIndicatorsDto>> GetDashboardIndicators(int? coachId, int? teamId)
+    {
+        try
+        {
+            var totalAthletesQuery = context.Users.AsQueryable();
+            var activeAthletesQuery = from ae in context.AthletesToEvaluated
+                                     join ast in context.AssessStrengths on ae.AssessStrengthId equals ast.AssessStrengthId
+                                     select new { ae, ast };
+            var completedTestsQuery = context.StrengthStatistics.AsQueryable();
+            var pendingTasksQuery = context.AssessStrengths.Where(a => a.State == "En progreso" || a.State == "Pendiente");
+
+            if (coachId.HasValue)
+            {
+                activeAthletesQuery = activeAthletesQuery.Where(x => x.ae.CoachId == coachId.Value);
+                pendingTasksQuery = pendingTasksQuery.Join(context.Teams, a => a.TeamId, t => t.TeamId, (a, t) => new { a, t })
+                    .Where(x => x.t.CoachId == coachId.Value)
+                    .Select(x => x.a);
+            }
+            if (teamId.HasValue)
+            {
+                activeAthletesQuery = activeAthletesQuery.Where(x => x.ast.TeamId == teamId.Value);
+                completedTestsQuery = completedTestsQuery.Join(context.AssessStrengths, ss => ss.AssessStrengthId, ast => ast.AssessStrengthId, (ss, ast) => new { ss, ast })
+                    .Where(x => x.ast.TeamId == teamId.Value)
+                    .Select(x => x.ss);
+                pendingTasksQuery = pendingTasksQuery.Where(a => a.TeamId == teamId.Value);
+                totalAthletesQuery = totalAthletesQuery.Join(context.AthletesToEvaluated, u => u.UserId, ae => ae.AthleteId, (u, ae) => new { u, ae })
+                    .Join(context.AssessStrengths, x => x.ae.AssessStrengthId, ast => ast.AssessStrengthId, (x, ast) => new { x.u, ast })
+                    .Where(x => x.ast.TeamId == teamId.Value)
+                    .Select(x => x.u).Distinct();
+            }
+
+            var totalAthletes = await totalAthletesQuery.CountAsync();
+            var recentDate = DateTime.Now.AddDays(-30);
+            var activeAthletes = await activeAthletesQuery.Where(x => x.ast.CreatedAt >= recentDate).Select(x => x.ae.AthleteId).Distinct().CountAsync();
+            var completedTests = await completedTestsQuery.CountAsync();
+            var averageEffectiveness = await completedTestsQuery.AverageAsync(s => (double?)s.EffectivenessPercentage) ?? 0;
+            var pendingTasks = await pendingTasksQuery.CountAsync();
+
+            var nextSession = new NextSessionInfo
+            {
+                SessionDate = DateTime.Now.AddDays(1),
+                SessionTime = "15:00",
+                TeamName = "Próxima sesión programada",
+                TeamId = teamId ?? 1,
+                SessionType = "Entrenamiento"
+            };
+
+            var indicators = new DashboardIndicatorsDto
+            {
+                TotalAthletes = totalAthletes,
+                ActiveAthletes = activeAthletes,
+                CompletedTests = completedTests,
+                GeneralAverage = averageEffectiveness,
+                PendingTasks = pendingTasks,
+                NextSession = nextSession
+            };
+
+            return ResponseContract<DashboardIndicatorsDto>.Ok(indicators, "Indicadores del dashboard obtenidos correctamente");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return ResponseContract<DashboardIndicatorsDto>.Fail("Error al obtener indicadores del dashboard: " + e.Message);
+        }
+    }
+
+    public async Task<ResponseContract<DashboardCompleteDto>> GetDashboardComplete(int? coachId)
+    {
+        try
+        {
+            var indicators = await GetDashboardIndicators(coachId, null);
+            var topAthletes = await GetTopPerformanceAthletes(coachId, null, 5);
+            var recentTests = await GetRecentTests(coachId, null, 10);
+            var pendingTasks = await GetPendingTasks(coachId, null);
+            var monthlyEvolution = await GetMonthlyEvolution(coachId, null, 12);
+
+            var dashboard = new DashboardCompleteDto
+            {
+                Indicators = indicators.Data,
+                TopPerformanceAthletes = topAthletes.Data,
+                RecentTests = recentTests.Data,
+                PendingTasks = pendingTasks.Data,
+                MonthlyEvolution = monthlyEvolution.Data
+            };
+
+            return ResponseContract<DashboardCompleteDto>.Ok(dashboard, "Dashboard completo obtenido correctamente");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return ResponseContract<DashboardCompleteDto>.Fail("Error al obtener dashboard completo: " + e.Message);
+        }
+    }
+
+    public async Task<ResponseContract<List<TopPerformanceAthleteDto>>> GetTopPerformanceAthletes(int? coachId, int? teamId, int limit)
+    {
+        try
+        {
+            var query = from u in context.Users
+                       join ae in context.AthletesToEvaluated on u.UserId equals ae.AthleteId
+                       join ss in context.StrengthStatistics on ae.AssessStrengthId equals ss.AssessStrengthId
+                       join ast in context.AssessStrengths on ae.AssessStrengthId equals ast.AssessStrengthId
+                       join t in context.Teams on ast.TeamId equals t.TeamId
+                       select new { u, ae, ss, ast, t };
+
+            if (coachId.HasValue)
+            {
+                query = query.Where(x => x.ae.CoachId == coachId.Value);
+            }
+
+            if (teamId.HasValue)
+            {
+                query = query.Where(x => x.ast.TeamId == teamId.Value);
+            }
+
+            var data = await query
+                .GroupBy(x => new { x.u.UserId, x.u.FirstName, x.u.LastName, x.t.NameTeam })
+                .Select(g => new TopPerformanceAthleteDto
+                {
+                    AthleteId = g.Key.UserId,
+                    AthleteName = g.Key.FirstName + " " + g.Key.LastName,
+                    PerformanceScore = g.Average(x => x.ss.EffectivenessPercentage),
+                    TeamName = g.Key.NameTeam ?? "Sin equipo",
+                    LastEvaluationDate = g.Max(x => x.ast.CreatedAt)
+                })
+                .OrderByDescending(x => x.PerformanceScore)
+                .Take(limit)
+                .ToListAsync();
+
+            return ResponseContract<List<TopPerformanceAthleteDto>>.Ok(data, "Top " + limit + " atletas obtenidos correctamente");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return ResponseContract<List<TopPerformanceAthleteDto>>.Fail("Error al obtener top atletas: " + e.Message);
+        }
+    }
+
+    public async Task<ResponseContract<List<RecentTestDto>>> GetRecentTests(int? coachId, int? teamId, int limit)
+    {
+        try
+        {
+            var query = from u in context.Users
+                       join ae in context.AthletesToEvaluated on u.UserId equals ae.AthleteId
+                       join ss in context.StrengthStatistics on ae.AssessStrengthId equals ss.AssessStrengthId
+                       join ast in context.AssessStrengths on ae.AssessStrengthId equals ast.AssessStrengthId
+                       select new { u, ae, ss, ast };
+
+            if (coachId.HasValue)
+            {
+                query = query.Where(x => x.ae.CoachId == coachId.Value);
+            }
+
+            if (teamId.HasValue)
+            {
+                query = query.Where(x => x.ast.TeamId == teamId.Value);
+            }
+
+            var data = await query
+                .OrderByDescending(x => x.ast.CreatedAt)
+                .Take(limit)
+                .Select(x => new RecentTestDto
+                {
+                    TestId = x.ss.StrengthStatisticsId,
+                    AthleteName = x.u.FirstName + " " + x.u.LastName,
+                    TestType = "Evaluación de Fuerza",
+                    Score = x.ss.EffectivenessPercentage,
+                    TestDate = x.ast.CreatedAt,
+                    Status = x.ast.State ?? "Completada"
+                })
+                .ToListAsync();
+
+            return ResponseContract<List<RecentTestDto>>.Ok(data, "Últimas " + limit + " pruebas obtenidas correctamente");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return ResponseContract<List<RecentTestDto>>.Fail("Error al obtener pruebas recientes: " + e.Message);
+        }
+    }
+
+    public async Task<ResponseContract<List<PendingTaskDto>>> GetPendingTasks(int? coachId, string? priority)
+    {
+        try
+        {
+            var query = from ast in context.AssessStrengths
+                       join t in context.Teams on ast.TeamId equals t.TeamId
+                       where ast.State == "En progreso" || ast.State == "Pendiente"
+                       select new { ast, t };
+
+            if (coachId.HasValue)
+            {
+                query = query.Where(x => x.t.CoachId == coachId.Value);
+            }
+
+            var data = await query
+                .Select(x => new PendingTaskDto
+                {
+                    TaskId = x.ast.AssessStrengthId,
+                    TaskDescription = "Revisar evaluación de " + (x.t.NameTeam ?? "equipo"),
+                    Priority = "Media", // Valor por defecto
+                    DueDate = x.ast.CreatedAt.AddDays(7), // Una semana después de creación
+                    TaskType = "Evaluación",
+                    AssignedTo = "Coach ID: " + x.t.CoachId.ToString()
+                })
+                .ToListAsync();
+
+            if (!string.IsNullOrEmpty(priority))
+            {
+                data = data.Where(x => x.Priority.Equals(priority, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            return ResponseContract<List<PendingTaskDto>>.Ok(data, data.Count + " tareas pendientes encontradas");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return ResponseContract<List<PendingTaskDto>>.Fail("Error al obtener tareas pendientes: " + e.Message);
+        }
+    }
+
+    public async Task<ResponseContract<List<MonthlyEvolutionDto>>> GetMonthlyEvolution(int? coachId, int? teamId, int months)
+    {
+        try
+        {
+            var startDate = DateTime.Now.AddMonths(-months);
+            
+            var query = from ae in context.AthletesToEvaluated
+                       join ss in context.StrengthStatistics on ae.AssessStrengthId equals ss.AssessStrengthId
+                       join ast in context.AssessStrengths on ae.AssessStrengthId equals ast.AssessStrengthId
+                       where ast.CreatedAt >= startDate
+                       select new { ae, ss, ast };
+
+            if (coachId.HasValue)
+            {
+                query = query.Where(x => x.ae.CoachId == coachId.Value);
+            }
+
+            if (teamId.HasValue)
+            {
+                query = query.Where(x => x.ast.TeamId == teamId.Value);
+            }
+
+            var data = await query.ToListAsync();
+
+            var monthlyData = data
+                .GroupBy(x => new { x.ast.CreatedAt.Year, x.ast.CreatedAt.Month })
+                .Select(g => new MonthlyEvolutionDto
+                {
+                    Month = g.Key.Month.ToString("00") + "/" + g.Key.Year.ToString(),
+                    AveragePerformance = g.Average(x => x.ss.EffectivenessPercentage),
+                    TestsCount = g.Count(),
+                    PeriodStart = new DateTime(g.Key.Year, g.Key.Month, 1),
+                    PeriodEnd = new DateTime(g.Key.Year, g.Key.Month, DateTime.DaysInMonth(g.Key.Year, g.Key.Month))
+                })
+                .OrderBy(x => x.PeriodStart)
+                .ToList();
+
+            return ResponseContract<List<MonthlyEvolutionDto>>.Ok(monthlyData, "Evolución de " + monthlyData.Count + " meses obtenida");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return ResponseContract<List<MonthlyEvolutionDto>>.Fail("Error al obtener evolución mensual: " + e.Message);
+        }
+    }
+
+    public async Task<ResponseContract<NextSessionInfo>> GetNextSession(int coachId)
+    {
+        try
+        {
+            // Como no hay tabla de sesiones, creamos datos de ejemplo
+            var nextTeam = await context.Teams
+                .Where(t => t.CoachId == coachId)
+                .FirstOrDefaultAsync();
+
+            var nextSession = new NextSessionInfo
+            {
+                SessionDate = DateTime.Now.AddDays(1),
+                SessionTime = "15:00",
+                TeamName = nextTeam?.NameTeam ?? "Sin equipo asignado",
+                TeamId = nextTeam?.TeamId ?? 0,
+                SessionType = "Entrenamiento"
+            };
+
+            return ResponseContract<NextSessionInfo>.Ok(nextSession, "Próxima sesión obtenida");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return ResponseContract<NextSessionInfo>.Fail($"Error al obtener próxima sesión: {e.Message}");
+        }
+    }
+
+    public async Task<ResponseContract<List<TeamOverviewDto>>> GetCoachTeamsOverview(int coachId)
+    {
+        try
+        {
+            var teams = await context.Teams
+                .Where(t => t.CoachId == coachId)
+                .ToListAsync();
+
+            var teamOverviews = new List<TeamOverviewDto>();
+
+            foreach (var team in teams)
+            {
+                // Obtener atletas del equipo
+                var athletesCount = await context.AthletesToEvaluated
+                    .Where(ae => ae.CoachId == coachId)
+                    .Join(context.AssessStrengths, ae => ae.AssessStrengthId, ast => ast.AssessStrengthId, (ae, ast) => new { ae, ast })
+                    .Where(x => x.ast.TeamId == team.TeamId)
+                    .Select(x => x.ae.AthleteId)
+                    .Distinct()
+                    .CountAsync();
+
+                // Atletas activos (con evaluaciones recientes)
+                var recentDate = DateTime.Now.AddDays(-30);
+                var activeAthletes = await context.AthletesToEvaluated
+                    .Where(ae => ae.CoachId == coachId)
+                    .Join(context.AssessStrengths, ae => ae.AssessStrengthId, ast => ast.AssessStrengthId, (ae, ast) => new { ae, ast })
+                    .Where(x => x.ast.TeamId == team.TeamId && x.ast.CreatedAt >= recentDate)
+                    .Select(x => x.ae.AthleteId)
+                    .Distinct()
+                    .CountAsync();
+
+                // Tests completados
+                var completedTests = await context.StrengthStatistics
+                    .Join(context.AssessStrengths, ss => ss.AssessStrengthId, ast => ast.AssessStrengthId, (ss, ast) => new { ss, ast })
+                    .Where(x => x.ast.TeamId == team.TeamId)
+                    .CountAsync();
+
+                // Promedio de rendimiento
+                var averagePerformance = await context.StrengthStatistics
+                    .Join(context.AssessStrengths, ss => ss.AssessStrengthId, ast => ast.AssessStrengthId, (ss, ast) => new { ss, ast })
+                    .Where(x => x.ast.TeamId == team.TeamId)
+                    .AverageAsync(x => (double?)x.ss.EffectivenessPercentage) ?? 0;
+
+                // Fecha del último test
+                var lastTestDate = await context.AssessStrengths
+                    .Where(ast => ast.TeamId == team.TeamId)
+                    .MaxAsync(ast => (DateTime?)ast.CreatedAt);
+
+                // Evaluaciones pendientes
+                var pendingEvaluations = await context.AssessStrengths
+                    .Where(ast => ast.TeamId == team.TeamId && 
+                                 (ast.State == "En progreso" || ast.State == "Pendiente"))
+                    .CountAsync();
+
+                teamOverviews.Add(new TeamOverviewDto
+                {
+                    TeamId = team.TeamId,
+                    TeamName = team.NameTeam ?? "Sin nombre",
+                    TotalAthletes = athletesCount,
+                    ActiveAthletes = activeAthletes,
+                    CompletedTests = completedTests,
+                    AveragePerformance = averagePerformance,
+                    LastTestDate = lastTestDate,
+                    PendingEvaluations = pendingEvaluations,
+                    Status = activeAthletes > 0 ? "Activo" : "Inactivo"
+                });
+            }
+
+            return ResponseContract<List<TeamOverviewDto>>.Ok(teamOverviews, "Resumen de " + teamOverviews.Count + " equipos obtenido");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return ResponseContract<List<TeamOverviewDto>>.Fail("Error al obtener resumen de equipos: " + e.Message);
+        }
+    }
 }

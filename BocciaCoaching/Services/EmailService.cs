@@ -1,7 +1,8 @@
-﻿﻿using BocciaCoaching.Data;
+﻿using BocciaCoaching.Data;
 using BocciaCoaching.Models.Configuration;
 using BocciaCoaching.Models.DTO.Auth;
 using BocciaCoaching.Models.DTO.Email;
+using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.Entities;
 using BocciaCoaching.Repositories;
 using BocciaCoaching.Services.Interfaces;
@@ -17,7 +18,7 @@ namespace BocciaCoaching.Services
 {
     public class EmailService : IEmailService
     {
-        private readonly LogErrorRepository logErrorRepository;
+        private readonly LogErrorRepository _logErrorRepository;
         private readonly EmailSettings _emailSettings;
         private readonly IMemoryCache _cache;
 
@@ -25,7 +26,7 @@ namespace BocciaCoaching.Services
         {
             _cache = cache;
             _emailSettings = emailSettings.Value;
-            logErrorRepository = new LogErrorRepository(context);
+            _logErrorRepository = new LogErrorRepository(context);
         }
 
         public async Task SendSecurityCodeAsync(EmailParametersDto emailParametersDto)
@@ -44,23 +45,23 @@ namespace BocciaCoaching.Services
 
                 await SendEmailAsync(message);
 
-                LogError _log = new()
+                LogError log = new()
                 {
                     ModuleErrorId = 1,
                     ErrorMessage = "Sin error",
                     Location = MethodBase.GetCurrentMethod()?.Name ?? "SendSecurityCodeAsync"
                 };
-                await logErrorRepository.AddLogError(_log);
+                await _logErrorRepository.AddLogError(log);
             }
             catch (Exception ex)
             {
-                LogError _log = new()
+                LogError log = new()
                 {
                     ModuleErrorId = 1,
                     ErrorMessage = ex.Message,
                     Location = MethodBase.GetCurrentMethod()?.Name ?? "SendSecurityCodeAsync"
                 };
-                await logErrorRepository.AddLogError(_log);
+                await _logErrorRepository.AddLogError(log);
                 throw;
             }
         }
@@ -217,32 +218,43 @@ namespace BocciaCoaching.Services
             
             try
             {
-                // Configurar timeout más corto para evitar que se cuelgue
-                client.Timeout = 15000; // 15 segundos
+                // Configurar timeout más largo para conexiones SSL/TLS
+                client.Timeout = 30000; // 30 segundos para permitir handshake SSL
                 
                 Console.WriteLine($"🔗 Conectando a SMTP: {_emailSettings.SmtpServer}:{_emailSettings.Port}");
-                Console.WriteLine($"🔒 Usando SSL: {_emailSettings.UseSsl}");
+                Console.WriteLine($"🔒 Configuración SSL: {_emailSettings.UseSsl}");
                 
-                // Configurar el tipo de conexión según la configuración
-                if (_emailSettings.UseSsl && _emailSettings.Port == 465)
+                // Configurar el tipo de conexión según el puerto y configuración SSL
+                MailKit.Security.SecureSocketOptions socketOptions;
+                
+                if (_emailSettings.UseSsl)
                 {
-                    Console.WriteLine("🔐 Usando SSL implícito (puerto 465)");
-                    await client.ConnectAsync(_emailSettings.SmtpServer, _emailSettings.Port, MailKit.Security.SecureSocketOptions.SslOnConnect);
-                }
-                else if (_emailSettings.Port == 587)
-                {
-                    Console.WriteLine("🔄 Usando STARTTLS (puerto 587)");
-                    await client.ConnectAsync(_emailSettings.SmtpServer, _emailSettings.Port, MailKit.Security.SecureSocketOptions.StartTls);
+                    if (_emailSettings.Port == 465)
+                    {
+                        Console.WriteLine("🔐 Usando SSL implícito (puerto 465)");
+                        socketOptions = MailKit.Security.SecureSocketOptions.SslOnConnect;
+                    }
+                    else if (_emailSettings.Port == 587)
+                    {
+                        Console.WriteLine("🔄 Usando STARTTLS (puerto 587)");
+                        socketOptions = MailKit.Security.SecureSocketOptions.StartTls;
+                    }
+                    else
+                    {
+                        Console.WriteLine("🔄 Usando STARTTLS para puerto personalizado");
+                        socketOptions = MailKit.Security.SecureSocketOptions.StartTlsWhenAvailable;
+                    }
                 }
                 else
                 {
                     Console.WriteLine("⚠️ Usando conexión sin cifrado (no recomendado)");
-                    await client.ConnectAsync(_emailSettings.SmtpServer, _emailSettings.Port, MailKit.Security.SecureSocketOptions.None);
+                    socketOptions = MailKit.Security.SecureSocketOptions.None;
                 }
-                
+
+                await client.ConnectAsync(_emailSettings.SmtpServer, _emailSettings.Port, socketOptions);
                 Console.WriteLine("✅ Conexión SMTP establecida");
-                Console.WriteLine($"🔑 Autenticando como: {_emailSettings.FromEmail}");
                 
+                Console.WriteLine($"🔑 Autenticando como: {_emailSettings.FromEmail}");
                 await client.AuthenticateAsync(_emailSettings.FromEmail, _emailSettings.Password);
                 Console.WriteLine("✅ Autenticación exitosa");
                 
@@ -256,23 +268,41 @@ namespace BocciaCoaching.Services
             {
                 Console.WriteLine($"❌ Error de conexión de red: {ex.Message}");
                 Console.WriteLine($"💡 Puerto {_emailSettings.Port} puede estar bloqueado por firewall");
+                Console.WriteLine($"💡 Para Hostinger, pruebe:");
+                Console.WriteLine($"   - Puerto 587 con STARTTLS");
+                Console.WriteLine($"   - Puerto 465 con SSL");
                 throw new Exception($"No se puede conectar al servidor SMTP en puerto {_emailSettings.Port}: {ex.Message}");
             }
             catch (AuthenticationException ex)
             {
                 Console.WriteLine($"❌ Error de autenticación: {ex.Message}");
+                Console.WriteLine($"💡 Verifique las credenciales:");
+                Console.WriteLine($"   - Email: {_emailSettings.FromEmail}");
+                Console.WriteLine($"   - Contraseña: [OCULTA]");
                 throw new Exception($"Credenciales SMTP inválidas: {ex.Message}");
             }
             catch (TimeoutException ex)
             {
                 Console.WriteLine($"❌ Timeout de conexión: {ex.Message}");
-                Console.WriteLine($"💡 El puerto {_emailSettings.Port} puede estar bloqueado. Intente puerto 587 si está usando 465.");
+                Console.WriteLine($"💡 El puerto {_emailSettings.Port} puede estar bloqueado o el servidor está sobrecargado.");
+                Console.WriteLine($"💡 Recomendaciones:");
+                Console.WriteLine($"   - Intente puerto 587 si está usando 465");
+                Console.WriteLine($"   - Intente puerto 465 si está usando 587");
+                Console.WriteLine($"   - Verifique configuración de firewall");
                 throw new Exception($"Timeout conectando al servidor SMTP en puerto {_emailSettings.Port}: {ex.Message}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ Error en SendEmailAsync: {ex.Message}");
+                Console.WriteLine($"❌ Error general en SendEmailAsync: {ex.Message}");
                 Console.WriteLine($"📍 StackTrace: {ex.StackTrace}");
+                
+                // Información adicional para debugging
+                Console.WriteLine($"📊 Información de conexión:");
+                Console.WriteLine($"   - Servidor: {_emailSettings.SmtpServer}");
+                Console.WriteLine($"   - Puerto: {_emailSettings.Port}");
+                Console.WriteLine($"   - SSL: {_emailSettings.UseSsl}");
+                Console.WriteLine($"   - Email: {_emailSettings.FromEmail}");
+                
                 throw;
             }
         }
@@ -281,13 +311,13 @@ namespace BocciaCoaching.Services
         {
             try
             {
-                LogError _log = new()
+                LogError log = new()
                 {
                     ModuleErrorId = 1,
                     ErrorMessage = errorMessage,
                     Location = location
                 };
-                await logErrorRepository.AddLogError(_log);
+                await _logErrorRepository.AddLogError(log);
             }
             catch
             {
@@ -316,6 +346,92 @@ namespace BocciaCoaching.Services
                 }
             }
             return new EmailValidateCodeResponseDto { Message = "Código no válido", StateCode = 400 };
+        }
+
+        /// <summary>
+        /// Intenta enviar email con configuración alternativa en caso de fallo
+        /// </summary>
+        public async Task<bool> SendEmailWithAlternativeConfigAsync(MimeMessage message)
+        {
+            // Configuraciones alternativas para Hostinger
+            var configs = new[]
+            {
+                new { Port = 587, Ssl = true, Description = "STARTTLS (587)" },
+                new { Port = 465, Ssl = true, Description = "SSL (465)" },
+                new { Port = 25, Ssl = false, Description = "Sin cifrado (25)" }
+            };
+
+            Exception? lastException = null;
+
+            foreach (var config in configs)
+            {
+                try
+                {
+                    Console.WriteLine($"🔄 Intentando con {config.Description}...");
+                    
+                    using var client = new SmtpClient();
+                    client.Timeout = 30000; // 30 segundos
+                    
+                    MailKit.Security.SecureSocketOptions socketOptions;
+                    
+                    if (config.Ssl)
+                    {
+                        socketOptions = config.Port == 465 
+                            ? MailKit.Security.SecureSocketOptions.SslOnConnect 
+                            : MailKit.Security.SecureSocketOptions.StartTls;
+                    }
+                    else
+                    {
+                        socketOptions = MailKit.Security.SecureSocketOptions.None;
+                    }
+
+                    await client.ConnectAsync(_emailSettings.SmtpServer, config.Port, socketOptions);
+                    Console.WriteLine($"✅ Conexión establecida con {config.Description}");
+                    
+                    await client.AuthenticateAsync(_emailSettings.FromEmail, _emailSettings.Password);
+                    Console.WriteLine($"✅ Autenticación exitosa con {config.Description}");
+                    
+                    await client.SendAsync(message);
+                    Console.WriteLine($"📧 Email enviado exitosamente con {config.Description}");
+                    
+                    await client.DisconnectAsync(true);
+                    
+                    // Si llegamos aquí, la configuración funcionó
+                    Console.WriteLine($"💡 Configuración exitosa: Puerto {config.Port}, SSL: {config.Ssl}");
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"❌ Falló {config.Description}: {ex.Message}");
+                    lastException = ex;
+                }
+            }
+
+            // Si ninguna configuración funcionó
+            Console.WriteLine($"❌ Todas las configuraciones fallaron. Último error: {lastException?.Message}");
+            throw lastException ?? new Exception("No se pudo enviar el email con ninguna configuración");
+        }
+
+        /// <summary>
+        /// Test de conectividad SMTP
+        /// </summary>
+        public async Task<ResponseContract<string>> TestSmtpConnectivity()
+        {
+            try
+            {
+                var testMessage = new MimeMessage();
+                testMessage.From.Add(new MailboxAddress(_emailSettings.FromName, _emailSettings.FromEmail));
+                testMessage.To.Add(new MailboxAddress("Test", _emailSettings.FromEmail));
+                testMessage.Subject = "Test de conectividad SMTP";
+                testMessage.Body = new TextPart("plain") { Text = "Este es un test de conectividad SMTP." };
+
+                await SendEmailWithAlternativeConfigAsync(testMessage);
+                return ResponseContract<string>.Ok("Test de conectividad SMTP exitoso", "Conectividad SMTP verificada correctamente");
+            }
+            catch (Exception ex)
+            {
+                return ResponseContract<string>.Fail($"Test de conectividad SMTP falló: {ex.Message}");
+            }
         }
     }
 }

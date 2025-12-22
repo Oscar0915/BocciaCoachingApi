@@ -44,5 +44,82 @@ namespace BocciaCoaching.Controllers
 
             return Ok(isValid);
         }
+
+        /// <summary>
+        /// Test de conectividad SMTP
+        /// </summary>
+        [HttpGet("TestSmtpConnectivity")]
+        public async Task<ActionResult<object>> TestSmtpConnectivity()
+        {
+            try
+            {
+                var result = await _email.TestSmtpConnectivity();
+                
+                if (result.Success)
+                {
+                    return Ok(new
+                    {
+                        success = true,
+                        message = result.Message,
+                        timestamp = DateTime.UtcNow
+                    });
+                }
+                else
+                {
+                    return BadRequest(new
+                    {
+                        success = false,
+                        message = result.Message,
+                        timestamp = DateTime.UtcNow
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = "Error al probar conectividad SMTP",
+                    error = ex.Message,
+                    timestamp = DateTime.UtcNow
+                });
+            }
+        }
+
+        /// <summary>
+        /// Envía un email de prueba
+        /// </summary>
+        [HttpPost("SendTestEmail")]
+        public async Task<ActionResult<object>> SendTestEmail([FromQuery] string? toEmail = null)
+        {
+            try
+            {
+                var testEmailParametersDto = new EmailParametersDto
+                {
+                    ToEmail = toEmail ?? "test@example.com",
+                    Code = SecurityCodeGenerator.GenerateCode()
+                };
+
+                await _email.SendSecurityCodeAsync(testEmailParametersDto);
+                
+                return Ok(new
+                {
+                    success = true,
+                    message = "Email de prueba enviado correctamente",
+                    timestamp = DateTime.UtcNow,
+                    sentTo = testEmailParametersDto.ToEmail
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = "Error al enviar el email de prueba",
+                    error = ex.Message,
+                    timestamp = DateTime.UtcNow
+                });
+            }
+        }
     }
 }

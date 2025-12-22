@@ -164,5 +164,145 @@ namespace BocciaCoaching.Controllers
 
             return Ok(ResponseContract<List<TeamStrengthStatisticsDto>>.Ok(results, $"Estadísticas comparativas obtenidas para {results.Count} equipos"));
         }
+
+        /// <summary>
+        /// Obtiene los indicadores principales para el dashboard
+        /// </summary>
+        /// <param name="coachId">ID del coach (opcional, si no se especifica obtiene datos globales)</param>
+        /// <param name="teamId">ID del equipo (opcional)</param>
+        /// <returns>Indicadores principales del dashboard</returns>
+        [HttpGet("DashboardIndicators")]
+        public async Task<ActionResult<ResponseContract<DashboardIndicatorsDto>>> GetDashboardIndicators([FromQuery] int? coachId = null, [FromQuery] int? teamId = null)
+        {
+            var result = await _statisticsService.GetDashboardIndicators(coachId, teamId);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Obtiene el dashboard completo con todos los datos
+        /// </summary>
+        /// <param name="coachId">ID del coach (opcional, si no se especifica obtiene datos globales)</param>
+        /// <returns>Datos completos del dashboard</returns>
+        [HttpGet("DashboardComplete")]
+        public async Task<ActionResult<ResponseContract<DashboardCompleteDto>>> GetDashboardComplete([FromQuery] int? coachId = null)
+        {
+            var result = await _statisticsService.GetDashboardComplete(coachId);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Obtiene los atletas con mejor rendimiento (Top 5)
+        /// </summary>
+        /// <param name="coachId">ID del coach (opcional)</param>
+        /// <param name="teamId">ID del equipo (opcional)</param>
+        /// <param name="limit">Número de atletas a retornar (por defecto 5)</param>
+        /// <returns>Lista de atletas con mejor rendimiento</returns>
+        [HttpGet("TopPerformanceAthletes")]
+        public async Task<ActionResult<ResponseContract<List<TopPerformanceAthleteDto>>>> GetTopPerformanceAthletes(
+            [FromQuery] int? coachId = null,
+            [FromQuery] int? teamId = null,
+            [FromQuery] int limit = 5)
+        {
+            if (limit <= 0 || limit > 20)
+            {
+                return BadRequest(ResponseContract<List<TopPerformanceAthleteDto>>.Fail("El límite debe estar entre 1 y 20"));
+            }
+
+            var result = await _statisticsService.GetTopPerformanceAthletes(coachId, teamId, limit);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Obtiene las pruebas recientes
+        /// </summary>
+        /// <param name="coachId">ID del coach (opcional)</param>
+        /// <param name="teamId">ID del equipo (opcional)</param>
+        /// <param name="limit">Número de pruebas a retornar (por defecto 10)</param>
+        /// <returns>Lista de pruebas recientes</returns>
+        [HttpGet("RecentTests")]
+        public async Task<ActionResult<ResponseContract<List<RecentTestDto>>>> GetRecentTests(
+            [FromQuery] int? coachId = null,
+            [FromQuery] int? teamId = null,
+            [FromQuery] int limit = 10)
+        {
+            if (limit <= 0 || limit > 50)
+            {
+                return BadRequest(ResponseContract<List<RecentTestDto>>.Fail("El límite debe estar entre 1 y 50"));
+            }
+
+            var result = await _statisticsService.GetRecentTests(coachId, teamId, limit);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Obtiene las tareas pendientes
+        /// </summary>
+        /// <param name="coachId">ID del coach (opcional)</param>
+        /// <param name="priority">Filtro por prioridad (opcional): "Alta", "Media", "Baja"</param>
+        /// <returns>Lista de tareas pendientes</returns>
+        [HttpGet("PendingTasks")]
+        public async Task<ActionResult<ResponseContract<List<PendingTaskDto>>>> GetPendingTasks(
+            [FromQuery] int? coachId = null,
+            [FromQuery] string? priority = null)
+        {
+            var result = await _statisticsService.GetPendingTasks(coachId, priority);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Obtiene la evolución mensual de rendimiento
+        /// </summary>
+        /// <param name="coachId">ID del coach (opcional)</param>
+        /// <param name="teamId">ID del equipo (opcional)</param>
+        /// <param name="months">Número de meses hacia atrás a incluir (por defecto 12)</param>
+        /// <returns>Datos de evolución mensual</returns>
+        [HttpGet("MonthlyEvolution")]
+        public async Task<ActionResult<ResponseContract<List<MonthlyEvolutionDto>>>> GetMonthlyEvolution(
+            [FromQuery] int? coachId = null,
+            [FromQuery] int? teamId = null,
+            [FromQuery] int months = 12)
+        {
+            if (months <= 0 || months > 24)
+            {
+                return BadRequest(ResponseContract<List<MonthlyEvolutionDto>>.Fail("El número de meses debe estar entre 1 y 24"));
+            }
+
+            var result = await _statisticsService.GetMonthlyEvolution(coachId, teamId, months);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Obtiene información de la próxima sesión programada
+        /// </summary>
+        /// <param name="coachId">ID del coach</param>
+        /// <returns>Información de la próxima sesión</returns>
+        [HttpGet("NextSession/{coachId}")]
+        public async Task<ActionResult<ResponseContract<NextSessionInfo>>> GetNextSession(int coachId)
+        {
+            if (coachId <= 0)
+            {
+                return BadRequest(ResponseContract<NextSessionInfo>.Fail("Coach ID debe ser un valor válido mayor a 0"));
+            }
+
+            var result = await _statisticsService.GetNextSession(coachId);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Obtiene estadísticas resumidas por equipo para el coach
+        /// </summary>
+        /// <param name="coachId">ID del coach</param>
+        /// <returns>Resumen de estadísticas por equipo</returns>
+        [HttpGet("CoachTeamsOverview/{coachId}")]
+        public async Task<ActionResult<ResponseContract<List<TeamOverviewDto>>>> GetCoachTeamsOverview(int coachId)
+        {
+            if (coachId <= 0)
+            {
+                return BadRequest(ResponseContract<List<TeamOverviewDto>>.Fail("Coach ID debe ser un valor válido mayor a 0"));
+            }
+
+            var result = await _statisticsService.GetCoachTeamsOverview(coachId);
+            return Ok(result);
+        }
     }
 }
