@@ -422,6 +422,86 @@ namespace BocciaCoaching.Migrations
                     b.ToTable("NotificationType");
                 });
 
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.Payment", b =>
+                {
+                    b.Property<int>("PaymentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("PaymentId"));
+
+                    b.Property<int>("AmountInCents")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("varchar(3)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<string>("FailureCode")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("FailureReason")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Metadata")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("PaymentDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("PaymentMethod")
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<DateTime?>("ProcessedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ReceiptNumber")
+                        .HasColumnType("longtext");
+
+                    b.Property<int?>("RefundedAmountInCents")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("RefundedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<string>("StripeInvoiceId")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("StripePaymentIntentId")
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("SubscriptionId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("PaymentId");
+
+                    b.HasIndex("SubscriptionId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Payment");
+                });
+
             modelBuilder.Entity("BocciaCoaching.Models.Entities.Rol", b =>
                 {
                     b.Property<int>("RolId")
@@ -527,6 +607,145 @@ namespace BocciaCoaching.Migrations
                     b.HasIndex("AthleteId");
 
                     b.ToTable("StrengthStatistics");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.Subscription", b =>
+                {
+                    b.Property<int>("SubscriptionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("SubscriptionId"));
+
+                    b.Property<DateTime?>("CanceledAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("varchar(3)");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsAnnual")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsTrial")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime?>("NextRenewalDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("longtext");
+
+                    b.Property<int?>("PricePaidInCents")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<string>("StripeCustomerId")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("StripeSubscriptionId")
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("SubscriptionTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("TrialEndDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("SubscriptionId");
+
+                    b.HasIndex("SubscriptionTypeId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Subscription");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.SubscriptionType", b =>
+                {
+                    b.Property<int>("SubscriptionTypeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("SubscriptionTypeId"));
+
+                    b.Property<int?>("AnnualPriceInCents")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("AthleteLimit")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<string>("Features")
+                        .HasColumnType("longtext");
+
+                    b.Property<bool>("HasAdvancedStatistics")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("HasPremiumChat")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int?>("MonthlyEvaluationLimit")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<int>("PriceInCents")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StripeAnnualPriceId")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("StripeMonthlyPriceId")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("StripeProductId")
+                        .HasColumnType("longtext");
+
+                    b.Property<int?>("TeamLimit")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("SubscriptionTypeId");
+
+                    b.ToTable("SubscriptionType");
                 });
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.Team", b =>
@@ -841,6 +1060,25 @@ namespace BocciaCoaching.Migrations
                     b.Navigation("Sender");
                 });
 
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.Payment", b =>
+                {
+                    b.HasOne("BocciaCoaching.Models.Entities.Subscription", "Subscription")
+                        .WithMany("Payments")
+                        .HasForeignKey("SubscriptionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BocciaCoaching.Models.Entities.User", "User")
+                        .WithMany("Payments")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Subscription");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("BocciaCoaching.Models.Entities.Session", b =>
                 {
                     b.HasOne("BocciaCoaching.Models.Entities.User", "User")
@@ -869,6 +1107,25 @@ namespace BocciaCoaching.Migrations
                     b.Navigation("AssessStrength");
 
                     b.Navigation("Athlete");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.Subscription", b =>
+                {
+                    b.HasOne("BocciaCoaching.Models.Entities.SubscriptionType", "SubscriptionType")
+                        .WithMany("Subscriptions")
+                        .HasForeignKey("SubscriptionTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BocciaCoaching.Models.Entities.User", "User")
+                        .WithMany("Subscriptions")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SubscriptionType");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.Team", b =>
@@ -925,9 +1182,23 @@ namespace BocciaCoaching.Migrations
                     b.Navigation("Messages");
                 });
 
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.Subscription", b =>
+                {
+                    b.Navigation("Payments");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.SubscriptionType", b =>
+                {
+                    b.Navigation("Subscriptions");
+                });
+
             modelBuilder.Entity("BocciaCoaching.Models.Entities.User", b =>
                 {
+                    b.Navigation("Payments");
+
                     b.Navigation("Session");
+
+                    b.Navigation("Subscriptions");
 
                     b.Navigation("UserRoles");
                 });

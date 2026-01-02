@@ -1,4 +1,4 @@
-﻿using BocciaCoaching.Models.DTO.General;
+﻿﻿using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.Team;
 using BocciaCoaching.Models.Entities;
 
@@ -35,5 +35,15 @@ namespace BocciaCoaching.Repositories.Interfaces.ITeams
         /// Verificar si un usuario ya pertenece a un equipo
         /// </summary>
         Task<bool> IsUserInTeam(int userId, int teamId);
+
+        /// <summary>
+        /// Contar la cantidad de equipos que ha creado un usuario
+        /// </summary>
+        Task<int> CountTeamsByUserIdAsync(int userId);
+
+        /// <summary>
+        /// Contar la cantidad de atletas en un equipo
+        /// </summary>
+        Task<int> CountAthletesByTeamIdAsync(int teamId);
     }
 }

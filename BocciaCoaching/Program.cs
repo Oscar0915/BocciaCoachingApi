@@ -12,6 +12,8 @@ using BocciaCoaching.Repositories.Teams;
 using BocciaCoaching.Services;
 using BocciaCoaching.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Stripe;
+using SubscriptionService = BocciaCoaching.Services.SubscriptionService;
 
 // Configurar WebApplicationOptions para evitar el error de inotify
 var options = new WebApplicationOptions
@@ -66,6 +68,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // Configurar EmailSettings
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
+// Configurar StripeSettings
+builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("StripeSettings"));
+
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
@@ -86,6 +91,10 @@ builder.Services.AddScoped<IAssessStrengthService, AssessStrengthService>();
 builder.Services.AddScoped<BocciaCoaching.Services.Interfaces.INotificationService, BocciaCoaching.Services.NotificationService>();
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IStatisticsService, StatisticsService>();
+
+// Subscription Services
+builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
+builder.Services.AddScoped<IStripePaymentService, StripePaymentServiceSimplified>();
 
 /*
 Repositories - Repositorios
@@ -108,7 +117,9 @@ builder.Services.AddScoped<IStatisticAssessStrength, StatisticAssessStrength>();
 // NotificationType - Tipos de notificación
 builder.Services.AddScoped<INotificationTypeRepository, NotificationTypeRepository>();
 
-builder.Services.AddControllers();
+// Subscription - Suscripciones
+builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

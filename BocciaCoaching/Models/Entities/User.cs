@@ -1,4 +1,4 @@
-﻿using BocciaCoaching.Models.Interfaces;
+﻿﻿using BocciaCoaching.Models.Interfaces;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -77,6 +77,19 @@ namespace BocciaCoaching.Models.Entities
         /// EN: 
         /// </summary>
         public Session? Session { get; set; }
+        
+        /// <summary>
+        /// ES: Suscripciones del usuario
+        /// EN: User subscriptions
+        /// </summary>
+        public ICollection<Subscription>? Subscriptions { get; set; }
+        
+        /// <summary>
+        /// ES: Pagos del usuario
+        /// EN: User payments
+        /// </summary>
+        public ICollection<Payment>? Payments { get; set; }
+        
         public DateTime CreatedAt { get ; set ; }
         public DateTime? UpdatedAt { get ; set ; }
     }

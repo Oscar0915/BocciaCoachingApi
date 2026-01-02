@@ -1,4 +1,4 @@
-﻿﻿﻿using BocciaCoaching.Data;
+﻿﻿﻿﻿using BocciaCoaching.Data;
 using BocciaCoaching.Models.DTO.Auth;
 using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.User;
@@ -406,6 +406,22 @@ namespace BocciaCoaching.Repositories
             {
                 Console.WriteLine($"Error en UpdateUserInfo: {ex.Message}");
                 return ResponseContract<bool>.Fail($"Error al actualizar la información del usuario: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Obtener usuario directamente por ID (para uso en servicios)
+        /// </summary>
+        public async Task<User?> GetUserEntityByIdAsync(int id)
+        {
+            try
+            {
+                return await context.Users.FirstOrDefaultAsync(u => u.UserId == id);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en GetUserEntityByIdAsync: {ex.Message}");
+                return null;
             }
         }
     }

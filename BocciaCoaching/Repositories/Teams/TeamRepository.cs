@@ -1,4 +1,4 @@
-﻿using BocciaCoaching.Data;
+﻿﻿using BocciaCoaching.Data;
 using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.Team;
 using BocciaCoaching.Models.Entities;
@@ -229,6 +229,24 @@ namespace BocciaCoaching.Repositories.Teams
         {
             return await context.TeamsUsers
                 .AnyAsync(tu => tu.UserId == userId && tu.TeamId == teamId);
+        }
+
+        /// <summary>
+        /// Contar la cantidad de equipos que ha creado un usuario
+        /// </summary>
+        public async Task<int> CountTeamsByUserIdAsync(int userId)
+        {
+            return await context.Teams
+                .CountAsync(t => t.CoachId == userId && (t.Status == null || t.Status == true));
+        }
+
+        /// <summary>
+        /// Contar la cantidad de atletas en un equipo
+        /// </summary>
+        public async Task<int> CountAthletesByTeamIdAsync(int teamId)
+        {
+            return await context.TeamsUsers
+                .CountAsync(tu => tu.TeamId == teamId);
         }
     }
 }

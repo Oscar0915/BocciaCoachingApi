@@ -1,4 +1,4 @@
-﻿﻿﻿using BocciaCoaching.Models.DTO.Auth;
+﻿﻿﻿﻿using BocciaCoaching.Models.DTO.Auth;
 using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.User;
 using BocciaCoaching.Models.DTO.User.Atlhete;
@@ -10,6 +10,7 @@ namespace BocciaCoaching.Repositories.Interfaces
     {
         Task<ResponseContract<IEnumerable<InfoBasicUserDto>>> GetAllAsync();
         Task<ResponseContract<InfoBasicUserDto>> GetByIdAsync(int id);
+        Task<User?> GetUserEntityByIdAsync(int id); // Método que devuelve directamente la entidad
         Task<ResponseContract<bool>> AddUser(InfoUserRegisterDto userDto);
         Task<ResponseContract<LoginResponseDto>> Login(LoginRequestDto loginDto);
         Task<ResponseContract<int>> RegistrarAtleta(AtlheteInfoSave atlheteInfoSave);
