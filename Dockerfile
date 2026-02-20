@@ -21,6 +21,12 @@ COPY --from=build /app/publish .
 
 # Exponer el puerto que usará Render
 ENV ASPNETCORE_URLS=http://+:8080
+
+# Deshabilitar inotify/file watchers para evitar el límite de instancias en Linux
+ENV DOTNET_hostBuilder__reloadConfigOnChange=false
+ENV DOTNET_USE_POLLING_FILE_WATCHER=false
+ENV DOTNET_RUNNING_IN_CONTAINER=true
+
 EXPOSE 8080
 
 # Ejecutar la aplicación

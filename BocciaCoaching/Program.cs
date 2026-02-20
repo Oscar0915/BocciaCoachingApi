@@ -15,27 +15,23 @@ using Microsoft.EntityFrameworkCore;
 using Stripe;
 using SubscriptionService = BocciaCoaching.Services.SubscriptionService;
 
-// Configurar WebApplicationOptions para evitar el error de inotify
-var options = new WebApplicationOptions
+// Deshabilitar reloadOnChange ANTES de que CreateBuilder inicie los file watchers.
+// Esto evita el error de inotify en Linux cuando se alcanza el límite de instancias.
+Environment.SetEnvironmentVariable("DOTNET_hostBuilder__reloadConfigOnChange", "false");
+
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions { Args = args });
+
+// Reemplazar todos los sources de configuración para asegurar reloadOnChange = false
+builder.WebHost.ConfigureAppConfiguration((ctx, config) =>
 {
-    Args = args,
-    ContentRootPath = Directory.GetCurrentDirectory()
-};
-
-var builder = WebApplication.CreateBuilder(options);
-
-// Deshabilitar el monitoreo de archivos de configuración para evitar el límite de inotify
-builder.Configuration.Sources.Clear();
-builder.Configuration
-    .SetBasePath(Directory.GetCurrentDirectory())
-    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
-    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: false)
-    .AddEnvironmentVariables();
-
-if (args != null)
-{
-    builder.Configuration.AddCommandLine(args);
-}
+    config.Sources.Clear();
+    config.SetBasePath(Directory.GetCurrentDirectory())
+          .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
+          .AddJsonFile($"appsettings.{ctx.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: false)
+          .AddEnvironmentVariables();
+    if (args != null)
+        config.AddCommandLine(args);
+});
 
 // Add services to the container.
 builder.Services.AddCors(options =>
