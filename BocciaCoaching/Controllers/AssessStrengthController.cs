@@ -1,5 +1,6 @@
-﻿using BocciaCoaching.Models.DTO.AssessStrength;
+﻿﻿using BocciaCoaching.Models.DTO.AssessStrength;
 using BocciaCoaching.Models.DTO.General;
+using BocciaCoaching.Models.DTO.Statistic;
 using BocciaCoaching.Models.Entities;
 using BocciaCoaching.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -69,6 +70,54 @@ namespace BocciaCoaching.Controllers
         {
             var debugInfo = await _assessStrengthService.GetEvaluationDebugInfo(teamId);
             return Ok(debugInfo);
+        }
+
+        /// <summary>
+        /// Actualizar el estado de una evaluación (A=Activa, T=Terminada, C=Cancelada)
+        /// </summary>
+        /// <param name="updateDto">Datos para actualizar el estado</param>
+        /// <returns>Resultado de la operación</returns>
+        [HttpPut("UpdateState")]
+        public async Task<ActionResult<ResponseContract<bool>>> UpdateEvaluationState(UpdateAssessStregthDto updateDto)
+        {
+            var result = await _assessStrengthService.UpdateEvaluationState(updateDto);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Obtener todas las evaluaciones de un equipo (activas e históricas)
+        /// </summary>
+        /// <param name="teamId">ID del equipo</param>
+        /// <returns>Lista de evaluaciones del equipo</returns>
+        [HttpGet("GetTeamEvaluations/{teamId}")]
+        public async Task<ActionResult<ResponseContract<List<EvaluationSummaryDto>>>> GetTeamEvaluations(int teamId)
+        {
+            var result = await _assessStrengthService.GetTeamEvaluations(teamId);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Obtener estadísticas de una evaluación específica
+        /// </summary>
+        /// <param name="assessStrengthId">ID de la evaluación</param>
+        /// <returns>Estadísticas de la evaluación</returns>
+        [HttpGet("GetEvaluationStatistics/{assessStrengthId}")]
+        public async Task<ActionResult<ResponseContract<List<AthleteStatisticsDto>>>> GetEvaluationStatistics(int assessStrengthId)
+        {
+            var result = await _assessStrengthService.GetEvaluationStatistics(assessStrengthId);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Obtener los detalles completos de una evaluación específica
+        /// </summary>
+        /// <param name="assessStrengthId">ID de la evaluación</param>
+        /// <returns>Detalles completos de la evaluación</returns>
+        [HttpGet("GetEvaluationDetails/{assessStrengthId}")]
+        public async Task<ActionResult<ResponseContract<EvaluationDetailsDto>>> GetEvaluationDetails(int assessStrengthId)
+        {
+            var result = await _assessStrengthService.GetEvaluationDetails(assessStrengthId);
+            return Ok(result);
         }
     }
 }

@@ -1,6 +1,7 @@
-﻿﻿using BocciaCoaching.Data;
+﻿﻿﻿using BocciaCoaching.Data;
 using BocciaCoaching.Models.DTO.AssessStrength;
 using BocciaCoaching.Models.DTO.General;
+using BocciaCoaching.Models.DTO.Statistic;
 using BocciaCoaching.Models.DTO.Team;
 using BocciaCoaching.Models.Entities;
 using BocciaCoaching.Repositories.Interfaces.IAssesstStrength;
@@ -74,7 +75,9 @@ namespace BocciaCoaching.Repositories.AssesstStrength
                     EvaluationDate = DateTime.Now,
                     Description = addAssessStrengthDto.Description,
                     State = "A",
-                    TeamId = addAssessStrengthDto.TeamId
+                    TeamId = addAssessStrengthDto.TeamId,
+                    CoachId = addAssessStrengthDto.CoachId,
+                    CreatedAt = DateTime.Now
                 };
 
                 await _context.AssessStrengths.AddAsync(assessStrength);
@@ -123,6 +126,7 @@ namespace BocciaCoaching.Repositories.AssesstStrength
                     Description = addAssessStrengthDto.Description,
                     State = "A",
                     TeamId = addAssessStrengthDto.TeamId,
+                    CoachId = addAssessStrengthDto.CoachId,
                     CreatedAt = DateTime.Now
                 };
 
@@ -383,10 +387,9 @@ namespace BocciaCoaching.Repositories.AssesstStrength
             try
             {
                 var assessment = await _context.AssessStrengths
-                    .Include(a => a.Team)
                     .FirstOrDefaultAsync(a => a.AssessStrengthId == assessStrengthId);
 
-                return assessment?.Team?.CoachId;
+                return assessment?.CoachId;
             }
             catch (Exception e)
             {
@@ -409,7 +412,7 @@ namespace BocciaCoaching.Repositories.AssesstStrength
                 // Buscar evaluación activa para el equipo
                 var activeAssessment = await _context.AssessStrengths
                     .Include(a => a.Team)
-                        .ThenInclude(t => t != null ? t.Coach : null)
+                    .Include(a => a.Coach)
                     .FirstOrDefaultAsync(a => a.TeamId == teamId && a.State == "A");
 
                 if (activeAssessment == null)
@@ -506,11 +509,11 @@ namespace BocciaCoaching.Repositories.AssesstStrength
                     State = activeAssessment.State,
                     TeamId = activeAssessment.TeamId,
                     TeamName = activeAssessment.Team?.NameTeam,
-                    CreatedByCoachId = activeAssessment.Team?.CoachId ?? 0,
-                    CreatedByCoachName = activeAssessment.Team?.Coach != null 
-                        ? $"{activeAssessment.Team.Coach.FirstName} {activeAssessment.Team.Coach.LastName}" 
+                    CreatedByCoachId = activeAssessment.CoachId,
+                    CreatedByCoachName = activeAssessment.Coach != null 
+                        ? $"{activeAssessment.Coach.FirstName} {activeAssessment.Coach.LastName}" 
                         : "Entrenador desconocido",
-                    CreatedByCoachEmail = activeAssessment.Team?.Coach?.Email,
+                    CreatedByCoachEmail = activeAssessment.Coach?.Email,
                     CreatedAt = activeAssessment.CreatedAt,
                     UpdatedAt = activeAssessment.UpdatedAt,
                     Athletes = athletes,
@@ -600,6 +603,218 @@ namespace BocciaCoaching.Repositories.AssesstStrength
             catch (Exception e)
             {
                 return new { Error = e.Message, StackTrace = e.StackTrace };
+            }
+        }
+
+        /// <summary>
+        /// Obtiene todas las evaluaciones de un equipo con información resumida
+        /// </summary>
+        /// <param name="teamId">ID del equipo</param>
+        /// <returns>Lista de resúmenes de evaluaciones</returns>
+        public async Task<List<EvaluationSummaryDto>> GetTeamEvaluationsAsync(int teamId)
+        {
+            try
+            {
+                var evaluations = await _context.AssessStrengths
+                    .Include(a => a.Team)
+                    .Include(a => a.Coach)
+                    .Where(a => a.TeamId == teamId)
+                    .OrderByDescending(a => a.EvaluationDate)
+                    .ToListAsync();
+
+                var summaries = new List<EvaluationSummaryDto>();
+
+                foreach (var eval in evaluations)
+                {
+                    var athletesCount = await _context.AthletesToEvaluated
+                        .CountAsync(ate => ate.AssessStrengthId == eval.AssessStrengthId);
+
+                    var throwsCount = await _context.EvaluationDetailStrengths
+                        .CountAsync(eds => eds.AssessStrengthId == eval.AssessStrengthId);
+
+                    summaries.Add(new EvaluationSummaryDto
+                    {
+                        AssessStrengthId = eval.AssessStrengthId,
+                        EvaluationDate = eval.EvaluationDate,
+                        Description = eval.Description,
+                        State = eval.State,
+                        StateName = eval.State switch
+                        {
+                            "A" => "Activa",
+                            "T" => "Terminada",
+                            "C" => "Cancelada",
+                            _ => "Desconocido"
+                        },
+                        TeamId = eval.TeamId,
+                        TeamName = eval.Team?.NameTeam,
+                        CoachId = eval.CoachId,
+                        CoachName = eval.Coach != null ? $"{eval.Coach.FirstName} {eval.Coach.LastName}" : null,
+                        AthletesCount = athletesCount,
+                        ThrowsCount = throwsCount,
+                        CreatedAt = eval.CreatedAt,
+                        UpdatedAt = eval.UpdatedAt
+                    });
+                }
+
+                return summaries;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error obteniendo evaluaciones del equipo: {e.Message}");
+                return new List<EvaluationSummaryDto>();
+            }
+        }
+
+        /// <summary>
+        /// Obtiene las estadísticas de todos los atletas en una evaluación
+        /// </summary>
+        /// <param name="assessStrengthId">ID de la evaluación</param>
+        /// <returns>Lista de estadísticas por atleta</returns>
+        public async Task<List<AthleteStatisticsDto>> GetEvaluationStatisticsAsync(int assessStrengthId)
+        {
+            try
+            {
+                var statistics = await _context.StrengthStatistics
+                    .Include(s => s.Athlete)
+                    .Where(s => s.AssessStrengthId == assessStrengthId)
+                    .ToListAsync();
+
+                return statistics.Select(s => new AthleteStatisticsDto
+                {
+                    AthleteId = s.AthleteId,
+                    AthleteName = s.Athlete != null ? $"{s.Athlete.FirstName} {s.Athlete.LastName}" : string.Empty,
+                    EffectivenessPercentage = s.EffectivenessPercentage,
+                    AccuracyPercentage = s.AccuracyPercentage,
+                    EffectiveThrow = s.EffectiveThrow,
+                    FailedThrow = s.FailedThrow,
+                    ShortThrow = s.ShortThrow,
+                    MediumThrow = s.MediumThrow,
+                    LongThrow = s.LongThrow,
+                    ShortEffectivenessPercentage = s.ShortEffectivenessPercentage,
+                    MediumEffectivenessPercentage = s.MediumEffectivenessPercentage,
+                    LongEffectivenessPercentage = s.LongEffectivenessPercentage,
+                    ShortThrowAccuracy = s.ShortThrowAccuracy,
+                    MediumThrowAccuracy = s.MediumThrowAccuracy,
+                    LongThrowAccuracy = s.LongThrowAccuracy,
+                    ShortAccuracyPercentage = s.ShortAccuracyPercentage,
+                    MediumAccuracyPercentage = s.MediumAccuracyPercentage,
+                    LongAccuracyPercentage = s.LongAccuracyPercentage
+                }).ToList();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error obteniendo estadísticas de evaluación: {e.Message}");
+                return new List<AthleteStatisticsDto>();
+            }
+        }
+
+        /// <summary>
+        /// Obtiene los detalles completos de una evaluación específica
+        /// </summary>
+        /// <param name="assessStrengthId">ID de la evaluación</param>
+        /// <returns>Detalles completos de la evaluación o null si no existe</returns>
+        public async Task<EvaluationDetailsDto?> GetEvaluationDetailsAsync(int assessStrengthId)
+        {
+            try
+            {
+                var assessment = await _context.AssessStrengths
+                    .Include(a => a.Team)
+                    .Include(a => a.Coach)
+                    .FirstOrDefaultAsync(a => a.AssessStrengthId == assessStrengthId);
+
+                if (assessment == null)
+                {
+                    return null;
+                }
+
+                // Obtener atletas participantes
+                var athletesQuery = await _context.AthletesToEvaluated
+                    .Where(ate => ate.AssessStrengthId == assessStrengthId)
+                    .ToListAsync();
+
+                var athletes = new List<AthleteInEvaluationDto>();
+                foreach (var athlete in athletesQuery)
+                {
+                    var athleteUser = await _context.Users.FindAsync(athlete.AthleteId);
+                    var coachUser = await _context.Users.FindAsync(athlete.CoachId);
+                    
+                    if (athleteUser != null && coachUser != null)
+                    {
+                        athletes.Add(new AthleteInEvaluationDto
+                        {
+                            AthleteId = athlete.AthleteId,
+                            AthleteName = $"{athleteUser.FirstName} {athleteUser.LastName}",
+                            AthleteEmail = athleteUser.Email,
+                            CoachId = athlete.CoachId,
+                            CoachName = $"{coachUser.FirstName} {coachUser.LastName}"
+                        });
+                    }
+                }
+
+                // Obtener lanzamientos
+                var throwsQuery = await _context.EvaluationDetailStrengths
+                    .Where(eds => eds.AssessStrengthId == assessStrengthId)
+                    .OrderBy(eds => eds.AthleteId)
+                    .ThenBy(eds => eds.ThrowOrder)
+                    .ToListAsync();
+
+                var throws = new List<EvaluationThrowDto>();
+                foreach (var throwDetail in throwsQuery)
+                {
+                    var athleteUser = await _context.Users.FindAsync(throwDetail.AthleteId);
+                    
+                    throws.Add(new EvaluationThrowDto
+                    {
+                        EvaluationDetailStrengthId = throwDetail.EvaluationDetailStrengthId,
+                        BoxNumber = throwDetail.BoxNumber,
+                        ThrowOrder = throwDetail.ThrowOrder,
+                        TargetDistance = throwDetail.TargetDistance,
+                        ScoreObtained = throwDetail.ScoreObtained,
+                        Observations = throwDetail.Observations,
+                        Status = throwDetail.Status,
+                        AthleteId = throwDetail.AthleteId,
+                        AthleteName = athleteUser != null ? $"{athleteUser.FirstName} {athleteUser.LastName}" : "Atleta desconocido",
+                        CreatedAt = throwDetail.CreatedAt,
+                        UpdatedAt = throwDetail.UpdatedAt
+                    });
+                }
+
+                // Obtener estadísticas si la evaluación está terminada
+                List<AthleteStatisticsDto>? statistics = null;
+                if (assessment.State == "T")
+                {
+                    statistics = await GetEvaluationStatisticsAsync(assessStrengthId);
+                }
+
+                return new EvaluationDetailsDto
+                {
+                    AssessStrengthId = assessment.AssessStrengthId,
+                    EvaluationDate = assessment.EvaluationDate,
+                    Description = assessment.Description,
+                    State = assessment.State,
+                    StateName = assessment.State switch
+                    {
+                        "A" => "Activa",
+                        "T" => "Terminada",
+                        "C" => "Cancelada",
+                        _ => "Desconocido"
+                    },
+                    TeamId = assessment.TeamId,
+                    TeamName = assessment.Team?.NameTeam,
+                    CoachId = assessment.CoachId,
+                    CoachName = assessment.Coach != null ? $"{assessment.Coach.FirstName} {assessment.Coach.LastName}" : null,
+                    CoachEmail = assessment.Coach?.Email,
+                    CreatedAt = assessment.CreatedAt,
+                    UpdatedAt = assessment.UpdatedAt,
+                    Athletes = athletes,
+                    Throws = throws,
+                    Statistics = statistics
+                };
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error obteniendo detalles de evaluación: {e.Message}");
+                return null;
             }
         }
     }

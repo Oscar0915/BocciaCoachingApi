@@ -1,6 +1,7 @@
 ﻿﻿using BocciaCoaching.Models.DTO.AssessStrength;
 using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.Notification;
+using BocciaCoaching.Models.DTO.Statistic;
 using BocciaCoaching.Models.Entities;
 using BocciaCoaching.Repositories.Interfaces.IAssesstStrength;
 using BocciaCoaching.Repositories.Interfaces.ITeams;
@@ -220,6 +221,123 @@ namespace BocciaCoaching.Services
             {
                 Console.WriteLine(e);
                 return new { Error = e.Message };
+            }
+        }
+
+        /// <summary>
+        /// Actualiza el estado de una evaluación
+        /// </summary>
+        /// <param name="updateDto">Datos para actualizar el estado</param>
+        /// <returns>Resultado de la operación</returns>
+        public async Task<ResponseContract<bool>> UpdateEvaluationState(UpdateAssessStregthDto updateDto)
+        {
+            try
+            {
+                // Validar que el estado sea válido (A=Activa, T=Terminada, C=Cancelada)
+                if (updateDto.State != "A" && updateDto.State != "T" && updateDto.State != "C")
+                {
+                    return ResponseContract<bool>.Fail("Estado inválido. Los estados válidos son: A (Activa), T (Terminada), C (Cancelada)");
+                }
+
+                return await _assessStrengthRepository.UpdateState(updateDto);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return ResponseContract<bool>.Fail($"Error al actualizar el estado: {e.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Obtiene todas las evaluaciones de un equipo
+        /// </summary>
+        /// <param name="teamId">ID del equipo</param>
+        /// <returns>Lista de evaluaciones del equipo</returns>
+        public async Task<ResponseContract<List<EvaluationSummaryDto>>> GetTeamEvaluations(int teamId)
+        {
+            try
+            {
+                // Validar que el equipo existe
+                var isValidTeam = await _teamValidationRepository.ValidateTeam(new Team { TeamId = teamId });
+                if (!isValidTeam)
+                {
+                    return ResponseContract<List<EvaluationSummaryDto>>.Fail("El equipo no existe o no está activo");
+                }
+
+                var evaluations = await _assessStrengthRepository.GetTeamEvaluationsAsync(teamId);
+                
+                if (evaluations == null || evaluations.Count == 0)
+                {
+                    return ResponseContract<List<EvaluationSummaryDto>>.Ok(
+                        new List<EvaluationSummaryDto>(), 
+                        "No se encontraron evaluaciones para este equipo"
+                    );
+                }
+
+                return ResponseContract<List<EvaluationSummaryDto>>.Ok(
+                    evaluations, 
+                    $"Se encontraron {evaluations.Count} evaluaciones"
+                );
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return ResponseContract<List<EvaluationSummaryDto>>.Fail($"Error al obtener las evaluaciones: {e.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Obtiene las estadísticas de una evaluación específica
+        /// </summary>
+        /// <param name="assessStrengthId">ID de la evaluación</param>
+        /// <returns>Estadísticas de la evaluación</returns>
+        public async Task<ResponseContract<List<AthleteStatisticsDto>>> GetEvaluationStatistics(int assessStrengthId)
+        {
+            try
+            {
+                var statistics = await _assessStrengthRepository.GetEvaluationStatisticsAsync(assessStrengthId);
+                
+                if (statistics == null || statistics.Count == 0)
+                {
+                    return ResponseContract<List<AthleteStatisticsDto>>.Fail(
+                        "No se encontraron estadísticas para esta evaluación. La evaluación debe estar terminada para tener estadísticas."
+                    );
+                }
+
+                return ResponseContract<List<AthleteStatisticsDto>>.Ok(
+                    statistics, 
+                    $"Se encontraron estadísticas de {statistics.Count} atletas"
+                );
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return ResponseContract<List<AthleteStatisticsDto>>.Fail($"Error al obtener las estadísticas: {e.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Obtiene los detalles completos de una evaluación específica
+        /// </summary>
+        /// <param name="assessStrengthId">ID de la evaluación</param>
+        /// <returns>Detalles completos de la evaluación</returns>
+        public async Task<ResponseContract<EvaluationDetailsDto>> GetEvaluationDetails(int assessStrengthId)
+        {
+            try
+            {
+                var details = await _assessStrengthRepository.GetEvaluationDetailsAsync(assessStrengthId);
+                
+                if (details == null)
+                {
+                    return ResponseContract<EvaluationDetailsDto>.Fail("No se encontró la evaluación especificada");
+                }
+
+                return ResponseContract<EvaluationDetailsDto>.Ok(details, "Detalles de evaluación obtenidos correctamente");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return ResponseContract<EvaluationDetailsDto>.Fail($"Error al obtener los detalles: {e.Message}");
             }
         }
     }

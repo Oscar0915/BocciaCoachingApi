@@ -1,5 +1,6 @@
-﻿﻿﻿using BocciaCoaching.Models.DTO.AssessStrength;
+﻿using BocciaCoaching.Models.DTO.AssessStrength;
 using BocciaCoaching.Models.DTO.General;
+using BocciaCoaching.Models.DTO.Statistic;
 using BocciaCoaching.Models.Entities;
 
 namespace BocciaCoaching.Repositories.Interfaces.IAssesstStrength
@@ -25,5 +26,8 @@ namespace BocciaCoaching.Repositories.Interfaces.IAssesstStrength
         Task<int?> GetCoachIdByAssessmentAsync(int assessStrengthId);
         Task<ActiveEvaluationDto?> GetActiveEvaluationWithDetailsAsync(int teamId);
         Task<object> GetEvaluationDebugInfoAsync(int teamId);
+        Task<List<EvaluationSummaryDto>> GetTeamEvaluationsAsync(int teamId);
+        Task<List<AthleteStatisticsDto>> GetEvaluationStatisticsAsync(int assessStrengthId);
+        Task<EvaluationDetailsDto?> GetEvaluationDetailsAsync(int assessStrengthId);
     }
 }
