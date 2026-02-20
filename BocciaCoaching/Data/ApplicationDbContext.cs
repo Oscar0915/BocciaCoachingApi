@@ -25,9 +25,6 @@ namespace BocciaCoaching.Data
         public DbSet<Achievement> Achievement { get; set; }
         public DbSet<StrengthStatistics> StrengthStatistics { get; set; }
 
-        // Chat entities
-        public DbSet<Conversation> Conversations { get; set; }
-        public DbSet<Message> Messages { get; set; }
 
         // Subscription entities
         public DbSet<SubscriptionType> SubscriptionTypes { get; set; }

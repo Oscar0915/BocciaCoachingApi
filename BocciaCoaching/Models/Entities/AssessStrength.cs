@@ -34,6 +34,20 @@ namespace BocciaCoaching.Models.Entities
 
         public Team? Team { get; set; }
 
+        // Relation to the coach (User) who created the assessment
+        /// <summary>
+        /// ES: Id del entrenador que creó la prueba
+        /// EN: Id of the coach who created the assessment
+        /// </summary>
+        public int CoachId { get; set; }
+
+        /// <summary>
+        /// ES: Navegación al usuario (entrenador) que crea la prueba
+        /// EN: Navigation to the user (coach) who created the assessment
+        /// </summary>
+        [ForeignKey("CoachId")]
+        public User? Coach { get; set; }
+
         // Timestamps
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }

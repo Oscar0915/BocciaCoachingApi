@@ -89,7 +89,6 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ITeamService, TeamService>();
 builder.Services.AddScoped<IAssessStrengthService, AssessStrengthService>();
 builder.Services.AddScoped<BocciaCoaching.Services.Interfaces.INotificationService, BocciaCoaching.Services.NotificationService>();
-builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IStatisticsService, StatisticsService>();
 
 // Subscription Services
@@ -144,8 +143,5 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
-
-// Mapear SignalR Hub
-app.MapHub<BocciaCoaching.Hubs.ChatHub>("/chatHub");
 
 app.Run();
