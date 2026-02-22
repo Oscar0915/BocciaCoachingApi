@@ -19,10 +19,15 @@ using SubscriptionService = BocciaCoaching.Services.SubscriptionService;
 // Esto evita el error de inotify en Linux cuando se alcanza el límite de instancias.
 Environment.SetEnvironmentVariable("DOTNET_hostBuilder__reloadConfigOnChange", "false");
 
-var builder = WebApplication.CreateBuilder(new WebApplicationOptions { Args = args });
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+{
+    Args = args,
+    ApplicationName = "BocciaCoaching"
+});
 
 // Reemplazar todos los sources de configuración para asegurar reloadOnChange = false
-builder.WebHost.ConfigureAppConfiguration((ctx, config) =>
+// Se usa Host.ConfigureAppConfiguration para evitar el error de WebHost con nombre de aplicación cambiado
+builder.Host.ConfigureAppConfiguration((ctx, config) =>
 {
     config.Sources.Clear();
     config.SetBasePath(Directory.GetCurrentDirectory())
