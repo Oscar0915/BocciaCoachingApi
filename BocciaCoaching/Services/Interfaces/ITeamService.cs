@@ -1,7 +1,6 @@
-﻿﻿using BocciaCoaching.Models.DTO.General;
+﻿﻿﻿using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.Statistic;
 using BocciaCoaching.Models.DTO.Team;
-using BocciaCoaching.Models.Entities;
 
 namespace BocciaCoaching.Services.Interfaces
 {
@@ -15,7 +14,7 @@ namespace BocciaCoaching.Services.Interfaces
         /// <returns></returns>
         Task<ResponseContract<bool>> AddTeamMember(RequestTeamMemberDto requestTeamMemberDto);
 
-        Task<List<Team>> GetTeamsForUser(RequestTeamDto requestTeamDto);
+        Task<ResponseContract<List<TeamSummaryDto>>> GetTeamsForUser(int coachId);
         Task<ResponseContract<List<TeamMemberDto>>> GetUsersForTeam(RequestGetUserForTeamDto requestGetUserForTeamDto);
         Task<bool> UpdateTeam(RequestUpdateTeamDto requestUpdateImageTeamDto);
 

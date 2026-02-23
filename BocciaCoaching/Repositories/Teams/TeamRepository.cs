@@ -1,4 +1,4 @@
-﻿﻿using BocciaCoaching.Data;
+﻿﻿﻿using BocciaCoaching.Data;
 using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.Team;
 using BocciaCoaching.Models.Entities;
@@ -99,21 +99,43 @@ namespace BocciaCoaching.Repositories.Teams
         /// Método para obtener los equipos al que pertenece los entrenadores 
         /// </summary>
         /// <returns></returns>
-        public async Task<List<Team>> GetTeamsForUser(RequestTeamDto requestTeamDto)
+        /// <summary>
+        /// Método para obtener los equipos de un coach con la cantidad de integrantes por equipo
+        /// </summary>
+        public async Task<ResponseContract<List<TeamSummaryDto>>> GetTeamsForUser(int coachId)
         {
             try
             {
-                var teamUsers = await context.TeamsUsers
-                    .Where(tu => tu.UserId == requestTeamDto.CoachId && tu.Team != null)
-                    .Include(tu => tu.Team)
+                var teams = await context.Teams
+                    .Where(t => t.CoachId == coachId && (t.Status == null || t.Status == true))
+                    .Select(t => new TeamSummaryDto
+                    {
+                        TeamId = t.TeamId,
+                        NameTeam = t.NameTeam,
+                        Description = t.Description,
+                        CoachId = t.CoachId,
+                        Status = t.Status,
+                        Image = t.Image,
+                        Bc1 = t.Bc1,
+                        Bc2 = t.Bc2,
+                        Bc3 = t.Bc3,
+                        Bc4 = t.Bc4,
+                        Pairs = t.Pairs,
+                        Teams = t.Teams,
+                        Country = t.Country,
+                        Region = t.Region,
+                        CreatedAt = t.CreatedAt,
+                        UpdatedAt = t.UpdatedAt,
+                        MemberCount = context.TeamsUsers.Count(tu => tu.TeamId == t.TeamId)
+                    })
                     .ToListAsync();
 
-                return teamUsers.Where(tu => tu.Team != null).Select(tu => tu.Team!).ToList();
+                return ResponseContract<List<TeamSummaryDto>>.Ok(teams, "Equipos obtenidos satisfactoriamente");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error en GetTeamsForUserAsync: {ex.Message}");
-                return new List<Team>(); // Retorna lista vacía si hay error
+                Console.WriteLine($"Error en GetTeamsForUser: {ex.Message}");
+                return ResponseContract<List<TeamSummaryDto>>.Fail(ex.Message);
             }
         }
         /// <summary>
