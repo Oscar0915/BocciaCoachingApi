@@ -132,6 +132,12 @@ namespace BocciaCoaching.Migrations
                     b.Property<int>("BoxNumber")
                         .HasColumnType("int");
 
+                    b.Property<double>("CoordinateX")
+                        .HasColumnType("double");
+
+                    b.Property<double>("CoordinateY")
+                        .HasColumnType("double");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 

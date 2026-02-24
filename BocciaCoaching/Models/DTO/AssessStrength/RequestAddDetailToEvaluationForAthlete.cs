@@ -1,4 +1,4 @@
-﻿namespace BocciaCoaching.Models.DTO.AssessStrength
+﻿﻿namespace BocciaCoaching.Models.DTO.AssessStrength
 {
     public class RequestAddDetailToEvaluationForAthlete
     {
@@ -10,5 +10,15 @@
         public bool Status { get; set; } = true;
         public int AthleteId { get; set; }
         public int AssessStrengthId { get; set; }
+        /// <summary>
+        /// ES: Coordenada X del lanzamiento
+        /// EN: X coordinate of the throw
+        /// </summary>
+        public double CoordinateX { get; set; }
+        /// <summary>
+        /// ES: Coordenada Y del lanzamiento
+        /// EN: Y coordinate of the throw
+        /// </summary>
+        public double CoordinateY { get; set; }
     }
 }

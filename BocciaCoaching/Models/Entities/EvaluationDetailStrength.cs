@@ -75,5 +75,17 @@ namespace BocciaCoaching.Models.Entities
         /// EN: 
         /// </summary>
         public DateTime? UpdatedAt { get ; set ; }
+        
+        /// <summary>
+        /// ES: Coordenada X del lanzamiento
+        /// EN: X coordinate of the throw
+        /// </summary>
+        public double CoordinateX { get; set; }
+        
+        /// <summary>
+        /// ES: Coordenada Y del lanzamiento
+        /// EN: Y coordinate of the throw
+        /// </summary>
+        public double CoordinateY { get; set; }
     }
 }
