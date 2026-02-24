@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿using BocciaCoaching.Data;
+﻿﻿﻿﻿﻿﻿using BocciaCoaching.Data;
 using BocciaCoaching.Models.DTO.AssessStrength;
 using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.Statistic;
@@ -225,6 +225,10 @@ namespace BocciaCoaching.Repositories.AssesstStrength
                     entity.ThrowOrder = request.ThrowOrder;
                     entity.CoordinateX = request.CoordinateX;
                     entity.CoordinateY = request.CoordinateY;
+                    entity.IsStrength = request.IsStrength;
+                    entity.IsCadence = request.IsCadence;
+                    entity.IsDirection = request.IsDirection;
+                    entity.IsTrajectory = request.IsTrajectory;
 
                     _context.EvaluationDetailStrengths.Update(entity);
                 }
@@ -242,7 +246,11 @@ namespace BocciaCoaching.Repositories.AssesstStrength
                         TargetDistance = request.TargetDistance,
                         ThrowOrder = request.ThrowOrder,
                         CoordinateX = request.CoordinateX,
-                        CoordinateY = request.CoordinateY
+                        CoordinateY = request.CoordinateY,
+                        IsStrength = request.IsStrength,
+                        IsCadence = request.IsCadence,
+                        IsDirection = request.IsDirection,
+                        IsTrajectory = request.IsTrajectory
                     };
 
                     await _context.EvaluationDetailStrengths.AddAsync(newEntity);

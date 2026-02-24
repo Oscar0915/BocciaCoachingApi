@@ -141,6 +141,18 @@ namespace BocciaCoaching.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<bool>("IsCadence")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsDirection")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsStrength")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("IsTrajectory")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<string>("Observations")
                         .HasColumnType("longtext");
 
