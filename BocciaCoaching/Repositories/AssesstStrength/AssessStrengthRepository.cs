@@ -1,4 +1,4 @@
-﻿﻿﻿using BocciaCoaching.Data;
+﻿﻿﻿﻿using BocciaCoaching.Data;
 using BocciaCoaching.Models.DTO.AssessStrength;
 using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.Statistic;
@@ -402,26 +402,27 @@ namespace BocciaCoaching.Repositories.AssesstStrength
         /// Obtiene la evaluación de fuerza activa para un equipo con todos sus detalles
         /// </summary>
         /// <param name="teamId">ID del equipo</param>
+        /// <param name="coachId">ID del entrenador</param>
         /// <returns>Información completa de la evaluación activa o null si no hay ninguna</returns>
-        public async Task<ActiveEvaluationDto?> GetActiveEvaluationWithDetailsAsync(int teamId)
+        public async Task<ActiveEvaluationDto?> GetActiveEvaluationWithDetailsAsync(int teamId, int coachId)
         {
             try
             {
-                Console.WriteLine($"🔍 Buscando evaluación activa para el equipo: {teamId}");
+                Console.WriteLine($"🔍 Buscando evaluación activa para el equipo: {teamId} y entrenador: {coachId}");
                 
-                // Buscar evaluación activa para el equipo
+                // Buscar evaluación activa para el equipo y el entrenador
                 var activeAssessment = await _context.AssessStrengths
                     .Include(a => a.Team)
                     .Include(a => a.Coach)
-                    .FirstOrDefaultAsync(a => a.TeamId == teamId && a.State == "A");
+                    .FirstOrDefaultAsync(a => a.TeamId == teamId && a.CoachId == coachId && a.State == "A");
 
                 if (activeAssessment == null)
                 {
-                    Console.WriteLine($"❌ No se encontró evaluación activa para el equipo {teamId}");
+                    Console.WriteLine($"❌ No se encontró evaluación activa para el equipo {teamId} y entrenador {coachId}");
                     
                     // Verificar si hay evaluaciones para este equipo en otros estados
                     var allEvaluations = await _context.AssessStrengths
-                        .Where(a => a.TeamId == teamId)
+                        .Where(a => a.TeamId == teamId && a.CoachId == coachId)
                         .Select(a => new { a.AssessStrengthId, a.State, a.EvaluationDate })
                         .ToListAsync();
                     

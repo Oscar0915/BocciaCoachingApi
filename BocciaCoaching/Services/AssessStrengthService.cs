@@ -1,4 +1,4 @@
-﻿﻿using BocciaCoaching.Models.DTO.AssessStrength;
+﻿﻿﻿using BocciaCoaching.Models.DTO.AssessStrength;
 using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.Notification;
 using BocciaCoaching.Models.DTO.Statistic;
@@ -177,8 +177,9 @@ namespace BocciaCoaching.Services
         /// Obtiene la evaluación de fuerza activa para un equipo con todos sus detalles
         /// </summary>
         /// <param name="teamId">ID del equipo</param>
+        /// <param name="coachId">ID del entrenador</param>
         /// <returns>Información completa de la evaluación activa o null si no hay ninguna</returns>
-        public async Task<ResponseContract<ActiveEvaluationDto>> GetActiveEvaluationWithDetails(int teamId)
+        public async Task<ResponseContract<ActiveEvaluationDto>> GetActiveEvaluationWithDetails(int teamId, int coachId)
         {
             try
             {
@@ -190,7 +191,7 @@ namespace BocciaCoaching.Services
                 }
 
                 // Obtener la evaluación activa del repositorio
-                var activeEvaluation = await _assessStrengthRepository.GetActiveEvaluationWithDetailsAsync(teamId);
+                var activeEvaluation = await _assessStrengthRepository.GetActiveEvaluationWithDetailsAsync(teamId, coachId);
                 
                 if (activeEvaluation == null)
                 {

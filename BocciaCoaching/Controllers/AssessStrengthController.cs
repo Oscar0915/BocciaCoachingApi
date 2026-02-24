@@ -1,4 +1,4 @@
-﻿﻿using BocciaCoaching.Models.DTO.AssessStrength;
+﻿﻿﻿using BocciaCoaching.Models.DTO.AssessStrength;
 using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.Statistic;
 using BocciaCoaching.Models.Entities;
@@ -52,11 +52,12 @@ namespace BocciaCoaching.Controllers
         /// Valida si hay una evaluación de fuerza activa y devuelve toda la información de la evaluación con todos los lanzamientos
         /// </summary>
         /// <param name="teamId">ID del equipo para buscar evaluación activa</param>
+        /// <param name="coachId">ID del entrenador para buscar evaluación activa</param>
         /// <returns>Información completa de la evaluación activa o null si no hay ninguna</returns>
-        [HttpGet("GetActiveEvaluation/{teamId}")]
-        public async Task<ActionResult<ResponseContract<ActiveEvaluationDto>>> GetActiveEvaluation(int teamId)
+        [HttpGet("GetActiveEvaluation/{teamId}/{coachId}")]
+        public async Task<ActionResult<ResponseContract<ActiveEvaluationDto>>> GetActiveEvaluation(int teamId, int coachId)
         {
-            var result = await _assessStrengthService.GetActiveEvaluationWithDetails(teamId);
+            var result = await _assessStrengthService.GetActiveEvaluationWithDetails(teamId, coachId);
             return Ok(result);
         }
 
