@@ -18,5 +18,6 @@ namespace BocciaCoaching.Services.Interfaces
         Task<ResponseContract<List<EvaluationSummaryDto>>> GetTeamEvaluations(int teamId);
         Task<ResponseContract<List<AthleteStatisticsDto>>> GetEvaluationStatistics(int assessStrengthId);
         Task<ResponseContract<EvaluationDetailsDto>> GetEvaluationDetails(int assessStrengthId);
+        Task<ResponseContract<bool>> CancelEvaluation(CancelAssessStrengthDto cancelDto);
     }
 }

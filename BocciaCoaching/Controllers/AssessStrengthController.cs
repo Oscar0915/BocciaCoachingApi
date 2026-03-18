@@ -3,6 +3,7 @@ using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.Statistic;
 using BocciaCoaching.Models.Entities;
 using BocciaCoaching.Services.Interfaces;
+using BocciaCoaching.Models.DTO.AssessStrength;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BocciaCoaching.Controllers
@@ -82,6 +83,16 @@ namespace BocciaCoaching.Controllers
         public async Task<ActionResult<ResponseContract<bool>>> UpdateEvaluationState(UpdateAssessStregthDto updateDto)
         {
             var result = await _assessStrengthService.UpdateEvaluationState(updateDto);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Cancela una evaluación de fuerza (sólo el coach creador puede cancelar)
+        /// </summary>
+        [HttpPost("Cancel")]
+        public async Task<ActionResult<ResponseContract<bool>>> CancelEvaluation(CancelAssessStrengthDto cancelDto)
+        {
+            var result = await _assessStrengthService.CancelEvaluation(cancelDto);
             return Ok(result);
         }
 

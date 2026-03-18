@@ -156,9 +156,9 @@ namespace BocciaCoaching.Services
  
                 // Llama al repositorio para crear la evaluación de forma atómica (verifica por TeamId)
                 var repoResult = await _assessStrengthRepository.CreateAssessmentIfNoneActiveAsync(addAssessStrengthDto);
-                if (repoResult == null || !repoResult.Success)
+                if (!repoResult.Success)
                 {
-                    return ResponseContract<ResponseAddAssessStrengthDto>.Fail(repoResult?.Message ?? "Error al crear la evaluación");
+                    return ResponseContract<ResponseAddAssessStrengthDto>.Fail(repoResult.Message);
                 }
 
                 return ResponseContract<ResponseAddAssessStrengthDto>.Ok(repoResult.Data, repoResult.Message);
@@ -267,7 +267,7 @@ namespace BocciaCoaching.Services
 
                 var evaluations = await _assessStrengthRepository.GetTeamEvaluationsAsync(teamId);
                 
-                if (evaluations == null || evaluations.Count == 0)
+                if (evaluations.Count == 0)
                 {
                     return ResponseContract<List<EvaluationSummaryDto>>.Ok(
                         new List<EvaluationSummaryDto>(), 
@@ -298,7 +298,7 @@ namespace BocciaCoaching.Services
             {
                 var statistics = await _assessStrengthRepository.GetEvaluationStatisticsAsync(assessStrengthId);
                 
-                if (statistics == null || statistics.Count == 0)
+                if (statistics.Count == 0)
                 {
                     return ResponseContract<List<AthleteStatisticsDto>>.Fail(
                         "No se encontraron estadísticas para esta evaluación. La evaluación debe estar terminada para tener estadísticas."
@@ -339,6 +339,59 @@ namespace BocciaCoaching.Services
             {
                 Console.WriteLine(e);
                 return ResponseContract<EvaluationDetailsDto>.Fail($"Error al obtener los detalles: {e.Message}");
+            }
+        }
+
+        public async Task<ResponseContract<bool>> CancelEvaluation(CancelAssessStrengthDto cancelDto)
+        {
+            try
+            {
+                var evaluationDetails = await _assessStrengthRepository.GetEvaluationDetailsAsync(cancelDto.AssessStrengthId);
+                if (evaluationDetails == null)
+                    return ResponseContract<bool>.Fail("No se encontró la evaluación especificada");
+
+                if (evaluationDetails.State != "A")
+                    return ResponseContract<bool>.Fail("Sólo se puede cancelar una evaluación que esté en estado Activa (A)");
+
+                if (evaluationDetails.CoachId != cancelDto.CoachId)
+                    return ResponseContract<bool>.Fail("No autorizado: sólo el entrenador que creó la evaluación puede cancelarla");
+
+                // Obtener lista de atletas para notificar
+                var athleteIds = evaluationDetails.Athletes.Select(a => a.AthleteId).Distinct().ToList();
+
+                var repoResult = await _assessStrengthRepository.CancelAssessmentAsync(cancelDto.AssessStrengthId, cancelDto.CoachId, cancelDto.Reason);
+                if (!repoResult.Success)
+                    return ResponseContract<bool>.Fail(repoResult.Message);
+
+                // Enviar notificaciones a los atletas
+                foreach (var athleteId in athleteIds)
+                {
+                    var notificationMessage = new RequestCreateNotificationMessageDto
+                    {
+                        Message = $"La evaluación de fuerza (ID: {cancelDto.AssessStrengthId}) ha sido cancelada. Motivo: {cancelDto.Reason ?? "No especificado"}",
+                        SenderId = cancelDto.CoachId,
+                        ReceiverId = athleteId,
+                        NotificationTypeId = 3,
+                        Status = true,
+                        ReferenceId = cancelDto.AssessStrengthId
+                    };
+
+                    try
+                    {
+                        await _notificationService.CreateMessage(notificationMessage);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error enviando notificación a atleta {athleteId}: {ex.Message}");
+                    }
+                }
+
+                return ResponseContract<bool>.Ok(true, "Evaluación cancelada correctamente");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error en CancelEvaluation: {e.Message}");
+                return ResponseContract<bool>.Fail($"Error al cancelar la evaluación: {e.Message}");
             }
         }
     }

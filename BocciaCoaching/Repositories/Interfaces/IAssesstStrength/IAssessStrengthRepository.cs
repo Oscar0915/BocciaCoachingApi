@@ -29,5 +29,6 @@ namespace BocciaCoaching.Repositories.Interfaces.IAssesstStrength
         Task<List<EvaluationSummaryDto>> GetTeamEvaluationsAsync(int teamId);
         Task<List<AthleteStatisticsDto>> GetEvaluationStatisticsAsync(int assessStrengthId);
         Task<EvaluationDetailsDto?> GetEvaluationDetailsAsync(int assessStrengthId);
+        Task<ResponseContract<bool>> CancelAssessmentAsync(int assessStrengthId, int coachId, string? reason);
     }
 }

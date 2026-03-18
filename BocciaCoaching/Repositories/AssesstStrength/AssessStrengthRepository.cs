@@ -615,7 +615,7 @@ namespace BocciaCoaching.Repositories.AssesstStrength
             }
             catch (Exception e)
             {
-                return new { Error = e.Message, StackTrace = e.StackTrace };
+                return new { Err = e.Message, Stack = e.StackTrace };
             }
         }
 
@@ -828,6 +828,65 @@ namespace BocciaCoaching.Repositories.AssesstStrength
             {
                 Console.WriteLine($"Error obteniendo detalles de evaluación: {e.Message}");
                 return null;
+            }
+        }
+
+        /// <summary>
+        /// Cancela una evaluación de fuerza de forma transaccional.
+        /// Valida que la evaluación exista, esté en estado 'A' y que el coach coincida.
+        /// Marca la evaluación como 'C' y elimina registros relacionados (detalles, atletas, estadísticas).
+        /// </summary>
+        public async Task<ResponseContract<bool>> CancelAssessmentAsync(int assessStrengthId, int coachId, string? reason)
+        {
+            await using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                var assess = await _context.AssessStrengths.FirstOrDefaultAsync(a => a.AssessStrengthId == assessStrengthId);
+                if (assess == null)
+                {
+                    await transaction.RollbackAsync();
+                    return ResponseContract<bool>.Fail($"No se encontró la evaluación con ID {assessStrengthId}");
+                }
+
+                if (assess.State != "A")
+                {
+                    await transaction.RollbackAsync();
+                    return ResponseContract<bool>.Fail("Sólo se puede cancelar una evaluación que esté en estado Activa (A)");
+                }
+
+                if (assess.CoachId != coachId)
+                {
+                    await transaction.RollbackAsync();
+                    return ResponseContract<bool>.Fail("No autorizado: el coach no coincide con el creador de la evaluación");
+                }
+
+                // Eliminar detalles de lanzamientos asociados
+                var details = _context.EvaluationDetailStrengths.Where(d => d.AssessStrengthId == assessStrengthId);
+                _context.EvaluationDetailStrengths.RemoveRange(details);
+
+                // Eliminar registros de atletas asignados a la evaluación
+                var athletesToEval = _context.AthletesToEvaluated.Where(a => a.AssessStrengthId == assessStrengthId);
+                _context.AthletesToEvaluated.RemoveRange(athletesToEval);
+
+                // Eliminar estadísticas asociadas
+                var stats = _context.StrengthStatistics.Where(s => s.AssessStrengthId == assessStrengthId);
+                _context.StrengthStatistics.RemoveRange(stats);
+
+                // Actualizar estado de la evaluación
+                assess.State = "C";
+                assess.UpdatedAt = DateTime.Now;
+                _context.AssessStrengths.Update(assess);
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return ResponseContract<bool>.Ok(true, "Evaluación cancelada y datos asociados eliminados correctamente");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en CancelAssessmentAsync: {ex.Message}");
+                try { await _context.Database.RollbackTransactionAsync(); } catch { /* ignore */ }
+                return ResponseContract<bool>.Fail($"Error al cancelar la evaluación: {ex.Message}");
             }
         }
     }

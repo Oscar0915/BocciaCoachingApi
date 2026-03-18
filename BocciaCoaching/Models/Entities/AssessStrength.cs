@@ -36,8 +36,8 @@ namespace BocciaCoaching.Models.Entities
 
         // Relation to the coach (User) who created the assessment
         /// <summary>
-        /// ES: Id del entrenador que creó la prueba
-        /// EN: Id of the coach who created the assessment
+        /// ES: I'd del entrenador que creó la prueba
+        /// EN: I'd of the coach who created the assessment
         /// </summary>
         public int CoachId { get; set; }
 
