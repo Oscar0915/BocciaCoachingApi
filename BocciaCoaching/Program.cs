@@ -86,6 +86,8 @@ builder.Services.AddSignalR();
 
 //Services
 builder.Services.AddScoped<IUserService, UserService>();
+// File storage
+builder.Services.AddSingleton<BocciaCoaching.Services.IFileStorageService, BocciaCoaching.Services.DiskFileStorageService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ITeamService, TeamService>();
 builder.Services.AddScoped<IAssessStrengthService, AssessStrengthService>();
@@ -131,6 +133,9 @@ app.UseRouting();
 
 // Use CORS - permitir credenciales para SignalR
 app.UseCors("AllowSpecificOrigins");
+
+// Servir archivos estáticos (wwwroot)
+app.UseStaticFiles();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

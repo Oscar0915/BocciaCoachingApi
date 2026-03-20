@@ -36,5 +36,10 @@ namespace BocciaCoaching.Services.Interfaces
         /// <returns></returns>
         Task<ResponseContract<bool>> UpdateUserInfo(UpdateUserInfoDto updateUserInfoDto);
 
+        /// <summary>
+        /// Actualiza la URL/ubicación de la imagen de perfil del usuario y devuelve la ruta anterior si existía
+        /// </summary>
+        Task<ResponseContract<string?>> UpdateUserImageAsync(int userId, string imageUrl);
+
     }
 }

@@ -410,6 +410,34 @@ namespace BocciaCoaching.Repositories
         }
 
         /// <summary>
+        /// Actualiza la URL/ubicación de la imagen de perfil del usuario
+        /// </summary>
+        public async Task<ResponseContract<string?>> UpdateUserImageAsync(int userId, string imageUrl)
+        {
+            try
+            {
+                var user = await context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+                if (user == null)
+                    return ResponseContract<string?>.Fail("Usuario no encontrado");
+
+                var previous = user.Image;
+
+                user.Image = imageUrl;
+                user.UpdatedAt = DateTime.Now;
+
+                context.Users.Update(user);
+                await context.SaveChangesAsync();
+
+                return ResponseContract<string?>.Ok(previous, "Imagen de usuario actualizada correctamente");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en UpdateUserImageAsync: {ex.Message}");
+                return ResponseContract<string?>.Fail($"Error al actualizar la imagen del usuario: {ex.Message}");
+            }
+        }
+
+        /// <summary>
         /// Obtener usuario directamente por ID (para uso en servicios)
         /// </summary>
         public async Task<User?> GetUserEntityByIdAsync(int id)

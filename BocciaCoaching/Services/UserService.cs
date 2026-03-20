@@ -117,5 +117,10 @@ namespace BocciaCoaching.Services
         {
             return await _repository.UpdateUserInfo(updateUserInfoDto);
         }
+
+        public async Task<ResponseContract<string?>> UpdateUserImageAsync(int userId, string imageUrl)
+        {
+            return await _repository.UpdateUserImageAsync(userId, imageUrl);
+        }
     }
 }
