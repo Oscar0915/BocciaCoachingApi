@@ -2,8 +2,10 @@ using BocciaCoaching.Data;
 using BocciaCoaching.Models.Configuration;
 using BocciaCoaching.Repositories;
 using BocciaCoaching.Repositories.AssesstStrength;
+using BocciaCoaching.Repositories.AssessDirection;
 using BocciaCoaching.Repositories.Interfaces;
 using BocciaCoaching.Repositories.Interfaces.IAssesstStrength;
+using BocciaCoaching.Repositories.Interfaces.IAssessDirection;
 using BocciaCoaching.Repositories.Interfaces.ITeams;
 using BocciaCoaching.Repositories.NotificationTypes;
 using BocciaCoaching.Repositories.Statistic;
@@ -91,6 +93,7 @@ builder.Services.AddSingleton<BocciaCoaching.Services.IFileStorageService, Bocci
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ITeamService, TeamService>();
 builder.Services.AddScoped<IAssessStrengthService, AssessStrengthService>();
+builder.Services.AddScoped<IAssessDirectionService, AssessDirectionService>();
 builder.Services.AddScoped<BocciaCoaching.Services.Interfaces.INotificationService, BocciaCoaching.Services.NotificationService>();
 builder.Services.AddScoped<IStatisticsService, StatisticsService>();
 
@@ -112,6 +115,10 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 // Assess Strength - Prueba de fuerza 
 builder.Services.AddScoped<IAssessStrengthRepository, AssessStrengthRepository>();
 builder.Services.AddScoped<IValidationsAssetsStrength, ValidatiosStrenthRepository>();
+
+// Assess Direction - Prueba de control de dirección
+builder.Services.AddScoped<IAssessDirectionRepository, AssessDirectionRepository>();
+builder.Services.AddScoped<IValidationsAssetsDirection, ValidationsDirectionRepository>();
 
 // Statistic - Estadisticas
 builder.Services.AddScoped<IStatisticAssessStrength, StatisticAssessStrength>();

@@ -25,6 +25,11 @@ namespace BocciaCoaching.Data
         public DbSet<Achievement> Achievement { get; set; }
         public DbSet<StrengthStatistics> StrengthStatistics { get; set; }
 
+        // Direction Assessment entities
+        public DbSet<AssessDirection> AssessDirections { get; set; }
+        public DbSet<EvaluationDetailDirection> EvaluationDetailDirections { get; set; }
+        public DbSet<AthletesToEvaluatedDirection> AthletesToEvaluatedDirection { get; set; }
+        public DbSet<DirectionStatistics> DirectionStatistics { get; set; }
 
         // Subscription entities
         public DbSet<SubscriptionType> SubscriptionTypes { get; set; }

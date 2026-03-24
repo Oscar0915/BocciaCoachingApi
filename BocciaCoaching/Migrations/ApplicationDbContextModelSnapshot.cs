@@ -49,6 +49,44 @@ namespace BocciaCoaching.Migrations
                     b.ToTable("Achievement");
                 });
 
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.AssessDirection", b =>
+                {
+                    b.Property<int>("AssessDirectionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("AssessDirectionId"));
+
+                    b.Property<int>("CoachId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("EvaluationDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("State")
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("TeamId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("AssessDirectionId");
+
+                    b.HasIndex("CoachId");
+
+                    b.HasIndex("TeamId");
+
+                    b.ToTable("AssessDirection");
+                });
+
             modelBuilder.Entity("BocciaCoaching.Models.Entities.AssessStrength", b =>
                 {
                     b.Property<int>("AssessStrengthId")
@@ -113,6 +151,194 @@ namespace BocciaCoaching.Migrations
                     b.HasIndex("CoachId");
 
                     b.ToTable("AthletesToEvaluated");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.AthletesToEvaluatedDirection", b =>
+                {
+                    b.Property<int>("AthletesToEvaluatedDirectionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("AthletesToEvaluatedDirectionId"));
+
+                    b.Property<int>("AssessDirectionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AthleteId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CoachId")
+                        .HasColumnType("int");
+
+                    b.HasKey("AthletesToEvaluatedDirectionId");
+
+                    b.HasIndex("AssessDirectionId");
+
+                    b.HasIndex("AthleteId");
+
+                    b.HasIndex("CoachId");
+
+                    b.ToTable("AthletesToEvaluatedDirection");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.DirectionStatistics", b =>
+                {
+                    b.Property<int>("DirectionStatisticsId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("DirectionStatisticsId"));
+
+                    b.Property<double>("AccuracyPercentage")
+                        .HasColumnType("double");
+
+                    b.Property<int>("AssessDirectionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AthleteId")
+                        .HasColumnType("int");
+
+                    b.Property<double>("DeviatedLeftPercentage")
+                        .HasColumnType("double");
+
+                    b.Property<double>("DeviatedRightPercentage")
+                        .HasColumnType("double");
+
+                    b.Property<int>("EffectiveThrow")
+                        .HasColumnType("int");
+
+                    b.Property<double>("EffectivenessPercentage")
+                        .HasColumnType("double");
+
+                    b.Property<int>("FailedThrow")
+                        .HasColumnType("int");
+
+                    b.Property<double>("LongAccuracyPercentage")
+                        .HasColumnType("double");
+
+                    b.Property<int>("LongDeviatedLeft")
+                        .HasColumnType("int");
+
+                    b.Property<int>("LongDeviatedRight")
+                        .HasColumnType("int");
+
+                    b.Property<double>("LongEffectivenessPercentage")
+                        .HasColumnType("double");
+
+                    b.Property<double>("LongThrow")
+                        .HasColumnType("double");
+
+                    b.Property<int>("LongThrowAccuracy")
+                        .HasColumnType("int");
+
+                    b.Property<double>("MediumAccuracyPercentage")
+                        .HasColumnType("double");
+
+                    b.Property<int>("MediumDeviatedLeft")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MediumDeviatedRight")
+                        .HasColumnType("int");
+
+                    b.Property<double>("MediumEffectivenessPercentage")
+                        .HasColumnType("double");
+
+                    b.Property<int>("MediumThrow")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MediumThrowAccuracy")
+                        .HasColumnType("int");
+
+                    b.Property<double>("ShortAccuracyPercentage")
+                        .HasColumnType("double");
+
+                    b.Property<int>("ShortDeviatedLeft")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ShortDeviatedRight")
+                        .HasColumnType("int");
+
+                    b.Property<double>("ShortEffectivenessPercentage")
+                        .HasColumnType("double");
+
+                    b.Property<int>("ShortThrow")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ShortThrowAccuracy")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalDeviatedLeft")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalDeviatedRight")
+                        .HasColumnType("int");
+
+                    b.HasKey("DirectionStatisticsId");
+
+                    b.HasIndex("AssessDirectionId");
+
+                    b.HasIndex("AthleteId");
+
+                    b.ToTable("DirectionStatistics");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.EvaluationDetailDirection", b =>
+                {
+                    b.Property<int>("EvaluationDetailDirectionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("EvaluationDetailDirectionId"));
+
+                    b.Property<int>("AssessDirectionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AthleteId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BoxNumber")
+                        .HasColumnType("int");
+
+                    b.Property<double>("CoordinateX")
+                        .HasColumnType("double");
+
+                    b.Property<double>("CoordinateY")
+                        .HasColumnType("double");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("DeviatedLeft")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("DeviatedRight")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("Observations")
+                        .HasColumnType("longtext");
+
+                    b.Property<decimal?>("ScoreObtained")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<decimal?>("TargetDistance")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<int>("ThrowOrder")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("EvaluationDetailDirectionId");
+
+                    b.HasIndex("AssessDirectionId");
+
+                    b.HasIndex("AthleteId");
+
+                    b.ToTable("EvaluationDetailDirection");
                 });
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.EvaluationDetailStrength", b =>
@@ -871,6 +1097,25 @@ namespace BocciaCoaching.Migrations
                     b.Navigation("Event");
                 });
 
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.AssessDirection", b =>
+                {
+                    b.HasOne("BocciaCoaching.Models.Entities.User", "Coach")
+                        .WithMany()
+                        .HasForeignKey("CoachId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BocciaCoaching.Models.Entities.Team", "Team")
+                        .WithMany()
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Coach");
+
+                    b.Navigation("Team");
+                });
+
             modelBuilder.Entity("BocciaCoaching.Models.Entities.AssessStrength", b =>
                 {
                     b.HasOne("BocciaCoaching.Models.Entities.User", "Coach")
@@ -915,6 +1160,71 @@ namespace BocciaCoaching.Migrations
                     b.Navigation("Athlete");
 
                     b.Navigation("Coach");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.AthletesToEvaluatedDirection", b =>
+                {
+                    b.HasOne("BocciaCoaching.Models.Entities.AssessDirection", "AssessDirection")
+                        .WithMany()
+                        .HasForeignKey("AssessDirectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BocciaCoaching.Models.Entities.User", "Athlete")
+                        .WithMany()
+                        .HasForeignKey("AthleteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BocciaCoaching.Models.Entities.User", "Coach")
+                        .WithMany()
+                        .HasForeignKey("CoachId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AssessDirection");
+
+                    b.Navigation("Athlete");
+
+                    b.Navigation("Coach");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.DirectionStatistics", b =>
+                {
+                    b.HasOne("BocciaCoaching.Models.Entities.AssessDirection", "AssessDirection")
+                        .WithMany()
+                        .HasForeignKey("AssessDirectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BocciaCoaching.Models.Entities.User", "Athlete")
+                        .WithMany()
+                        .HasForeignKey("AthleteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AssessDirection");
+
+                    b.Navigation("Athlete");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.EvaluationDetailDirection", b =>
+                {
+                    b.HasOne("BocciaCoaching.Models.Entities.AssessDirection", "AssessDirection")
+                        .WithMany()
+                        .HasForeignKey("AssessDirectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BocciaCoaching.Models.Entities.User", "Athlete")
+                        .WithMany()
+                        .HasForeignKey("AthleteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AssessDirection");
+
+                    b.Navigation("Athlete");
                 });
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.EvaluationDetailStrength", b =>
