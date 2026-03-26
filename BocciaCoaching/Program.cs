@@ -14,6 +14,7 @@ using BocciaCoaching.Repositories.Teams;
 using BocciaCoaching.Services;
 using BocciaCoaching.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using Stripe;
 using SubscriptionService = BocciaCoaching.Services.SubscriptionService;
 
@@ -131,7 +132,12 @@ builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "BocciaCoaching API", Version = "v1" });
+    
+    
+});
 
 
 
