@@ -35,5 +35,17 @@ namespace BocciaCoaching.Data
         public DbSet<SubscriptionType> SubscriptionTypes { get; set; }
         public DbSet<Subscription> Subscriptions { get; set; }
         public DbSet<Payment> Payments { get; set; }
+
+        // SAREMAS+ Assessment entities
+        public DbSet<SaremasEvaluation> SaremasEvaluations { get; set; }
+        public DbSet<SaremasAthleteEvaluation> SaremasAthleteEvaluations { get; set; }
+        public DbSet<SaremasThrow> SaremasThrows { get; set; }
+
+        // Macrocycle entities
+        public DbSet<Macrocycle> Macrocycles { get; set; }
+        public DbSet<MacrocycleEvent> MacrocycleEvents { get; set; }
+        public DbSet<MacrocyclePeriod> MacrocyclePeriods { get; set; }
+        public DbSet<Mesocycle> Mesocycles { get; set; }
+        public DbSet<Microcycle> Microcycles { get; set; }
     }
 }

@@ -19,5 +19,11 @@ namespace BocciaCoaching.Services.Interfaces
         Task<ResponseContract<List<MonthlyEvolutionDto>>> GetMonthlyEvolution(int? coachId, int? teamId, int months);
         Task<ResponseContract<NextSessionInfo>> GetNextSession(int coachId);
         Task<ResponseContract<List<TeamOverviewDto>>> GetCoachTeamsOverview(int coachId);
+
+        // Cross-statistics: SAREMAS+ & Macrociclo
+        Task<ResponseContract<SaremasTeamStatsDto>> GetSaremasTeamStats(int teamId);
+        Task<ResponseContract<SaremasAthleteEvolutionDto>> GetSaremasAthleteStats(int athleteId);
+        Task<ResponseContract<MacrocycleProgressDto>> GetMacrocycleProgress(string macrocycleId);
+        Task<ResponseContract<AthleteFullDashboardDto>> GetAthleteFullDashboard(int athleteId);
     }
 }

@@ -504,6 +504,215 @@ namespace BocciaCoaching.Migrations
                     b.ToTable("LogError");
                 });
 
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.Macrocycle", b =>
+                {
+                    b.Property<string>("MacrocycleId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("AthleteId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("AthleteName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("CoachId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("TeamId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("MacrocycleId");
+
+                    b.HasIndex("AthleteId");
+
+                    b.HasIndex("CoachId");
+
+                    b.HasIndex("TeamId");
+
+                    b.ToTable("Macrocycle");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.MacrocycleEvent", b =>
+                {
+                    b.Property<string>("MacrocycleEventId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Location")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("MacrocycleId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("MacrocycleEventId");
+
+                    b.HasIndex("MacrocycleId");
+
+                    b.ToTable("MacrocycleEvent");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.MacrocyclePeriod", b =>
+                {
+                    b.Property<int>("MacrocyclePeriodId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("MacrocyclePeriodId"));
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("MacrocycleId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("Weeks")
+                        .HasColumnType("int");
+
+                    b.HasKey("MacrocyclePeriodId");
+
+                    b.HasIndex("MacrocycleId");
+
+                    b.ToTable("MacrocyclePeriod");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.Mesocycle", b =>
+                {
+                    b.Property<int>("MesocycleId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("MesocycleId"));
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("MacrocycleId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("Number")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Objective")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("Weeks")
+                        .HasColumnType("int");
+
+                    b.HasKey("MesocycleId");
+
+                    b.HasIndex("MacrocycleId");
+
+                    b.ToTable("Mesocycle");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.Microcycle", b =>
+                {
+                    b.Property<int>("MicrocycleId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("MicrocycleId"));
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("HasPeakPerformance")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("MacrocycleId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("MesocycleName")
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("Number")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PeriodName")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("TrainingDistribution")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("WeekNumber")
+                        .HasColumnType("int");
+
+                    b.HasKey("MicrocycleId");
+
+                    b.HasIndex("MacrocycleId");
+
+                    b.ToTable("Microcycle");
+                });
+
             modelBuilder.Entity("BocciaCoaching.Models.Entities.ModuleError", b =>
                 {
                     b.Property<int>("ModuleErrorId")
@@ -688,6 +897,149 @@ namespace BocciaCoaching.Migrations
                     b.HasKey("RolId");
 
                     b.ToTable("Rol");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.SaremasAthleteEvaluation", b =>
+                {
+                    b.Property<int>("SaremasAthleteEvaluationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("SaremasAthleteEvaluationId"));
+
+                    b.Property<int>("AthleteId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("AthleteName")
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("SaremasEvalId")
+                        .HasColumnType("int");
+
+                    b.HasKey("SaremasAthleteEvaluationId");
+
+                    b.HasIndex("AthleteId");
+
+                    b.HasIndex("SaremasEvalId");
+
+                    b.ToTable("SaremasAthleteEvaluation");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.SaremasEvaluation", b =>
+                {
+                    b.Property<int>("SaremasEvaluationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("SaremasEvaluationId"));
+
+                    b.Property<double?>("AverageScore")
+                        .HasColumnType("double");
+
+                    b.Property<int>("CoachId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("EvaluationDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("State")
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("TeamId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TotalScore")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("SaremasEvaluationId");
+
+                    b.HasIndex("CoachId");
+
+                    b.HasIndex("TeamId");
+
+                    b.ToTable("SaremasEvaluation");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.SaremasThrow", b =>
+                {
+                    b.Property<int>("SaremasThrowId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("SaremasThrowId"));
+
+                    b.Property<int>("AthleteId")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("ColorBallX")
+                        .HasColumnType("double");
+
+                    b.Property<double?>("ColorBallY")
+                        .HasColumnType("double");
+
+                    b.Property<string>("Diagonal")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<double?>("DistanceToLaunchPoint")
+                        .HasColumnType("double");
+
+                    b.Property<double?>("EstimatedDistance")
+                        .HasColumnType("double");
+
+                    b.Property<string>("FailureTags")
+                        .HasColumnType("longtext");
+
+                    b.Property<double?>("LaunchPointX")
+                        .HasColumnType("double");
+
+                    b.Property<double?>("LaunchPointY")
+                        .HasColumnType("double");
+
+                    b.Property<string>("Observations")
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("SaremasEvalId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ScoreObtained")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("TechnicalComponent")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("ThrowNumber")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<double?>("WhiteBallX")
+                        .HasColumnType("double");
+
+                    b.Property<double?>("WhiteBallY")
+                        .HasColumnType("double");
+
+                    b.HasKey("SaremasThrowId");
+
+                    b.HasIndex("AthleteId");
+
+                    b.HasIndex("SaremasEvalId");
+
+                    b.ToTable("SaremasThrow");
                 });
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.Session", b =>
@@ -1276,6 +1628,77 @@ namespace BocciaCoaching.Migrations
                     b.Navigation("ModuleError");
                 });
 
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.Macrocycle", b =>
+                {
+                    b.HasOne("BocciaCoaching.Models.Entities.User", "Athlete")
+                        .WithMany()
+                        .HasForeignKey("AthleteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BocciaCoaching.Models.Entities.User", "Coach")
+                        .WithMany()
+                        .HasForeignKey("CoachId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BocciaCoaching.Models.Entities.Team", "Team")
+                        .WithMany()
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Athlete");
+
+                    b.Navigation("Coach");
+
+                    b.Navigation("Team");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.MacrocycleEvent", b =>
+                {
+                    b.HasOne("BocciaCoaching.Models.Entities.Macrocycle", "Macrocycle")
+                        .WithMany("Events")
+                        .HasForeignKey("MacrocycleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Macrocycle");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.MacrocyclePeriod", b =>
+                {
+                    b.HasOne("BocciaCoaching.Models.Entities.Macrocycle", "Macrocycle")
+                        .WithMany("Periods")
+                        .HasForeignKey("MacrocycleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Macrocycle");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.Mesocycle", b =>
+                {
+                    b.HasOne("BocciaCoaching.Models.Entities.Macrocycle", "Macrocycle")
+                        .WithMany("Mesocycles")
+                        .HasForeignKey("MacrocycleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Macrocycle");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.Microcycle", b =>
+                {
+                    b.HasOne("BocciaCoaching.Models.Entities.Macrocycle", "Macrocycle")
+                        .WithMany("Microcycles")
+                        .HasForeignKey("MacrocycleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Macrocycle");
+                });
+
             modelBuilder.Entity("BocciaCoaching.Models.Entities.NotificationMessage", b =>
                 {
                     b.HasOne("BocciaCoaching.Models.Entities.NotificationType", "NotificationType")
@@ -1320,6 +1743,63 @@ namespace BocciaCoaching.Migrations
                     b.Navigation("Subscription");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.SaremasAthleteEvaluation", b =>
+                {
+                    b.HasOne("BocciaCoaching.Models.Entities.User", "Athlete")
+                        .WithMany()
+                        .HasForeignKey("AthleteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BocciaCoaching.Models.Entities.SaremasEvaluation", "SaremasEvaluation")
+                        .WithMany("Athletes")
+                        .HasForeignKey("SaremasEvalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Athlete");
+
+                    b.Navigation("SaremasEvaluation");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.SaremasEvaluation", b =>
+                {
+                    b.HasOne("BocciaCoaching.Models.Entities.User", "Coach")
+                        .WithMany()
+                        .HasForeignKey("CoachId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BocciaCoaching.Models.Entities.Team", "Team")
+                        .WithMany()
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Coach");
+
+                    b.Navigation("Team");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.SaremasThrow", b =>
+                {
+                    b.HasOne("BocciaCoaching.Models.Entities.User", "Athlete")
+                        .WithMany()
+                        .HasForeignKey("AthleteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BocciaCoaching.Models.Entities.SaremasEvaluation", "SaremasEvaluation")
+                        .WithMany("Throws")
+                        .HasForeignKey("SaremasEvalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Athlete");
+
+                    b.Navigation("SaremasEvaluation");
                 });
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.Session", b =>
@@ -1418,6 +1898,24 @@ namespace BocciaCoaching.Migrations
                     b.Navigation("Rol");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.Macrocycle", b =>
+                {
+                    b.Navigation("Events");
+
+                    b.Navigation("Mesocycles");
+
+                    b.Navigation("Microcycles");
+
+                    b.Navigation("Periods");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.SaremasEvaluation", b =>
+                {
+                    b.Navigation("Athletes");
+
+                    b.Navigation("Throws");
                 });
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.Subscription", b =>

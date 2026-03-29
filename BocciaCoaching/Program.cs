@@ -3,10 +3,14 @@ using BocciaCoaching.Models.Configuration;
 using BocciaCoaching.Repositories;
 using BocciaCoaching.Repositories.AssesstStrength;
 using BocciaCoaching.Repositories.AssessDirection;
+using BocciaCoaching.Repositories.AssessSaremas;
 using BocciaCoaching.Repositories.Interfaces;
 using BocciaCoaching.Repositories.Interfaces.IAssesstStrength;
 using BocciaCoaching.Repositories.Interfaces.IAssessDirection;
+using BocciaCoaching.Repositories.Interfaces.IAssessSaremas;
+using BocciaCoaching.Repositories.Interfaces.IMacrocycle;
 using BocciaCoaching.Repositories.Interfaces.ITeams;
+using BocciaCoaching.Repositories.Macrocycle;
 using BocciaCoaching.Repositories.NotificationTypes;
 using BocciaCoaching.Repositories.Statistic;
 using BocciaCoaching.Repositories.Statistic.Interfce;
@@ -102,6 +106,12 @@ builder.Services.AddScoped<IStatisticsService, StatisticsService>();
 builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
 builder.Services.AddScoped<IStripePaymentService, StripePaymentServiceSimplified>();
 
+// SAREMAS+ Services
+builder.Services.AddScoped<IAssessSaremasService, AssessSaremasService>();
+
+// Macrocycle Services
+builder.Services.AddScoped<IMacrocycleService, MacrocycleService>();
+
 /*
 Repositories - Repositorios
 */
@@ -129,6 +139,13 @@ builder.Services.AddScoped<INotificationTypeRepository, NotificationTypeReposito
 
 // Subscription - Suscripciones
 builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+
+// Assess SAREMAS+ - Prueba SAREMAS+
+builder.Services.AddScoped<IAssessSaremasRepository, AssessSaremasRepository>();
+builder.Services.AddScoped<IValidationsAssessSaremas, ValidationsAssessSaremasRepository>();
+
+// Macrocycle - Macrociclos
+builder.Services.AddScoped<IMacrocycleRepository, MacrocycleRepository>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

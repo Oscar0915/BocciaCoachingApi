@@ -304,5 +304,59 @@ namespace BocciaCoaching.Controllers
             var result = await _statisticsService.GetCoachTeamsOverview(coachId);
             return Ok(result);
         }
+
+        // ==================== Cross-Statistics: SAREMAS+ & Macrociclo ====================
+
+        /// <summary>
+        /// Obtiene estadísticas SAREMAS+ por equipo
+        /// </summary>
+        [HttpGet("SaremasTeamStats/{teamId}")]
+        public async Task<ActionResult<ResponseContract<SaremasTeamStatsDto>>> GetSaremasTeamStats(int teamId)
+        {
+            if (teamId <= 0)
+                return BadRequest(ResponseContract<SaremasTeamStatsDto>.Fail("Team ID debe ser un valor válido mayor a 0"));
+
+            var result = await _statisticsService.GetSaremasTeamStats(teamId);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Obtiene la evolución SAREMAS+ de un atleta a lo largo del tiempo
+        /// </summary>
+        [HttpGet("SaremasAthleteStats/{athleteId}")]
+        public async Task<ActionResult<ResponseContract<SaremasAthleteEvolutionDto>>> GetSaremasAthleteStats(int athleteId)
+        {
+            if (athleteId <= 0)
+                return BadRequest(ResponseContract<SaremasAthleteEvolutionDto>.Fail("Athlete ID debe ser un valor válido mayor a 0"));
+
+            var result = await _statisticsService.GetSaremasAthleteStats(athleteId);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Obtiene el progreso de un macrociclo (semana actual, evaluaciones realizadas)
+        /// </summary>
+        [HttpGet("MacrocycleProgress/{macrocycleId}")]
+        public async Task<ActionResult<ResponseContract<MacrocycleProgressDto>>> GetMacrocycleProgress(string macrocycleId)
+        {
+            if (string.IsNullOrEmpty(macrocycleId))
+                return BadRequest(ResponseContract<MacrocycleProgressDto>.Fail("Macrocycle ID es requerido"));
+
+            var result = await _statisticsService.GetMacrocycleProgress(macrocycleId);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Dashboard unificado por atleta: Fuerza + Dirección + SAREMAS+ + Macrociclo
+        /// </summary>
+        [HttpGet("AthleteFullDashboard/{athleteId}")]
+        public async Task<ActionResult<ResponseContract<AthleteFullDashboardDto>>> GetAthleteFullDashboard(int athleteId)
+        {
+            if (athleteId <= 0)
+                return BadRequest(ResponseContract<AthleteFullDashboardDto>.Fail("Athlete ID debe ser un valor válido mayor a 0"));
+
+            var result = await _statisticsService.GetAthleteFullDashboard(athleteId);
+            return Ok(result);
+        }
     }
 }
