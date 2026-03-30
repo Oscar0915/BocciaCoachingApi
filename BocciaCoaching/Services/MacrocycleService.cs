@@ -69,24 +69,86 @@ namespace BocciaCoaching.Services
                     });
                 }
 
-                // Calcular estructura
-                var microcycles = BuildMicrocycles(macrocycle.MacrocycleId, normalizedStart, dto.EndDate, macrocycle.Events.ToList());
-                var periods = BuildPeriods(macrocycle.MacrocycleId, normalizedStart, dto.EndDate, macrocycle.Events.ToList(), microcycles);
-                var mesocycles = BuildMesocycles(macrocycle.MacrocycleId, microcycles, periods);
+                // Determinar si se usan datos manuales o auto-calculados
+                List<Microcycle> microcycles;
+                List<MacrocyclePeriod> periods;
+                List<Mesocycle> mesocycles;
 
-                // Asignar período y mesociclo a cada microciclo
-                foreach (var micro in microcycles)
+                bool hasManualMicrocycles = dto.Microcycles != null && dto.Microcycles.Any();
+                bool hasManualMesocycles = dto.Mesocycles != null && dto.Mesocycles.Any();
+
+                if (hasManualMicrocycles)
                 {
-                    var period = periods.FirstOrDefault(p => micro.StartDate >= p.StartDate && micro.StartDate < p.EndDate);
-                    if (period != null) micro.PeriodName = period.Name;
+                    // Usar microciclos proporcionados por el cliente
+                    microcycles = dto.Microcycles!.Select(mi => new Microcycle
+                    {
+                        MacrocycleId = macrocycle.MacrocycleId,
+                        Number = mi.Number,
+                        WeekNumber = mi.WeekNumber,
+                        StartDate = mi.StartDate,
+                        EndDate = mi.EndDate,
+                        Type = mi.Type,
+                        PeriodName = mi.PeriodName,
+                        MesocycleName = mi.MesocycleName,
+                        HasPeakPerformance = mi.HasPeakPerformance,
+                        TrainingDistribution = mi.TrainingDistribution != null
+                            ? JsonSerializer.Serialize(mi.TrainingDistribution)
+                            : JsonSerializer.Serialize(GetDefaultDistribution(mi.Type))
+                    }).ToList();
+                }
+                else
+                {
+                    // Auto-calcular microciclos
+                    microcycles = BuildMicrocycles(macrocycle.MacrocycleId, normalizedStart, dto.EndDate, macrocycle.Events.ToList());
+                }
 
-                    var meso = mesocycles.FirstOrDefault(m => micro.StartDate >= m.StartDate && micro.StartDate < m.EndDate);
-                    if (meso != null) micro.MesocycleName = meso.Name;
+                if (hasManualMesocycles)
+                {
+                    // Usar mesociclos proporcionados por el cliente
+                    mesocycles = dto.Mesocycles!.Select(ms => new Mesocycle
+                    {
+                        MacrocycleId = macrocycle.MacrocycleId,
+                        Number = ms.Number,
+                        Name = ms.Name,
+                        Type = ms.Type,
+                        StartDate = ms.StartDate,
+                        EndDate = ms.EndDate,
+                        Weeks = ms.Weeks,
+                        Objective = ms.Objective ?? GetMesocycleObjective(ms.Type)
+                    }).ToList();
+                }
+                else
+                {
+                    // Auto-calcular períodos y mesociclos
+                    periods = BuildPeriods(macrocycle.MacrocycleId, normalizedStart, dto.EndDate, macrocycle.Events.ToList(), microcycles);
+                    mesocycles = BuildMesocycles(macrocycle.MacrocycleId, microcycles, periods);
+
+                    // Asignar período y mesociclo a cada microciclo (solo si fueron auto-calculados)
+                    if (!hasManualMicrocycles)
+                    {
+                        foreach (var micro in microcycles)
+                        {
+                            var period = periods.FirstOrDefault(p => micro.StartDate >= p.StartDate && micro.StartDate < p.EndDate);
+                            if (period != null) micro.PeriodName = period.Name;
+
+                            var meso = mesocycles.FirstOrDefault(m => micro.StartDate >= m.StartDate && micro.StartDate < m.EndDate);
+                            if (meso != null) micro.MesocycleName = meso.Name;
+                        }
+                    }
+
+                    // Persistir períodos auto-calculados
+                    await _repository.AddPeriodsAsync(periods);
+                }
+
+                // Si se proporcionaron mesociclos manualmente, los períodos se auto-calculan igual
+                if (hasManualMesocycles)
+                {
+                    periods = BuildPeriods(macrocycle.MacrocycleId, normalizedStart, dto.EndDate, macrocycle.Events.ToList(), microcycles);
+                    await _repository.AddPeriodsAsync(periods);
                 }
 
                 // Persistir
                 var created = await _repository.CreateAsync(macrocycle);
-                await _repository.AddPeriodsAsync(periods);
                 await _repository.AddMesocyclesAsync(mesocycles);
                 await _repository.AddMicrocyclesAsync(microcycles);
 

@@ -11,6 +11,16 @@ namespace BocciaCoaching.Models.DTO.Macrocycle
         public int CoachId { get; set; }
         public int TeamId { get; set; }
         public List<CreateMacrocycleEventDto> Events { get; set; } = new();
+
+        /// <summary>
+        /// Opcional: si se proporcionan, se usan en lugar de auto-calcularlos.
+        /// </summary>
+        public List<CreateMesocycleDto>? Mesocycles { get; set; }
+
+        /// <summary>
+        /// Opcional: si se proporcionan, se usan en lugar de auto-calcularlos.
+        /// </summary>
+        public List<CreateMicrocycleDto>? Microcycles { get; set; }
     }
 }
 

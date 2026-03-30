@@ -17,7 +17,8 @@ namespace BocciaCoaching.Controllers
         }
 
         /// <summary>
-        /// Crear un macrociclo completo (con eventos). El backend calcula períodos, mesociclos y microciclos.
+        /// Crear un macrociclo completo (con eventos, y opcionalmente mesociclos y microciclos).
+        /// Si no se proporcionan mesociclos/microciclos, el backend los calcula automáticamente.
         /// </summary>
         [HttpPost("Create")]
         public async Task<ActionResult<ResponseContract<MacrocycleResponseDto>>> Create(CreateMacrocycleDto dto)
