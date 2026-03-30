@@ -10,7 +10,9 @@ using BocciaCoaching.Repositories.Interfaces.IAssessDirection;
 using BocciaCoaching.Repositories.Interfaces.IAssessSaremas;
 using BocciaCoaching.Repositories.Interfaces.IMacrocycle;
 using BocciaCoaching.Repositories.Interfaces.ITeams;
+using BocciaCoaching.Repositories.Interfaces.ITrainingSession;
 using BocciaCoaching.Repositories.Macrocycle;
+using BocciaCoaching.Repositories.TrainingSession;
 using BocciaCoaching.Repositories.NotificationTypes;
 using BocciaCoaching.Repositories.Statistic;
 using BocciaCoaching.Repositories.Statistic.Interfce;
@@ -112,6 +114,9 @@ builder.Services.AddScoped<IAssessSaremasService, AssessSaremasService>();
 // Macrocycle Services
 builder.Services.AddScoped<IMacrocycleService, MacrocycleService>();
 
+// Training Session Services
+builder.Services.AddScoped<ITrainingSessionService, TrainingSessionService>();
+
 /*
 Repositories - Repositorios
 */
@@ -146,6 +151,9 @@ builder.Services.AddScoped<IValidationsAssessSaremas, ValidationsAssessSaremasRe
 
 // Macrocycle - Macrociclos
 builder.Services.AddScoped<IMacrocycleRepository, MacrocycleRepository>();
+
+// Training Session - Sesiones de entrenamiento
+builder.Services.AddScoped<ITrainingSessionRepository, TrainingSessionRepository>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

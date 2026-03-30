@@ -36,6 +36,9 @@ namespace BocciaCoaching.Models.Entities
         /// </summary>
         [Column(TypeName = "text")]
         public string? TrainingDistribution { get; set; }
+
+        /// <summary>Sesiones de entrenamiento del microciclo</summary>
+        public ICollection<TrainingSession> TrainingSessions { get; set; } = new List<TrainingSession>();
     }
 }
 

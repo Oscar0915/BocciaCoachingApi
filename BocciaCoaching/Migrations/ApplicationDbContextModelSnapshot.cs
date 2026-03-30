@@ -1061,6 +1061,81 @@ namespace BocciaCoaching.Migrations
                     b.ToTable("Session");
                 });
 
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.SessionPart", b =>
+                {
+                    b.Property<int>("SessionPartId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("SessionPartId"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TrainingSessionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("SessionPartId");
+
+                    b.HasIndex("TrainingSessionId");
+
+                    b.ToTable("SessionPart");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.SessionSection", b =>
+                {
+                    b.Property<int>("SessionSectionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("SessionSectionId"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("EndTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsOwnDiagonal")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("NumberOfThrows")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Observation")
+                        .HasColumnType("text");
+
+                    b.Property<int>("SessionPartId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("StartTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("SessionSectionId");
+
+                    b.HasIndex("SessionPartId");
+
+                    b.ToTable("SessionSection");
+                });
+
             modelBuilder.Entity("BocciaCoaching.Models.Entities.StrengthStatistics", b =>
                 {
                     b.Property<int>("StrengthStatisticsId")
@@ -1358,6 +1433,65 @@ namespace BocciaCoaching.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("TeamUser");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.TrainingSession", b =>
+                {
+                    b.Property<int>("TrainingSessionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("TrainingSessionId"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("DayOfWeek")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("Duration")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("EndTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("MicrocycleId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PhotoEvidence1")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("PhotoEvidence2")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("PhotoEvidence3")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("PhotoEvidence4")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("StartTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<double>("ThrowPercentage")
+                        .HasColumnType("double");
+
+                    b.Property<int>("TotalThrowsBase")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("TrainingSessionId");
+
+                    b.HasIndex("MicrocycleId");
+
+                    b.ToTable("TrainingSession");
                 });
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.User", b =>
@@ -1813,6 +1947,28 @@ namespace BocciaCoaching.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.SessionPart", b =>
+                {
+                    b.HasOne("BocciaCoaching.Models.Entities.TrainingSession", "TrainingSession")
+                        .WithMany("Parts")
+                        .HasForeignKey("TrainingSessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TrainingSession");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.SessionSection", b =>
+                {
+                    b.HasOne("BocciaCoaching.Models.Entities.SessionPart", "SessionPart")
+                        .WithMany("Sections")
+                        .HasForeignKey("SessionPartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SessionPart");
+                });
+
             modelBuilder.Entity("BocciaCoaching.Models.Entities.StrengthStatistics", b =>
                 {
                     b.HasOne("BocciaCoaching.Models.Entities.AssessStrength", "AssessStrength")
@@ -1881,6 +2037,17 @@ namespace BocciaCoaching.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.TrainingSession", b =>
+                {
+                    b.HasOne("BocciaCoaching.Models.Entities.Microcycle", "Microcycle")
+                        .WithMany("TrainingSessions")
+                        .HasForeignKey("MicrocycleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Microcycle");
+                });
+
             modelBuilder.Entity("BocciaCoaching.Models.Entities.UserRol", b =>
                 {
                     b.HasOne("BocciaCoaching.Models.Entities.Rol", "Rol")
@@ -1911,11 +2078,21 @@ namespace BocciaCoaching.Migrations
                     b.Navigation("Periods");
                 });
 
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.Microcycle", b =>
+                {
+                    b.Navigation("TrainingSessions");
+                });
+
             modelBuilder.Entity("BocciaCoaching.Models.Entities.SaremasEvaluation", b =>
                 {
                     b.Navigation("Athletes");
 
                     b.Navigation("Throws");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.SessionPart", b =>
+                {
+                    b.Navigation("Sections");
                 });
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.Subscription", b =>
@@ -1926,6 +2103,11 @@ namespace BocciaCoaching.Migrations
             modelBuilder.Entity("BocciaCoaching.Models.Entities.SubscriptionType", b =>
                 {
                     b.Navigation("Subscriptions");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.TrainingSession", b =>
+                {
+                    b.Navigation("Parts");
                 });
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.User", b =>
