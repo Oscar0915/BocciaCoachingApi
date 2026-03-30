@@ -15,8 +15,9 @@ public class TeamValidationRepository (ApplicationDbContext context):ITeamValida
                 .Select(t => t.Status)
                 .FirstOrDefaultAsync();
 
-            return (bool)stateTeam!;
-        }catch (Exception e)
+            // Si Status es null (equipos creados antes de la migración), se trata como activo
+            return stateTeam ?? true;
+        }catch (Exception)
         {
             return false;
         }
