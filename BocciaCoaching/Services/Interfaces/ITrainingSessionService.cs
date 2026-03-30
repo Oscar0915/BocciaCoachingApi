@@ -18,6 +18,12 @@ namespace BocciaCoaching.Services.Interfaces
         Task<ResponseContract<SessionSectionResponseDto>> AddSection(AddSessionSectionDto dto);
         Task<ResponseContract<SessionSectionResponseDto>> UpdateSection(UpdateSessionSectionDto dto);
         Task<ResponseContract<bool>> DeleteSection(int sectionId);
+
+        // Athlete operations
+        Task<ResponseContract<List<AthleteSessionSummaryDto>>> GetSessionsByAthleteInDateRange(GetAthleteSessionsDto dto);
+        Task<ResponseContract<TrainingSessionResponseDto>> GetSessionDetailForAthlete(int sessionId, int athleteId);
+        Task<ResponseContract<TrainingSessionResponseDto>> StartSession(AthleteUpdateSessionStatusDto dto);
+        Task<ResponseContract<TrainingSessionResponseDto>> FinishSession(AthleteUpdateSessionStatusDto dto);
     }
 }
 

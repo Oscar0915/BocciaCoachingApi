@@ -418,6 +418,135 @@ namespace BocciaCoaching.Services
         }
 
         #endregion
+
+        #region Athlete Operations
+
+        public async Task<ResponseContract<List<AthleteSessionSummaryDto>>> GetSessionsByAthleteInDateRange(GetAthleteSessionsDto dto)
+        {
+            try
+            {
+                if (dto.StartDate > dto.EndDate)
+                    return ResponseContract<List<AthleteSessionSummaryDto>>.Fail("La fecha de inicio no puede ser mayor a la fecha de fin");
+
+                var sessions = await _repository.GetByAthleteAndDateRangeAsync(dto.AthleteId, dto.StartDate, dto.EndDate);
+
+                var summaries = sessions.Select(s => new AthleteSessionSummaryDto
+                {
+                    TrainingSessionId = s.TrainingSessionId,
+                    MicrocycleId = s.MicrocycleId,
+                    MacrocycleName = s.Microcycle?.Macrocycle?.Name ?? string.Empty,
+                    MicrocycleNumber = s.Microcycle?.Number ?? 0,
+                    MicrocycleStartDate = s.Microcycle?.StartDate ?? DateTime.MinValue,
+                    MicrocycleEndDate = s.Microcycle?.EndDate ?? DateTime.MinValue,
+                    MicrocycleType = s.Microcycle?.Type ?? string.Empty,
+                    DayOfWeek = s.DayOfWeek,
+                    Duration = s.Duration,
+                    Status = s.Status,
+                    StartTime = s.StartTime,
+                    EndTime = s.EndTime,
+                    ThrowPercentage = s.ThrowPercentage,
+                    MaxThrows = s.MaxThrows,
+                    TotalParts = s.Parts.Count,
+                    TotalSections = s.Parts.Sum(p => p.Sections.Count),
+                    CreatedAt = s.CreatedAt
+                }).ToList();
+
+                return ResponseContract<List<AthleteSessionSummaryDto>>.Ok(summaries, $"Se encontraron {summaries.Count} sesiones");
+            }
+            catch (Exception ex)
+            {
+                return ResponseContract<List<AthleteSessionSummaryDto>>.Fail($"Error al obtener sesiones del atleta: {ex.Message}");
+            }
+        }
+
+        public async Task<ResponseContract<TrainingSessionResponseDto>> GetSessionDetailForAthlete(int sessionId, int athleteId)
+        {
+            try
+            {
+                // Validate that the session belongs to the athlete
+                var belongsToAthlete = await _repository.SessionBelongsToAthleteAsync(sessionId, athleteId);
+                if (!belongsToAthlete)
+                    return ResponseContract<TrainingSessionResponseDto>.Fail("La sesión no existe o no pertenece al atleta");
+
+                var session = await _repository.GetByIdAsync(sessionId);
+                if (session == null)
+                    return ResponseContract<TrainingSessionResponseDto>.Fail("Sesión no encontrada");
+
+                return ResponseContract<TrainingSessionResponseDto>.Ok(MapToResponseDto(session));
+            }
+            catch (Exception ex)
+            {
+                return ResponseContract<TrainingSessionResponseDto>.Fail($"Error al obtener el detalle de la sesión: {ex.Message}");
+            }
+        }
+
+        public async Task<ResponseContract<TrainingSessionResponseDto>> StartSession(AthleteUpdateSessionStatusDto dto)
+        {
+            try
+            {
+                // Validate that the session belongs to the athlete
+                var belongsToAthlete = await _repository.SessionBelongsToAthleteAsync(dto.TrainingSessionId, dto.AthleteId);
+                if (!belongsToAthlete)
+                    return ResponseContract<TrainingSessionResponseDto>.Fail("La sesión no existe o no pertenece al atleta");
+
+                var session = await _repository.GetByIdAsync(dto.TrainingSessionId);
+                if (session == null)
+                    return ResponseContract<TrainingSessionResponseDto>.Fail("Sesión no encontrada");
+
+                // Validate current status - can only start a "programada" session
+                if (session.Status != "programada")
+                    return ResponseContract<TrainingSessionResponseDto>.Fail($"No se puede iniciar la sesión. Estado actual: '{session.Status}'. Solo se pueden iniciar sesiones con estado 'programada'");
+
+                session.Status = "en_proceso";
+                session.StartTime = DateTime.Now;
+
+                var updated = await _repository.UpdateAsync(session);
+                if (!updated)
+                    return ResponseContract<TrainingSessionResponseDto>.Fail("Error al iniciar la sesión");
+
+                var refreshed = await _repository.GetByIdAsync(dto.TrainingSessionId);
+                return ResponseContract<TrainingSessionResponseDto>.Ok(MapToResponseDto(refreshed!), "Sesión iniciada exitosamente");
+            }
+            catch (Exception ex)
+            {
+                return ResponseContract<TrainingSessionResponseDto>.Fail($"Error al iniciar la sesión: {ex.Message}");
+            }
+        }
+
+        public async Task<ResponseContract<TrainingSessionResponseDto>> FinishSession(AthleteUpdateSessionStatusDto dto)
+        {
+            try
+            {
+                // Validate that the session belongs to the athlete
+                var belongsToAthlete = await _repository.SessionBelongsToAthleteAsync(dto.TrainingSessionId, dto.AthleteId);
+                if (!belongsToAthlete)
+                    return ResponseContract<TrainingSessionResponseDto>.Fail("La sesión no existe o no pertenece al atleta");
+
+                var session = await _repository.GetByIdAsync(dto.TrainingSessionId);
+                if (session == null)
+                    return ResponseContract<TrainingSessionResponseDto>.Fail("Sesión no encontrada");
+
+                // Validate current status - can only finish an "en_proceso" session
+                if (session.Status != "en_proceso")
+                    return ResponseContract<TrainingSessionResponseDto>.Fail($"No se puede finalizar la sesión. Estado actual: '{session.Status}'. Solo se pueden finalizar sesiones con estado 'en_proceso'");
+
+                session.Status = "finalizada";
+                session.EndTime = DateTime.Now;
+
+                var updated = await _repository.UpdateAsync(session);
+                if (!updated)
+                    return ResponseContract<TrainingSessionResponseDto>.Fail("Error al finalizar la sesión");
+
+                var refreshed = await _repository.GetByIdAsync(dto.TrainingSessionId);
+                return ResponseContract<TrainingSessionResponseDto>.Ok(MapToResponseDto(refreshed!), "Sesión finalizada exitosamente");
+            }
+            catch (Exception ex)
+            {
+                return ResponseContract<TrainingSessionResponseDto>.Fail($"Error al finalizar la sesión: {ex.Message}");
+            }
+        }
+
+        #endregion
     }
 }
 

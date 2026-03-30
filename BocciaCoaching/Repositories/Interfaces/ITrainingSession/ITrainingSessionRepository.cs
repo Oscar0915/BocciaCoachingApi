@@ -22,5 +22,9 @@ namespace BocciaCoaching.Repositories.Interfaces.ITrainingSession
 
         // Validations
         Task<bool> MicrocycleExistsAsync(int microcycleId);
+
+        // Athlete queries
+        Task<List<TrainingSessionEntity>> GetByAthleteAndDateRangeAsync(int athleteId, DateTime startDate, DateTime endDate);
+        Task<bool> SessionBelongsToAthleteAsync(int sessionId, int athleteId);
     }
 }

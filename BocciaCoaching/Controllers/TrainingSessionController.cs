@@ -68,17 +68,7 @@ namespace BocciaCoaching.Controllers
             return Ok(result);
         }
 
-        /// <summary>
-        /// Subir evidencia fotográfica a una sesión (posición 1-4).
-        /// Formato: multipart/form-data con campo "file".
-        /// </summary>
-        [HttpPost("UploadPhoto/{sessionId}/{photoNumber}")]
-        public async Task<ActionResult<ResponseContract<TrainingSessionResponseDto>>> UploadPhoto(
-            int sessionId, int photoNumber, [FromForm] IFormFile file)
-        {
-            var result = await _service.UploadPhoto(sessionId, photoNumber, file);
-            return Ok(result);
-        }
+    
 
         /// <summary>
         /// Agregar una sección a una parte de la sesión
@@ -107,6 +97,52 @@ namespace BocciaCoaching.Controllers
         public async Task<ActionResult<ResponseContract<bool>>> DeleteSection(int sectionId)
         {
             var result = await _service.DeleteSection(sectionId);
+            return Ok(result);
+        }
+
+        // ===================== ATHLETE ENDPOINTS =====================
+
+        /// <summary>
+        /// Obtener las sesiones de entrenamiento asignadas a un atleta en un rango de fechas.
+        /// Busca a través de la relación Macrocycle (AthleteId) → Microcycle (StartDate/EndDate) → TrainingSession.
+        /// </summary>
+        [HttpPost("Athlete/GetSessionsByDateRange")]
+        public async Task<ActionResult<ResponseContract<List<AthleteSessionSummaryDto>>>> GetSessionsByAthleteInDateRange(GetAthleteSessionsDto dto)
+        {
+            var result = await _service.GetSessionsByAthleteInDateRange(dto);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Obtener el detalle completo de una sesión con todas sus partes y secciones para un atleta.
+        /// Valida que la sesión pertenezca al atleta.
+        /// </summary>
+        [HttpGet("Athlete/GetSessionDetail/{sessionId}/{athleteId}")]
+        public async Task<ActionResult<ResponseContract<TrainingSessionResponseDto>>> GetSessionDetailForAthlete(int sessionId, int athleteId)
+        {
+            var result = await _service.GetSessionDetailForAthlete(sessionId, athleteId);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Iniciar una sesión de entrenamiento (cambia estado de 'programada' a 'en_proceso' y registra la hora de inicio).
+        /// Solo el atleta asignado puede iniciar la sesión.
+        /// </summary>
+        [HttpPut("Athlete/StartSession")]
+        public async Task<ActionResult<ResponseContract<TrainingSessionResponseDto>>> StartSession(AthleteUpdateSessionStatusDto dto)
+        {
+            var result = await _service.StartSession(dto);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Finalizar una sesión de entrenamiento (cambia estado de 'en_proceso' a 'finalizada' y registra la hora de fin).
+        /// Solo el atleta asignado puede finalizar la sesión.
+        /// </summary>
+        [HttpPut("Athlete/FinishSession")]
+        public async Task<ActionResult<ResponseContract<TrainingSessionResponseDto>>> FinishSession(AthleteUpdateSessionStatusDto dto)
+        {
+            var result = await _service.FinishSession(dto);
             return Ok(result);
         }
     }

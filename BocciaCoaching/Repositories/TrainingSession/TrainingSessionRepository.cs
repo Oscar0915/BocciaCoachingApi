@@ -144,5 +144,33 @@ namespace BocciaCoaching.Repositories.TrainingSession
         {
             return await _context.Microcycles.AnyAsync(m => m.MicrocycleId == microcycleId);
         }
+
+        public async Task<List<TrainingSessionEntity>> GetByAthleteAndDateRangeAsync(int athleteId, DateTime startDate, DateTime endDate)
+        {
+            return await _context.TrainingSessions
+                .Include(s => s.Parts)
+                    .ThenInclude(p => p.Sections)
+                .Include(s => s.Microcycle)
+                    .ThenInclude(m => m!.Macrocycle)
+                .Where(s => s.Microcycle != null
+                    && s.Microcycle.Macrocycle != null
+                    && s.Microcycle.Macrocycle.AthleteId == athleteId
+                    && s.Microcycle.StartDate <= endDate
+                    && s.Microcycle.EndDate >= startDate)
+                .OrderBy(s => s.Microcycle!.StartDate)
+                    .ThenBy(s => s.DayOfWeek)
+                .ToListAsync();
+        }
+
+        public async Task<bool> SessionBelongsToAthleteAsync(int sessionId, int athleteId)
+        {
+            return await _context.TrainingSessions
+                .Include(s => s.Microcycle)
+                    .ThenInclude(m => m!.Macrocycle)
+                .AnyAsync(s => s.TrainingSessionId == sessionId
+                    && s.Microcycle != null
+                    && s.Microcycle.Macrocycle != null
+                    && s.Microcycle.Macrocycle.AthleteId == athleteId);
+        }
     }
 }
