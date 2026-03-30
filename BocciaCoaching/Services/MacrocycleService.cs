@@ -71,7 +71,7 @@ namespace BocciaCoaching.Services
 
                 // Determinar si se usan datos manuales o auto-calculados
                 List<Microcycle> microcycles;
-                List<MacrocyclePeriod> periods;
+                List<MacrocyclePeriod> periods = new();
                 List<Mesocycle> mesocycles;
 
                 bool hasManualMicrocycles = dto.Microcycles != null && dto.Microcycles.Any();
@@ -136,19 +136,17 @@ namespace BocciaCoaching.Services
                         }
                     }
 
-                    // Persistir períodos auto-calculados
-                    await _repository.AddPeriodsAsync(periods);
                 }
 
                 // Si se proporcionaron mesociclos manualmente, los períodos se auto-calculan igual
                 if (hasManualMesocycles)
                 {
                     periods = BuildPeriods(macrocycle.MacrocycleId, normalizedStart, dto.EndDate, macrocycle.Events.ToList(), microcycles);
-                    await _repository.AddPeriodsAsync(periods);
                 }
 
-                // Persistir
+                // Persistir: primero el macrociclo (padre) y luego las entidades hijas
                 var created = await _repository.CreateAsync(macrocycle);
+                await _repository.AddPeriodsAsync(periods);
                 await _repository.AddMesocyclesAsync(mesocycles);
                 await _repository.AddMicrocyclesAsync(microcycles);
 
