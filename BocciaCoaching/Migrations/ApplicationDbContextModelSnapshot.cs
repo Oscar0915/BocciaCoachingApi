@@ -181,6 +181,41 @@ namespace BocciaCoaching.Migrations
                     b.ToTable("AthletesToEvaluatedDirection");
                 });
 
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.CoachMicrocycleTypeDay", b =>
+                {
+                    b.Property<string>("CoachMicrocycleTypeDayId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("CoachId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("DayOfWeek")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<string>("MicrocycleTypeId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<double>("ThrowPercentage")
+                        .HasColumnType("double");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("CoachMicrocycleTypeDayId");
+
+                    b.HasIndex("CoachId");
+
+                    b.HasIndex("MicrocycleTypeId");
+
+                    b.ToTable("CoachMicrocycleTypeDay");
+                });
+
             modelBuilder.Entity("BocciaCoaching.Models.Entities.DirectionStatistics", b =>
                 {
                     b.Property<int>("DirectionStatisticsId")
@@ -711,6 +746,58 @@ namespace BocciaCoaching.Migrations
                     b.HasIndex("MacrocycleId");
 
                     b.ToTable("Microcycle");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.MicrocycleType", b =>
+                {
+                    b.Property<string>("MicrocycleTypeId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("MicrocycleTypeId");
+
+                    b.ToTable("MicrocycleType");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.MicrocycleTypeDayDefault", b =>
+                {
+                    b.Property<string>("MicrocycleTypeDayDefaultId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("DayOfWeek")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<string>("MicrocycleTypeId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<double>("ThrowPercentage")
+                        .HasColumnType("double");
+
+                    b.HasKey("MicrocycleTypeDayDefaultId");
+
+                    b.HasIndex("MicrocycleTypeId");
+
+                    b.ToTable("MicrocycleTypeDayDefault");
                 });
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.ModuleError", b =>
@@ -1675,6 +1762,25 @@ namespace BocciaCoaching.Migrations
                     b.Navigation("Coach");
                 });
 
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.CoachMicrocycleTypeDay", b =>
+                {
+                    b.HasOne("BocciaCoaching.Models.Entities.User", "Coach")
+                        .WithMany()
+                        .HasForeignKey("CoachId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BocciaCoaching.Models.Entities.MicrocycleType", "MicrocycleType")
+                        .WithMany("CoachDays")
+                        .HasForeignKey("MicrocycleTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Coach");
+
+                    b.Navigation("MicrocycleType");
+                });
+
             modelBuilder.Entity("BocciaCoaching.Models.Entities.DirectionStatistics", b =>
                 {
                     b.HasOne("BocciaCoaching.Models.Entities.AssessDirection", "AssessDirection")
@@ -1831,6 +1937,17 @@ namespace BocciaCoaching.Migrations
                         .IsRequired();
 
                     b.Navigation("Macrocycle");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.MicrocycleTypeDayDefault", b =>
+                {
+                    b.HasOne("BocciaCoaching.Models.Entities.MicrocycleType", "MicrocycleType")
+                        .WithMany("DefaultDays")
+                        .HasForeignKey("MicrocycleTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MicrocycleType");
                 });
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.NotificationMessage", b =>
@@ -2081,6 +2198,13 @@ namespace BocciaCoaching.Migrations
             modelBuilder.Entity("BocciaCoaching.Models.Entities.Microcycle", b =>
                 {
                     b.Navigation("TrainingSessions");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.MicrocycleType", b =>
+                {
+                    b.Navigation("CoachDays");
+
+                    b.Navigation("DefaultDays");
                 });
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.SaremasEvaluation", b =>

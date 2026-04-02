@@ -52,5 +52,10 @@ namespace BocciaCoaching.Data
         public DbSet<TrainingSession> TrainingSessions { get; set; }
         public DbSet<SessionPart> SessionParts { get; set; }
         public DbSet<SessionSection> SessionSections { get; set; }
+
+        // Microcycle Type entities
+        public DbSet<MicrocycleType> MicrocycleTypes { get; set; }
+        public DbSet<MicrocycleTypeDayDefault> MicrocycleTypeDayDefaults { get; set; }
+        public DbSet<CoachMicrocycleTypeDay> CoachMicrocycleTypeDays { get; set; }
     }
 }

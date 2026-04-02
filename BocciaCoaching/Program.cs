@@ -9,9 +9,11 @@ using BocciaCoaching.Repositories.Interfaces.IAssesstStrength;
 using BocciaCoaching.Repositories.Interfaces.IAssessDirection;
 using BocciaCoaching.Repositories.Interfaces.IAssessSaremas;
 using BocciaCoaching.Repositories.Interfaces.IMacrocycle;
+using BocciaCoaching.Repositories.Interfaces.IMicrocycleType;
 using BocciaCoaching.Repositories.Interfaces.ITeams;
 using BocciaCoaching.Repositories.Interfaces.ITrainingSession;
 using BocciaCoaching.Repositories.Macrocycle;
+using BocciaCoaching.Repositories.MicrocycleType;
 using BocciaCoaching.Repositories.TrainingSession;
 using BocciaCoaching.Repositories.NotificationTypes;
 using BocciaCoaching.Repositories.Statistic;
@@ -117,6 +119,9 @@ builder.Services.AddScoped<IMacrocycleService, MacrocycleService>();
 // Training Session Services
 builder.Services.AddScoped<ITrainingSessionService, TrainingSessionService>();
 
+// MicrocycleType Services
+builder.Services.AddScoped<IMicrocycleTypeService, MicrocycleTypeService>();
+
 /*
 Repositories - Repositorios
 */
@@ -154,6 +159,9 @@ builder.Services.AddScoped<IMacrocycleRepository, MacrocycleRepository>();
 
 // Training Session - Sesiones de entrenamiento
 builder.Services.AddScoped<ITrainingSessionRepository, TrainingSessionRepository>();
+
+// MicrocycleType - Tipos de microciclo
+builder.Services.AddScoped<IMicrocycleTypeRepository, MicrocycleTypeRepository>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
