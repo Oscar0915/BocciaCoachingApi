@@ -106,8 +106,15 @@ namespace BocciaCoaching.Repositories.Teams
         {
             try
             {
+                // Obtener IDs de equipos donde el usuario está relacionado via TeamUser con Status activo
+                var teamIdsViaTeamUser = await context.TeamsUsers
+                    .Where(tu => tu.UserId == coachId && tu.Status == true)
+                    .Select(tu => tu.TeamId)
+                    .ToListAsync();
+
                 var teams = await context.Teams
-                    .Where(t => t.CoachId == coachId && (t.Status == null || t.Status == true))
+                    .Where(t => (t.Status == null || t.Status == true) &&
+                                (t.CoachId == coachId || teamIdsViaTeamUser.Contains(t.TeamId)))
                     .Select(t => new TeamSummaryDto
                     {
                         TeamId = t.TeamId,
@@ -126,7 +133,7 @@ namespace BocciaCoaching.Repositories.Teams
                         Region = t.Region,
                         CreatedAt = t.CreatedAt,
                         UpdatedAt = t.UpdatedAt,
-                        MemberCount = context.TeamsUsers.Count(tu => tu.TeamId == t.TeamId)
+                        MemberCount = context.TeamsUsers.Count(tu => tu.TeamId == t.TeamId && tu.Status == true)
                     })
                     .ToListAsync();
 
