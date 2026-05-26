@@ -24,7 +24,13 @@ namespace BocciaCoaching.Models.DTO.Macrocycle
     {
         public string MacrocycleEventId { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
+
+        /// <summary>competencia, concentracion, evaluacion, descanso, campus, controlTecnico, intercambio</summary>
         public string Type { get; set; } = string.Empty;
+
+        /// <summary>Nivel del evento: local, nacional, internacional</summary>
+        public string? Level { get; set; }
+
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public string? Location { get; set; }
@@ -35,7 +41,13 @@ namespace BocciaCoaching.Models.DTO.Macrocycle
     {
         public int MacrocyclePeriodId { get; set; }
         public string Name { get; set; } = string.Empty;
+
+        /// <summary>preparatorioGeneral, preparatorioEspecial, competitivo, transicion, precompetitivo</summary>
         public string Type { get; set; } = string.Empty;
+
+        /// <summary>Código corto de la etapa: G1, E1, P1, C1, G2, E2, P2, C2, TO</summary>
+        public string? StageCode { get; set; }
+
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public int Weeks { get; set; }
@@ -60,10 +72,17 @@ namespace BocciaCoaching.Models.DTO.Macrocycle
         public int WeekNumber { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
+
+        /// <summary>ordinario, choque, activacion, competitivo, recuperacion, descarga, evaluacion</summary>
         public string Type { get; set; } = string.Empty;
+
         public string? PeriodName { get; set; }
         public string? MesocycleName { get; set; }
         public bool HasPeakPerformance { get; set; }
+
+        /// <summary>Carga semanal de 0.0 a 1.0 (0% a 100%) - corresponde al gráfico de barras</summary>
+        public double LoadPercentage { get; set; }
+
         public TrainingDistributionDto? TrainingDistribution { get; set; }
 
         /// <summary>Id del tipo de microciclo del catálogo (nullable)</summary>
@@ -71,6 +90,9 @@ namespace BocciaCoaching.Models.DTO.Macrocycle
 
         /// <summary>Nombre del tipo de microciclo del catálogo (nullable)</summary>
         public string? MicrocycleTypeName { get; set; }
+
+        /// <summary>Código corto del tipo de microciclo, ej: μ1, μ2</summary>
+        public string? MicrocycleTypeShortCode { get; set; }
 
         /// <summary>Días de la semana con sus porcentajes de lanzamiento para este microciclo</summary>
         public List<MicrocycleDayResponseDto> Days { get; set; } = new();

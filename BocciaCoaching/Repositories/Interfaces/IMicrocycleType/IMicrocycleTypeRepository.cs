@@ -10,15 +10,28 @@ namespace BocciaCoaching.Repositories.Interfaces.IMicrocycleType
         Task<bool> UpdateAsync(Models.Entities.MicrocycleType microcycleType);
         Task<bool> DeleteAsync(string id);
 
-        // Coach customization
-        Task<List<CoachMicrocycleTypeDay>> GetCoachDaysAsync(int coachId, string microcycleTypeId);
-        Task SaveCoachDaysAsync(int coachId, string microcycleTypeId, List<CoachMicrocycleTypeDay> days);
+        // ─── Overrides de días por coach (CoachId != null en MicrocycleTypeDayDefault) ───
+
+        /// <summary>Obtiene los overrides del coach para un tipo de microciclo</summary>
+        Task<List<MicrocycleTypeDayDefault>> GetCoachDaysAsync(int coachId, string microcycleTypeId);
+
+        /// <summary>Reemplaza todos los overrides del coach para un tipo (borra los viejos e inserta los nuevos)</summary>
+        Task SaveCoachDaysAsync(int coachId, string microcycleTypeId, List<MicrocycleTypeDayDefault> days);
+
+        /// <summary>Elimina todos los overrides del coach para un tipo (vuelve a los defaults del sistema)</summary>
         Task<bool> ResetCoachDaysAsync(int coachId, string microcycleTypeId);
 
-        /// <summary>Obtiene el conteo de microciclos construidos agrupados por tipo (campo Type de la tabla Microcycle)</summary>
+        // ─── Distribución de componentes personalizada por coach ───────────────────────
+
+        Task<CoachMicrocycleTypeDistribution?> GetCoachDistributionAsync(int coachId, string microcycleTypeId);
+        Task<List<CoachMicrocycleTypeDistribution>> GetAllCoachDistributionsAsync(int coachId);
+        Task UpsertCoachDistributionAsync(CoachMicrocycleTypeDistribution distribution);
+        Task<bool> DeleteCoachDistributionAsync(int coachId, string microcycleTypeId);
+
+        /// <summary>Conteo de microciclos construidos agrupados por tipo</summary>
         Task<Dictionary<string, int>> GetBuiltTypeSummaryAsync();
 
-        /// <summary>Inserta un nuevo día por defecto asociado a un tipo de microciclo</summary>
+        /// <summary>Inserta un nuevo día por defecto global (CoachId == null) para un tipo</summary>
         Task<MicrocycleTypeDayDefault> CreateDayDefaultAsync(MicrocycleTypeDayDefault dayDefault);
     }
 }

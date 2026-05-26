@@ -6,6 +6,10 @@ namespace BocciaCoaching.Models.DTO.Macrocycle
         public string MacrocycleId { get; set; } = string.Empty;
         public string? Type { get; set; }
         public bool? HasPeakPerformance { get; set; }
+
+        /// <summary>Carga semanal de 0.0 a 1.0 (0% a 100%). Si es null no se actualiza.</summary>
+        public double? LoadPercentage { get; set; }
+
         public TrainingDistributionDto? TrainingDistribution { get; set; }
 
         /// <summary>Id del tipo de microciclo del catálogo para actualizar la relación y sus días (opcional)</summary>
@@ -24,4 +28,3 @@ namespace BocciaCoaching.Models.DTO.Macrocycle
         public double ThrowPercentage { get; set; }
     }
 }
-

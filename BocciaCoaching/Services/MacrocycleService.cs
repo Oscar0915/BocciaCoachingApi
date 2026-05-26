@@ -555,7 +555,8 @@ namespace BocciaCoaching.Services
             DateTime start,
             DateTime end,
             List<MacrocycleEvent> events,
-            Dictionary<string, (string TypeId, List<MicrocycleTypeDayDefault> Days)>? typeMap = null)
+            Dictionary<string, (string TypeId, List<MicrocycleTypeDayDefault> Days)>? typeMap = null,
+            Dictionary<string, TrainingDistributionDto>? coachDistributions = null)
         {
             var microcycles = new List<Microcycle>();
             var normalizedStart = NormalizeToMonday(start);
@@ -569,7 +570,8 @@ namespace BocciaCoaching.Services
 
                 var type = DetermineMicrocycleType(current, weekEnd, events);
                 var hasPeak = events.Any(e => e.Type == "competencia" && e.StartDate <= weekEnd && e.EndDate >= current);
-                var distribution = GetDefaultDistribution(type);
+                var distribution = GetDistributionForCoach(type, coachDistributions);
+                var loadPercentage = GetDefaultLoadPercentage(type);
 
                 var calendar = System.Globalization.CultureInfo.InvariantCulture.Calendar;
                 var weekNumber = calendar.GetWeekOfYear(current, System.Globalization.CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
@@ -583,6 +585,7 @@ namespace BocciaCoaching.Services
                     EndDate = weekEnd,
                     Type = type,
                     HasPeakPerformance = hasPeak,
+                    LoadPercentage = loadPercentage,
                     TrainingDistribution = JsonSerializer.Serialize(distribution)
                 };
 
@@ -795,7 +798,70 @@ namespace BocciaCoaching.Services
         private static string CapitalizeFirst(string s) =>
             string.IsNullOrEmpty(s) ? s : char.ToUpper(s[0]) + s[1..];
 
+        /// <summary>
+        /// Calcula la carga semanal por defecto (0.0 a 1.0) según el tipo de microciclo:
+        /// ordinario=50%, choque=80%, activacion=65%, competitivo=100%, recuperacion=30%
+        /// </summary>
+        private static double GetDefaultLoadPercentage(string microcycleType)
+        {
+            return microcycleType switch
+            {
+                "ordinario"    => 0.50,
+                "choque"       => 0.80,
+                "activacion"   => 0.65,
+                "competitivo"  => 1.0,
+                "recuperacion" => 0.30,
+                "descarga"     => 0.40,
+                _              => 0.50
+            };
+        }
+
+        /// <summary>
+        /// Obtiene la distribución de entrenamiento para el coach. Si el coach tiene una
+        /// distribución personalizada para ese tipo de microciclo (via CoachMicrocycleTypeDistribution),
+        /// la usa. Si no, usa los valores por defecto del sistema.
+        /// </summary>
+        private static TrainingDistributionDto GetDistributionForCoach(
+            string microcycleType,
+            Dictionary<string, TrainingDistributionDto>? coachDistributions)
+        {
+            if (coachDistributions != null)
+            {
+                var key = microcycleType.Trim().ToLowerInvariant();
+                if (coachDistributions.TryGetValue(key, out var coachDist))
+                    return coachDist;
+            }
+            return GetDefaultDistribution(microcycleType);
+        }
+
         // ===================== HELPERS DE TIPOS DE MICROCICLO =====================
+
+        /// <summary>
+        /// Carga las distribuciones personalizadas del coach y las indexa por nombre de tipo
+        /// de microciclo (en minúsculas) para búsqueda rápida.
+        /// </summary>
+        private async Task<Dictionary<string, TrainingDistributionDto>> LoadCoachDistributionsAsync(int coachId)
+        {
+            var distributions = await _microcycleTypeRepository.GetAllCoachDistributionsAsync(coachId);
+            var result = new Dictionary<string, TrainingDistributionDto>();
+
+            foreach (var dist in distributions)
+            {
+                if (dist.MicrocycleType == null) continue;
+                var key = dist.MicrocycleType.Name.Trim().ToLowerInvariant();
+                result[key] = new TrainingDistributionDto
+                {
+                    FisicaGeneral = dist.FisicaGeneral,
+                    FisicaEspecial = dist.FisicaEspecial,
+                    Tecnica = dist.Tecnica,
+                    Tactica = dist.Tactica,
+                    Teorica = dist.Teorica,
+                    Psicologica = dist.Psicologica
+                };
+            }
+
+            return result;
+        }
 
         /// <summary>
         /// Carga el catálogo de tipos de microciclo y construye un diccionario
@@ -806,7 +872,8 @@ namespace BocciaCoaching.Services
             var types = await _microcycleTypeRepository.GetAllAsync();
             return types.ToDictionary(
                 t => t.Name.Trim().ToLowerInvariant(),
-                t => (t.MicrocycleTypeId, t.DefaultDays.ToList())
+                // Solo los días por defecto globales (CoachId == null) para poblar nuevos microciclos
+                t => (t.MicrocycleTypeId, t.DayConfigs.Where(d => d.CoachId == null).ToList())
             );
         }
 
@@ -860,6 +927,7 @@ namespace BocciaCoaching.Services
                     MacrocycleEventId = e.MacrocycleEventId,
                     Name = e.Name,
                     Type = e.Type,
+                    Level = e.Level,
                     StartDate = e.StartDate,
                     EndDate = e.EndDate,
                     Location = e.Location,
@@ -870,6 +938,7 @@ namespace BocciaCoaching.Services
                     MacrocyclePeriodId = p.MacrocyclePeriodId,
                     Name = p.Name,
                     Type = p.Type,
+                    StageCode = p.StageCode,
                     StartDate = p.StartDate,
                     EndDate = p.EndDate,
                     Weeks = p.Weeks
@@ -896,8 +965,10 @@ namespace BocciaCoaching.Services
                     PeriodName = mi.PeriodName,
                     MesocycleName = mi.MesocycleName,
                     HasPeakPerformance = mi.HasPeakPerformance,
+                    LoadPercentage = mi.LoadPercentage,
                     MicrocycleTypeId = mi.MicrocycleTypeId,
                     MicrocycleTypeName = mi.MicrocycleType?.Name,
+                    MicrocycleTypeShortCode = mi.MicrocycleType?.ShortCode,
                     TrainingDistribution = string.IsNullOrEmpty(mi.TrainingDistribution)
                         ? null
                         : JsonSerializer.Deserialize<TrainingDistributionDto>(mi.TrainingDistribution),

@@ -90,6 +90,56 @@ namespace BocciaCoaching.Controllers
             var result = await _service.CreateDayDefault(dto);
             return Ok(result);
         }
+
+        // ─── Distribución de componentes personalizada por coach ─────────────────
+
+        /// <summary>
+        /// Guardar (crear o actualizar) la distribución de componentes de entrenamiento
+        /// personalizada del coach para un tipo de microciclo.
+        /// Los valores (FísicaGeneral, FísicaEspecial, Técnica, Táctica, Teórica, Psicológica)
+        /// deben sumar 1.0. Solo afecta a ese coach específico.
+        /// </summary>
+        [HttpPut("UpsertCoachDistribution")]
+        public async Task<ActionResult<ResponseContract<CoachMicrocycleTypeDistributionDto>>> UpsertCoachDistribution(
+            UpsertCoachMicrocycleTypeDistributionDto dto)
+        {
+            var result = await _service.UpsertCoachDistribution(dto);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Obtener la distribución personalizada del coach para un tipo de microciclo.
+        /// Si no tiene personalización devuelve null (se usan los valores por defecto del sistema).
+        /// </summary>
+        [HttpGet("GetCoachDistribution/{coachId}/{microcycleTypeId}")]
+        public async Task<ActionResult<ResponseContract<CoachMicrocycleTypeDistributionDto?>>> GetCoachDistribution(
+            int coachId, string microcycleTypeId)
+        {
+            var result = await _service.GetCoachDistribution(coachId, microcycleTypeId);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Obtener todas las distribuciones personalizadas de un coach
+        /// (una por cada tipo de microciclo que haya configurado).
+        /// </summary>
+        [HttpGet("GetAllCoachDistributions/{coachId}")]
+        public async Task<ActionResult<ResponseContract<List<CoachMicrocycleTypeDistributionDto>>>> GetAllCoachDistributions(int coachId)
+        {
+            var result = await _service.GetAllCoachDistributions(coachId);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Eliminar la distribución personalizada del coach para un tipo de microciclo.
+        /// Los nuevos macrociclos de ese coach usarán los valores por defecto del sistema.
+        /// </summary>
+        [HttpDelete("DeleteCoachDistribution/{coachId}/{microcycleTypeId}")]
+        public async Task<ActionResult<ResponseContract<bool>>> DeleteCoachDistribution(int coachId, string microcycleTypeId)
+        {
+            var result = await _service.DeleteCoachDistribution(coachId, microcycleTypeId);
+            return Ok(result);
+        }
     }
 }
 

@@ -3,6 +3,10 @@ namespace BocciaCoaching.Models.DTO.MicrocycleType
     public class CreateMicrocycleTypeDto
     {
         public string Name { get; set; } = string.Empty;
+
+        /// <summary>Código corto (símbolo) del tipo de microciclo, ej: μ1, μ2, μ3</summary>
+        public string? ShortCode { get; set; }
+
         public string? Description { get; set; }
         public List<DayPercentageDto> Days { get; set; } = new();
     }

@@ -38,6 +38,12 @@ namespace BocciaCoaching.Models.Entities
         public bool HasPeakPerformance { get; set; }
 
         /// <summary>
+        /// Porcentaje de carga semanal (0.0 a 1.0 = 0% a 100%).
+        /// Corresponde al gráfico de barras del plan periodizado.
+        /// </summary>
+        public double LoadPercentage { get; set; }
+
+        /// <summary>
         /// JSON: {"fisicaGeneral":0.15,"fisicaEspecial":0.15,"tecnica":0.20,"tactica":0.20,"teorica":0.20,"psicologica":0.10}
         /// </summary>
         [Column(TypeName = "text")]

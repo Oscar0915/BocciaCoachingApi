@@ -24,7 +24,7 @@ namespace BocciaCoaching.Repositories.MicrocycleType
         public async Task<List<Models.Entities.MicrocycleType>> GetAllAsync()
         {
             return await _context.MicrocycleTypes
-                .Include(m => m.DefaultDays)
+                .Include(m => m.DayConfigs)
                 .Where(m => m.Status)
                 .OrderBy(m => m.Name)
                 .ToListAsync();
@@ -33,7 +33,7 @@ namespace BocciaCoaching.Repositories.MicrocycleType
         public async Task<Models.Entities.MicrocycleType?> GetByIdAsync(string id)
         {
             return await _context.MicrocycleTypes
-                .Include(m => m.DefaultDays)
+                .Include(m => m.DayConfigs)
                 .FirstOrDefaultAsync(m => m.MicrocycleTypeId == id);
         }
 
@@ -52,33 +52,80 @@ namespace BocciaCoaching.Repositories.MicrocycleType
             return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task<List<CoachMicrocycleTypeDay>> GetCoachDaysAsync(int coachId, string microcycleTypeId)
+        // ─── Overrides de días por coach ──────────────────────────────────────────────
+
+        public async Task<List<MicrocycleTypeDayDefault>> GetCoachDaysAsync(int coachId, string microcycleTypeId)
         {
-            return await _context.CoachMicrocycleTypeDays
-                .Where(c => c.CoachId == coachId && c.MicrocycleTypeId == microcycleTypeId)
+            return await _context.MicrocycleTypeDayDefaults
+                .Where(d => d.CoachId == coachId && d.MicrocycleTypeId == microcycleTypeId)
                 .ToListAsync();
         }
 
-        public async Task SaveCoachDaysAsync(int coachId, string microcycleTypeId, List<CoachMicrocycleTypeDay> days)
+        public async Task SaveCoachDaysAsync(int coachId, string microcycleTypeId, List<MicrocycleTypeDayDefault> days)
         {
-            // Eliminar días previos del coach para este tipo
-            var existing = await _context.CoachMicrocycleTypeDays
-                .Where(c => c.CoachId == coachId && c.MicrocycleTypeId == microcycleTypeId)
+            var existing = await _context.MicrocycleTypeDayDefaults
+                .Where(d => d.CoachId == coachId && d.MicrocycleTypeId == microcycleTypeId)
                 .ToListAsync();
-            _context.CoachMicrocycleTypeDays.RemoveRange(existing);
-
-            // Insertar los nuevos
-            _context.CoachMicrocycleTypeDays.AddRange(days);
+            _context.MicrocycleTypeDayDefaults.RemoveRange(existing);
+            _context.MicrocycleTypeDayDefaults.AddRange(days);
             await _context.SaveChangesAsync();
         }
 
         public async Task<bool> ResetCoachDaysAsync(int coachId, string microcycleTypeId)
         {
-            var existing = await _context.CoachMicrocycleTypeDays
-                .Where(c => c.CoachId == coachId && c.MicrocycleTypeId == microcycleTypeId)
+            var existing = await _context.MicrocycleTypeDayDefaults
+                .Where(d => d.CoachId == coachId && d.MicrocycleTypeId == microcycleTypeId)
                 .ToListAsync();
             if (!existing.Any()) return false;
-            _context.CoachMicrocycleTypeDays.RemoveRange(existing);
+            _context.MicrocycleTypeDayDefaults.RemoveRange(existing);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        // ─── CoachMicrocycleTypeDistribution ──────────────────────────────────────────
+
+        public async Task<CoachMicrocycleTypeDistribution?> GetCoachDistributionAsync(int coachId, string microcycleTypeId)
+        {
+            return await _context.CoachMicrocycleTypeDistributions
+                .FirstOrDefaultAsync(d => d.CoachId == coachId && d.MicrocycleTypeId == microcycleTypeId);
+        }
+
+        public async Task<List<CoachMicrocycleTypeDistribution>> GetAllCoachDistributionsAsync(int coachId)
+        {
+            return await _context.CoachMicrocycleTypeDistributions
+                .Include(d => d.MicrocycleType)
+                .Where(d => d.CoachId == coachId)
+                .ToListAsync();
+        }
+
+        public async Task UpsertCoachDistributionAsync(CoachMicrocycleTypeDistribution distribution)
+        {
+            var existing = await _context.CoachMicrocycleTypeDistributions
+                .FirstOrDefaultAsync(d => d.CoachId == distribution.CoachId
+                                       && d.MicrocycleTypeId == distribution.MicrocycleTypeId);
+            if (existing == null)
+            {
+                _context.CoachMicrocycleTypeDistributions.Add(distribution);
+            }
+            else
+            {
+                existing.FisicaGeneral  = distribution.FisicaGeneral;
+                existing.FisicaEspecial = distribution.FisicaEspecial;
+                existing.Tecnica        = distribution.Tecnica;
+                existing.Tactica        = distribution.Tactica;
+                existing.Teorica        = distribution.Teorica;
+                existing.Psicologica    = distribution.Psicologica;
+                existing.UpdatedAt      = DateTime.Now;
+                _context.CoachMicrocycleTypeDistributions.Update(existing);
+            }
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<bool> DeleteCoachDistributionAsync(int coachId, string microcycleTypeId)
+        {
+            var existing = await _context.CoachMicrocycleTypeDistributions
+                .FirstOrDefaultAsync(d => d.CoachId == coachId && d.MicrocycleTypeId == microcycleTypeId);
+            if (existing == null) return false;
+            _context.CoachMicrocycleTypeDistributions.Remove(existing);
             return await _context.SaveChangesAsync() > 0;
         }
 
@@ -99,4 +146,3 @@ namespace BocciaCoaching.Repositories.MicrocycleType
         }
     }
 }
-

@@ -18,6 +18,23 @@ namespace BocciaCoaching.Services.Interfaces
 
         /// <summary>Inserta un nuevo día por defecto para un tipo de microciclo</summary>
         Task<ResponseContract<MicrocycleTypeDayDefaultResponseDto>> CreateDayDefault(CreateMicrocycleTypeDayDefaultDto dto);
+
+        // ─── Distribución personalizada por coach ───────────────────────────────
+
+        /// <summary>
+        /// Crea o actualiza la distribución de componentes de entrenamiento personalizada
+        /// del coach para un tipo de microciclo específico (FísicaGeneral, Técnica, etc.).
+        /// Solo afecta a ese coach.
+        /// </summary>
+        Task<ResponseContract<CoachMicrocycleTypeDistributionDto>> UpsertCoachDistribution(UpsertCoachMicrocycleTypeDistributionDto dto);
+
+        /// <summary>Obtiene la distribución personalizada del coach para un tipo de microciclo</summary>
+        Task<ResponseContract<CoachMicrocycleTypeDistributionDto?>> GetCoachDistribution(int coachId, string microcycleTypeId);
+
+        /// <summary>Obtiene todas las distribuciones personalizadas del coach</summary>
+        Task<ResponseContract<List<CoachMicrocycleTypeDistributionDto>>> GetAllCoachDistributions(int coachId);
+
+        /// <summary>Elimina la distribución personalizada del coach y vuelve a los valores por defecto</summary>
+        Task<ResponseContract<bool>> DeleteCoachDistribution(int coachId, string microcycleTypeId);
     }
 }
-

@@ -24,18 +24,21 @@ namespace BocciaCoaching.Services
                 {
                     MicrocycleTypeId = Guid.NewGuid().ToString(),
                     Name = dto.Name,
+                    ShortCode = dto.ShortCode,
                     Description = dto.Description,
                     CreatedAt = DateTime.Now
                 };
 
                 foreach (var day in dto.Days)
                 {
-                    entity.DefaultDays.Add(new MicrocycleTypeDayDefault
+                    entity.DayConfigs.Add(new MicrocycleTypeDayDefault
                     {
                         MicrocycleTypeDayDefaultId = Guid.NewGuid().ToString(),
                         MicrocycleTypeId = entity.MicrocycleTypeId,
+                        CoachId = null,   // null = default global del sistema
                         DayOfWeek = day.DayOfWeek,
-                        ThrowPercentage = day.ThrowPercentage
+                        ThrowPercentage = day.ThrowPercentage,
+                        CreatedAt = DateTime.Now
                     });
                 }
 
@@ -123,9 +126,10 @@ namespace BocciaCoaching.Services
                 if (entity == null)
                     return ResponseContract<bool>.Fail("Tipo de microciclo no encontrado");
 
-                var days = dto.Days.Select(d => new CoachMicrocycleTypeDay
+                // Crear registros con CoachId != null (override del coach)
+                var days = dto.Days.Select(d => new MicrocycleTypeDayDefault
                 {
-                    CoachMicrocycleTypeDayId = Guid.NewGuid().ToString(),
+                    MicrocycleTypeDayDefaultId = Guid.NewGuid().ToString(),
                     CoachId = dto.CoachId,
                     MicrocycleTypeId = dto.MicrocycleTypeId,
                     DayOfWeek = d.DayOfWeek,
@@ -175,12 +179,15 @@ namespace BocciaCoaching.Services
                         Name = t.Name,
                         Description = t.Description,
                         Status = t.Status,
-                        Days = t.DefaultDays.Select(d => new MicrocycleTypeDayDto
-                        {
-                            DayOfWeek = d.DayOfWeek,
-                            ThrowPercentage = d.ThrowPercentage,
-                            IsCustom = false
-                        }).ToList(),
+                        // Solo mostrar los defaults globales (CoachId == null) en el overview
+                        Days = t.DayConfigs
+                            .Where(d => d.CoachId == null)
+                            .Select(d => new MicrocycleTypeDayDto
+                            {
+                                DayOfWeek = d.DayOfWeek,
+                                ThrowPercentage = d.ThrowPercentage,
+                                IsCustom = false
+                            }).ToList(),
                         // Busca coincidencia por nombre (case-insensitive) con los tipos construidos
                         TotalBuilt = builtSummary
                             .Where(b => b.Key.Equals(t.Name, StringComparison.OrdinalIgnoreCase))
@@ -219,8 +226,10 @@ namespace BocciaCoaching.Services
                 {
                     MicrocycleTypeDayDefaultId = Guid.NewGuid().ToString(),
                     MicrocycleTypeId = dto.MicrocycleTypeId,
+                    CoachId = null,  // null = global default
                     DayOfWeek = dto.DayOfWeek,
-                    ThrowPercentage = dto.ThrowPercentage
+                    ThrowPercentage = dto.ThrowPercentage,
+                    CreatedAt = DateTime.Now
                 };
 
                 var created = await _repository.CreateDayDefaultAsync(entity);
@@ -249,31 +258,38 @@ namespace BocciaCoaching.Services
             {
                 MicrocycleTypeId = entity.MicrocycleTypeId,
                 Name = entity.Name,
+                ShortCode = entity.ShortCode,
                 Description = entity.Description,
                 Status = entity.Status,
-                Days = entity.DefaultDays.Select(d => new MicrocycleTypeDayDto
-                {
-                    DayOfWeek = d.DayOfWeek,
-                    ThrowPercentage = d.ThrowPercentage,
-                    IsCustom = false
-                }).ToList()
+                // Solo los defaults globales (sin coach override)
+                Days = entity.DayConfigs
+                    .Where(d => d.CoachId == null)
+                    .Select(d => new MicrocycleTypeDayDto
+                    {
+                        DayOfWeek = d.DayOfWeek,
+                        ThrowPercentage = d.ThrowPercentage,
+                        IsCustom = false
+                    }).ToList()
             };
         }
 
         private MicrocycleTypeResponseDto MapToResponseWithCoach(
             MicrocycleTypeEntity entity,
-            List<CoachMicrocycleTypeDay> coachDays)
+            List<MicrocycleTypeDayDefault> coachDays)
         {
             var dto = new MicrocycleTypeResponseDto
             {
                 MicrocycleTypeId = entity.MicrocycleTypeId,
                 Name = entity.Name,
+                ShortCode = entity.ShortCode,
                 Description = entity.Description,
                 Status = entity.Status
             };
 
-            // Para cada día default, verificar si el coach tiene personalización
-            foreach (var defaultDay in entity.DefaultDays)
+            // Los defaults globales son los que tienen CoachId == null
+            var globalDefaults = entity.DayConfigs.Where(d => d.CoachId == null).ToList();
+
+            foreach (var defaultDay in globalDefaults)
             {
                 var coachDay = coachDays.FirstOrDefault(c =>
                     c.DayOfWeek.Equals(defaultDay.DayOfWeek, StringComparison.OrdinalIgnoreCase));
@@ -287,6 +303,119 @@ namespace BocciaCoaching.Services
             }
 
             return dto;
+        }
+
+        // ─── CoachMicrocycleTypeDistribution ────────────────────────────────────
+
+        public async Task<ResponseContract<CoachMicrocycleTypeDistributionDto>> UpsertCoachDistribution(UpsertCoachMicrocycleTypeDistributionDto dto)
+        {
+            try
+            {
+                var type = await _repository.GetByIdAsync(dto.MicrocycleTypeId);
+                if (type == null)
+                    return ResponseContract<CoachMicrocycleTypeDistributionDto>.Fail("Tipo de microciclo no encontrado");
+
+                var sum = dto.FisicaGeneral + dto.FisicaEspecial + dto.Tecnica + dto.Tactica + dto.Teorica + dto.Psicologica;
+                if (Math.Abs(sum - 1.0) > 0.01)
+                    return ResponseContract<CoachMicrocycleTypeDistributionDto>.Fail("La suma de los porcentajes debe ser 1.0 (±0.01)");
+
+                var entity = new CoachMicrocycleTypeDistribution
+                {
+                    CoachMicrocycleTypeDistributionId = Guid.NewGuid().ToString(),
+                    CoachId = dto.CoachId,
+                    MicrocycleTypeId = dto.MicrocycleTypeId,
+                    FisicaGeneral = dto.FisicaGeneral,
+                    FisicaEspecial = dto.FisicaEspecial,
+                    Tecnica = dto.Tecnica,
+                    Tactica = dto.Tactica,
+                    Teorica = dto.Teorica,
+                    Psicologica = dto.Psicologica,
+                    CreatedAt = DateTime.Now
+                };
+
+                await _repository.UpsertCoachDistributionAsync(entity);
+
+                var saved = await _repository.GetCoachDistributionAsync(dto.CoachId, dto.MicrocycleTypeId);
+                return ResponseContract<CoachMicrocycleTypeDistributionDto>.Ok(
+                    MapDistributionToDto(saved!, type),
+                    "Distribución guardada correctamente");
+            }
+            catch (Exception ex)
+            {
+                return ResponseContract<CoachMicrocycleTypeDistributionDto>.Fail($"Error al guardar distribución: {ex.Message}");
+            }
+        }
+
+        public async Task<ResponseContract<CoachMicrocycleTypeDistributionDto?>> GetCoachDistribution(int coachId, string microcycleTypeId)
+        {
+            try
+            {
+                var type = await _repository.GetByIdAsync(microcycleTypeId);
+                if (type == null)
+                    return ResponseContract<CoachMicrocycleTypeDistributionDto?>.Fail("Tipo de microciclo no encontrado");
+
+                var distribution = await _repository.GetCoachDistributionAsync(coachId, microcycleTypeId);
+                if (distribution == null)
+                    return ResponseContract<CoachMicrocycleTypeDistributionDto?>.Ok(null, "El coach no tiene distribución personalizada para este tipo");
+
+                return ResponseContract<CoachMicrocycleTypeDistributionDto?>.Ok(MapDistributionToDto(distribution, type));
+            }
+            catch (Exception ex)
+            {
+                return ResponseContract<CoachMicrocycleTypeDistributionDto?>.Fail($"Error al obtener distribución: {ex.Message}");
+            }
+        }
+
+        public async Task<ResponseContract<List<CoachMicrocycleTypeDistributionDto>>> GetAllCoachDistributions(int coachId)
+        {
+            try
+            {
+                var distributions = await _repository.GetAllCoachDistributionsAsync(coachId);
+                var result = distributions.Select(d => MapDistributionToDto(d, d.MicrocycleType)).ToList();
+                return ResponseContract<List<CoachMicrocycleTypeDistributionDto>>.Ok(result,
+                    $"Se encontraron {result.Count} distribuciones personalizadas");
+            }
+            catch (Exception ex)
+            {
+                return ResponseContract<List<CoachMicrocycleTypeDistributionDto>>.Fail($"Error al obtener distribuciones: {ex.Message}");
+            }
+        }
+
+        public async Task<ResponseContract<bool>> DeleteCoachDistribution(int coachId, string microcycleTypeId)
+        {
+            try
+            {
+                var result = await _repository.DeleteCoachDistributionAsync(coachId, microcycleTypeId);
+                return result
+                    ? ResponseContract<bool>.Ok(true, "Distribución personalizada eliminada. Se usarán los valores por defecto")
+                    : ResponseContract<bool>.Fail("No se encontró distribución personalizada para ese coach y tipo");
+            }
+            catch (Exception ex)
+            {
+                return ResponseContract<bool>.Fail($"Error al eliminar distribución: {ex.Message}");
+            }
+        }
+
+        private static CoachMicrocycleTypeDistributionDto MapDistributionToDto(
+            CoachMicrocycleTypeDistribution d,
+            MicrocycleTypeEntity? type)
+        {
+            return new CoachMicrocycleTypeDistributionDto
+            {
+                CoachMicrocycleTypeDistributionId = d.CoachMicrocycleTypeDistributionId,
+                CoachId = d.CoachId,
+                MicrocycleTypeId = d.MicrocycleTypeId,
+                MicrocycleTypeName = type?.Name ?? string.Empty,
+                MicrocycleTypeShortCode = type?.ShortCode,
+                FisicaGeneral = d.FisicaGeneral,
+                FisicaEspecial = d.FisicaEspecial,
+                Tecnica = d.Tecnica,
+                Tactica = d.Tactica,
+                Teorica = d.Teorica,
+                Psicologica = d.Psicologica,
+                CreatedAt = d.CreatedAt,
+                UpdatedAt = d.UpdatedAt
+            };
         }
     }
 }

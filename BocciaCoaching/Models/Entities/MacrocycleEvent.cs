@@ -16,8 +16,15 @@ namespace BocciaCoaching.Models.Entities
 
         public string Name { get; set; } = string.Empty;
 
-        /// <summary>competencia, concentracion, evaluacion, descanso, campus</summary>
+        /// <summary>competencia, concentracion, evaluacion, descanso, campus, controlTecnico, intercambio</summary>
         public string Type { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Nivel del evento (aplicable a competencias): local, nacional, internacional.
+        /// También puede usarse para clasificar evaluaciones o controles.
+        /// </summary>
+        [MaxLength(50)]
+        public string? Level { get; set; }
 
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }

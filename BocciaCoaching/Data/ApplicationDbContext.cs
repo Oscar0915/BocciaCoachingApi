@@ -55,8 +55,19 @@ namespace BocciaCoaching.Data
 
         // Microcycle Type entities
         public DbSet<MicrocycleType> MicrocycleTypes { get; set; }
+        /// <summary>
+        /// Configuración de días por tipo de microciclo.
+        /// CoachId == null → default global. CoachId != null → override del coach.
+        /// Unifica las antiguas tablas MicrocycleTypeDayDefault y CoachMicrocycleTypeDay.
+        /// </summary>
         public DbSet<MicrocycleTypeDayDefault> MicrocycleTypeDayDefaults { get; set; }
-        public DbSet<CoachMicrocycleTypeDay> CoachMicrocycleTypeDays { get; set; }
+
+        /// <summary>
+        /// Distribución de componentes de entrenamiento personalizada por coach para cada tipo de microciclo.
+        /// Permite que cada entrenador defina sus propios porcentajes por defecto (FísicaGeneral, Técnica, etc.)
+        /// al generar nuevos macrociclos. Solo afecta al coach específico.
+        /// </summary>
+        public DbSet<CoachMicrocycleTypeDistribution> CoachMicrocycleTypeDistributions { get; set; }
 
         // Microcycle Day (días/porcentajes por instancia de microciclo)
         public DbSet<MicrocycleDay> MicrocycleDays { get; set; }
@@ -64,6 +75,21 @@ namespace BocciaCoaching.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            // MicrocycleTypeDayDefault → MicrocycleType
+            modelBuilder.Entity<MicrocycleTypeDayDefault>()
+                .HasOne(d => d.MicrocycleType)
+                .WithMany(t => t.DayConfigs)
+                .HasForeignKey(d => d.MicrocycleTypeId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // MicrocycleTypeDayDefault → User (Coach, nullable)
+            modelBuilder.Entity<MicrocycleTypeDayDefault>()
+                .HasOne(d => d.Coach)
+                .WithMany()
+                .HasForeignKey(d => d.CoachId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .IsRequired(false);
 
             // Microcycle → MicrocycleType (nullable, SetNull on delete del tipo)
             modelBuilder.Entity<Microcycle>()
