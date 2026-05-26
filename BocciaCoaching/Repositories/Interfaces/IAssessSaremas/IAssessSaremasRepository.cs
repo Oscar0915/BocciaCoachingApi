@@ -19,6 +19,11 @@ namespace BocciaCoaching.Repositories.Interfaces.IAssessSaremas
         Task<List<SaremasThrow>> GetAllThrowsForAthleteAsync(int saremasEvalId, int athleteId);
         Task<int?> GetCoachIdByEvaluationAsync(int saremasEvalId);
         Task<bool> UpdateEvaluationScoresAsync(int saremasEvalId, int totalScore, double averageScore);
+
+        /// <summary>
+        /// Verifica si un entrenador ya ha generado alguna evaluación SAREMAS+
+        /// </summary>
+        Task<CoachHasSaremasEvaluationsDto> CoachHasEvaluationsAsync(int coachId);
     }
 }
 

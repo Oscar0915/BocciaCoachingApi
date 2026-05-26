@@ -16,6 +16,7 @@ namespace BocciaCoaching.Services.Interfaces
         Task<ResponseContract<SaremasEvaluationDetailsDto>> GetEvaluationDetails(int saremasEvalId);
         Task<ResponseContract<SaremasStatisticsDto>> GetEvaluationStatistics(int saremasEvalId);
         Task<ResponseContract<SaremasAthleteHistoryDto>> GetAthleteHistory(int athleteId);
+        Task<ResponseContract<CoachHasSaremasEvaluationsDto>> CoachHasEvaluations(int coachId);
     }
 }
 

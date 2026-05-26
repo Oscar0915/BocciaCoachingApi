@@ -234,6 +234,15 @@ namespace BocciaCoaching.Repositories.AssesstStrength
                 }
                 else
                 {
+                    // Validar que el AthleteId existe en la tabla User
+                    var athleteExists = await _context.Users.AnyAsync(u => u.UserId == request.AthleteId);
+                    if (!athleteExists)
+                    {
+                        await transaction.RollbackAsync();
+                        Console.WriteLine($"Error en AgregarDetalleDeEvaluacion: AthleteId {request.AthleteId} no existe en la tabla User.");
+                        return false;
+                    }
+
                     // Crear nueva entidad
                     var newEntity = new EvaluationDetailStrength
                     {
@@ -888,6 +897,23 @@ namespace BocciaCoaching.Repositories.AssesstStrength
                 try { await _context.Database.RollbackTransactionAsync(); } catch { /* ignore */ }
                 return ResponseContract<bool>.Fail($"Error al cancelar la evaluación: {ex.Message}");
             }
+        }
+
+        /// <summary>
+        /// Verifica si un entrenador ya ha generado alguna evaluación de fuerza
+        /// </summary>
+        public async Task<CoachHasEvaluationsDto> CoachHasEvaluationsAsync(int coachId)
+        {
+            var totalEvaluations = await _context.AssessStrengths
+                .Where(a => a.CoachId == coachId)
+                .CountAsync();
+
+            return new CoachHasEvaluationsDto
+            {
+                CoachId = coachId,
+                HasEvaluations = totalEvaluations > 0,
+                TotalEvaluations = totalEvaluations
+            };
         }
     }
 }

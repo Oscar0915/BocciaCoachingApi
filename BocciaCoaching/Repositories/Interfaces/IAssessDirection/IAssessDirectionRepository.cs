@@ -36,6 +36,11 @@ namespace BocciaCoaching.Repositories.Interfaces.IAssessDirection
         Task<DirectionEvaluationDetailsDto?> GetEvaluationDetailsAsync(int assessDirectionId);
 
         Task<ResponseContract<bool>> CancelAssessmentAsync(int assessDirectionId, int coachId, string? reason);
+
+        /// <summary>
+        /// Verifica si un entrenador ya ha generado alguna evaluación de dirección
+        /// </summary>
+        Task<CoachHasDirectionEvaluationsDto> CoachHasEvaluationsAsync(int coachId);
     }
 }
 

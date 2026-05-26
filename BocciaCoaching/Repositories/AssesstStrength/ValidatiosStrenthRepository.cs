@@ -44,7 +44,8 @@ public class ValidatiosStrenthRepository: IValidationsAssetsStrength
         {
             var idUpdate = await _context.EvaluationDetailStrengths.Where(a =>
                 a.ThrowOrder == requestAddDetailToEvaluationForAthlete.ThrowOrder
-                && a.AssessStrengthId == requestAddDetailToEvaluationForAthlete.AssessStrengthId).ToListAsync();
+                && a.AssessStrengthId == requestAddDetailToEvaluationForAthlete.AssessStrengthId
+                && a.AthleteId == requestAddDetailToEvaluationForAthlete.AthleteId).ToListAsync();
             
             if(idUpdate.Count == 0)
                 return false;

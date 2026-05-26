@@ -116,6 +116,18 @@ namespace BocciaCoaching.Controllers
             var result = await _service.GetAthleteHistory(athleteId);
             return Ok(result);
         }
+
+        /// <summary>
+        /// Verifica si un entrenador ya ha generado alguna evaluación SAREMAS+
+        /// </summary>
+        /// <param name="coachId">ID del entrenador a consultar</param>
+        /// <returns>Indica si tiene evaluaciones y el total generado</returns>
+        [HttpGet("CoachHasEvaluations/{coachId}")]
+        public async Task<ActionResult<ResponseContract<CoachHasSaremasEvaluationsDto>>> CoachHasEvaluations(int coachId)
+        {
+            var result = await _service.CoachHasEvaluations(coachId);
+            return Ok(result);
+        }
     }
 }
 

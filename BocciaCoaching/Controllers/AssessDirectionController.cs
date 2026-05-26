@@ -127,6 +127,18 @@ namespace BocciaCoaching.Controllers
             var result = await _assessDirectionService.GetEvaluationDetails(assessDirectionId);
             return Ok(result);
         }
+
+        /// <summary>
+        /// Verifica si un entrenador ya ha generado alguna evaluación de control de dirección
+        /// </summary>
+        /// <param name="coachId">ID del entrenador a consultar</param>
+        /// <returns>Indica si tiene evaluaciones y el total generado</returns>
+        [HttpGet("CoachHasEvaluations/{coachId}")]
+        public async Task<ActionResult<ResponseContract<CoachHasDirectionEvaluationsDto>>> CoachHasEvaluations(int coachId)
+        {
+            var result = await _assessDirectionService.CoachHasEvaluations(coachId);
+            return Ok(result);
+        }
     }
 }
 

@@ -239,6 +239,23 @@ namespace BocciaCoaching.Services
                 return ResponseContract<SaremasAthleteHistoryDto>.Fail($"Error al obtener el historial: {e.Message}");
             }
         }
+
+        public async Task<ResponseContract<CoachHasSaremasEvaluationsDto>> CoachHasEvaluations(int coachId)
+        {
+            try
+            {
+                var result = await _repository.CoachHasEvaluationsAsync(coachId);
+                return ResponseContract<CoachHasSaremasEvaluationsDto>.Ok(result,
+                    result.HasEvaluations
+                        ? $"El entrenador tiene {result.TotalEvaluations} evaluación(es) SAREMAS+ registrada(s)"
+                        : "El entrenador no ha generado ninguna evaluación SAREMAS+");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error en CoachHasEvaluations (Saremas): {e.Message}");
+                return ResponseContract<CoachHasSaremasEvaluationsDto>.Fail($"Error al consultar las evaluaciones: {e.Message}");
+            }
+        }
     }
 }
 

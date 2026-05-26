@@ -36,10 +36,12 @@ namespace BocciaCoaching.Services
             var isUdateDetail =
                 await _validationsAssetsStrength.IsUpdateDetailAssessStrength(requestAddDetailToEvaluationForAthlete);
            
-            await _assessStrengthRepository.AgregarDetalleDeEvaluacion(requestAddDetailToEvaluationForAthlete,isUdateDetail);
+            var saved = await _assessStrengthRepository.AgregarDetalleDeEvaluacion(requestAddDetailToEvaluationForAthlete, isUdateDetail);
+
+            if (!saved)
+                return false;
 
             var dataStrenthStatistic = new StrengthStatistics();
-            
             if (requestAddDetailToEvaluationForAthlete.ThrowOrder == 36)
             {
                 //Consultamos toda la evaluación
@@ -392,6 +394,23 @@ namespace BocciaCoaching.Services
             {
                 Console.WriteLine($"Error en CancelEvaluation: {e.Message}");
                 return ResponseContract<bool>.Fail($"Error al cancelar la evaluación: {e.Message}");
+            }
+        }
+
+        public async Task<ResponseContract<CoachHasEvaluationsDto>> CoachHasEvaluations(int coachId)
+        {
+            try
+            {
+                var result = await _assessStrengthRepository.CoachHasEvaluationsAsync(coachId);
+                return ResponseContract<CoachHasEvaluationsDto>.Ok(result,
+                    result.HasEvaluations
+                        ? $"El entrenador tiene {result.TotalEvaluations} evaluación(es) registrada(s)"
+                        : "El entrenador no ha generado ninguna evaluación");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error en CoachHasEvaluations: {e.Message}");
+                return ResponseContract<CoachHasEvaluationsDto>.Fail($"Error al consultar las evaluaciones: {e.Message}");
             }
         }
     }

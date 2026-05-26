@@ -26,6 +26,7 @@ namespace BocciaCoaching.Services.Interfaces
         Task<ResponseContract<DirectionEvaluationDetailsDto>> GetEvaluationDetails(int assessDirectionId);
 
         Task<ResponseContract<bool>> CancelEvaluation(CancelAssessDirectionDto cancelDto);
+        Task<ResponseContract<CoachHasDirectionEvaluationsDto>> CoachHasEvaluations(int coachId);
     }
 }
 

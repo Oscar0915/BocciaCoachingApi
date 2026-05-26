@@ -390,7 +390,24 @@ namespace BocciaCoaching.Services
             catch (Exception e)
             {
                 Console.WriteLine($"Error en CancelEvaluation: {e.Message}");
-                return ResponseContract<bool>.Fail($"Error al cancelar la evaluación: {e.Message}");
+                return ResponseContract<bool>.Fail($"Error al cancelar la evaluacin: {e.Message}");
+            }
+        }
+
+        public async Task<ResponseContract<CoachHasDirectionEvaluationsDto>> CoachHasEvaluations(int coachId)
+        {
+            try
+            {
+                var result = await _assessDirectionRepository.CoachHasEvaluationsAsync(coachId);
+                return ResponseContract<CoachHasDirectionEvaluationsDto>.Ok(result,
+                    result.HasEvaluations
+                        ? $"El entrenador tiene {result.TotalEvaluations} evaluación(es) de dirección registrada(s)"
+                        : "El entrenador no ha generado ninguna evaluación de dirección");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error en CoachHasEvaluations (Direction): {e.Message}");
+                return ResponseContract<CoachHasDirectionEvaluationsDto>.Fail($"Error al consultar las evaluaciones: {e.Message}");
             }
         }
     }

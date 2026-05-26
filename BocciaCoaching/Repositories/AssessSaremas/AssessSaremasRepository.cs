@@ -654,6 +654,23 @@ namespace BocciaCoaching.Repositories.AssessSaremas
                 return false;
             }
         }
+
+        /// <summary>
+        /// Verifica si un entrenador ya ha generado alguna evaluación SAREMAS+
+        /// </summary>
+        public async Task<CoachHasSaremasEvaluationsDto> CoachHasEvaluationsAsync(int coachId)
+        {
+            var totalEvaluations = await _context.SaremasEvaluations
+                .Where(a => a.CoachId == coachId)
+                .CountAsync();
+
+            return new CoachHasSaremasEvaluationsDto
+            {
+                CoachId = coachId,
+                HasEvaluations = totalEvaluations > 0,
+                TotalEvaluations = totalEvaluations
+            };
+        }
     }
 }
 

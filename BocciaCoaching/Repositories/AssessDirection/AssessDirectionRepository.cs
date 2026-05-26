@@ -730,8 +730,25 @@ namespace BocciaCoaching.Repositories.AssessDirection
             {
                 Console.WriteLine($"Error en CancelAssessmentAsync: {ex.Message}");
                 try { await _context.Database.RollbackTransactionAsync(); } catch { /* ignore */ }
-                return ResponseContract<bool>.Fail($"Error al cancelar la evaluación: {ex.Message}");
+                return ResponseContract<bool>.Fail($"Error al cancelar la evaluacin: {ex.Message}");
             }
+        }
+
+        /// <summary>
+        /// Verifica si un entrenador ya ha generado alguna evaluación de dirección
+        /// </summary>
+        public async Task<CoachHasDirectionEvaluationsDto> CoachHasEvaluationsAsync(int coachId)
+        {
+            var totalEvaluations = await _context.AssessDirections
+                .Where(a => a.CoachId == coachId)
+                .CountAsync();
+
+            return new CoachHasDirectionEvaluationsDto
+            {
+                CoachId = coachId,
+                HasEvaluations = totalEvaluations > 0,
+                TotalEvaluations = totalEvaluations
+            };
         }
     }
 }
