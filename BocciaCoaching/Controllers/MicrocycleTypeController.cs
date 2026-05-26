@@ -71,6 +71,25 @@ namespace BocciaCoaching.Controllers
             var result = await _service.ResetCoachPercentages(coachId, microcycleTypeId);
             return Ok(result);
         }
+
+        /// <summary>
+        /// Obtener los tipos de microciclo configurados (catálogo) y los tipos de microciclos
+        /// que están construidos en macrociclos de la aplicación, con su cantidad de uso.
+        /// </summary>
+        [HttpGet("GetOverview")]
+        public async Task<ActionResult<ResponseContract<MicrocycleTypesOverviewDto>>> GetOverview()
+        {
+            var result = await _service.GetOverview();
+            return Ok(result);
+        }
+
+        /// <summary>Insertar un nuevo día por defecto para un tipo de microciclo</summary>
+        [HttpPost("CreateDayDefault")]
+        public async Task<ActionResult<ResponseContract<MicrocycleTypeDayDefaultResponseDto>>> CreateDayDefault(CreateMicrocycleTypeDayDefaultDto dto)
+        {
+            var result = await _service.CreateDayDefault(dto);
+            return Ok(result);
+        }
     }
 }
 

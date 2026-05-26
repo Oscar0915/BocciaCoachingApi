@@ -14,5 +14,11 @@ namespace BocciaCoaching.Repositories.Interfaces.IMicrocycleType
         Task<List<CoachMicrocycleTypeDay>> GetCoachDaysAsync(int coachId, string microcycleTypeId);
         Task SaveCoachDaysAsync(int coachId, string microcycleTypeId, List<CoachMicrocycleTypeDay> days);
         Task<bool> ResetCoachDaysAsync(int coachId, string microcycleTypeId);
+
+        /// <summary>Obtiene el conteo de microciclos construidos agrupados por tipo (campo Type de la tabla Microcycle)</summary>
+        Task<Dictionary<string, int>> GetBuiltTypeSummaryAsync();
+
+        /// <summary>Inserta un nuevo día por defecto asociado a un tipo de microciclo</summary>
+        Task<MicrocycleTypeDayDefault> CreateDayDefaultAsync(MicrocycleTypeDayDefault dayDefault);
     }
 }

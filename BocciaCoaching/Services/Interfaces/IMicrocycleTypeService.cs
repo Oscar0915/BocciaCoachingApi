@@ -12,6 +12,12 @@ namespace BocciaCoaching.Services.Interfaces
         Task<ResponseContract<List<MicrocycleTypeResponseDto>>> GetAllForCoach(int coachId);
         Task<ResponseContract<bool>> UpdateCoachPercentages(UpdateCoachPercentagesDto dto);
         Task<ResponseContract<bool>> ResetCoachPercentages(int coachId, string microcycleTypeId);
+
+        /// <summary>Obtiene los tipos de microciclo configurados junto con los tipos que están construidos en la aplicación</summary>
+        Task<ResponseContract<MicrocycleTypesOverviewDto>> GetOverview();
+
+        /// <summary>Inserta un nuevo día por defecto para un tipo de microciclo</summary>
+        Task<ResponseContract<MicrocycleTypeDayDefaultResponseDto>> CreateDayDefault(CreateMicrocycleTypeDayDefaultDto dto);
     }
 }
 

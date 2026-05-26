@@ -81,6 +81,22 @@ namespace BocciaCoaching.Repositories.MicrocycleType
             _context.CoachMicrocycleTypeDays.RemoveRange(existing);
             return await _context.SaveChangesAsync() > 0;
         }
+
+        public async Task<Dictionary<string, int>> GetBuiltTypeSummaryAsync()
+        {
+            return await _context.Microcycles
+                .Where(m => !string.IsNullOrEmpty(m.Type))
+                .GroupBy(m => m.Type)
+                .Select(g => new { TypeName = g.Key, Count = g.Count() })
+                .ToDictionaryAsync(x => x.TypeName, x => x.Count);
+        }
+
+        public async Task<MicrocycleTypeDayDefault> CreateDayDefaultAsync(MicrocycleTypeDayDefault dayDefault)
+        {
+            _context.MicrocycleTypeDayDefaults.Add(dayDefault);
+            await _context.SaveChangesAsync();
+            return dayDefault;
+        }
     }
 }
 

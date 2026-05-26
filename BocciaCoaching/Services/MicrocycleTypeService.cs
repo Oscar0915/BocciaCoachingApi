@@ -157,6 +157,90 @@ namespace BocciaCoaching.Services
             }
         }
 
+        public async Task<ResponseContract<MicrocycleTypesOverviewDto>> GetOverview()
+        {
+            try
+            {
+                // 1. Tipos configurados en el catálogo
+                var configuredTypes = await _repository.GetAllAsync();
+
+                // 2. Resumen de microciclos construidos en macrociclos (agrupados por tipo)
+                var builtSummary = await _repository.GetBuiltTypeSummaryAsync();
+
+                var overview = new MicrocycleTypesOverviewDto
+                {
+                    ConfiguredTypes = configuredTypes.Select(t => new MicrocycleTypeWithCountDto
+                    {
+                        MicrocycleTypeId = t.MicrocycleTypeId,
+                        Name = t.Name,
+                        Description = t.Description,
+                        Status = t.Status,
+                        Days = t.DefaultDays.Select(d => new MicrocycleTypeDayDto
+                        {
+                            DayOfWeek = d.DayOfWeek,
+                            ThrowPercentage = d.ThrowPercentage,
+                            IsCustom = false
+                        }).ToList(),
+                        // Busca coincidencia por nombre (case-insensitive) con los tipos construidos
+                        TotalBuilt = builtSummary
+                            .Where(b => b.Key.Equals(t.Name, StringComparison.OrdinalIgnoreCase))
+                            .Select(b => b.Value)
+                            .FirstOrDefault()
+                    }).ToList(),
+
+                    BuiltTypes = builtSummary
+                        .OrderByDescending(b => b.Value)
+                        .Select(b => new BuiltMicrocycleTypeSummaryDto
+                        {
+                            TypeName = b.Key,
+                            Count = b.Value
+                        }).ToList()
+                };
+
+                return ResponseContract<MicrocycleTypesOverviewDto>.Ok(overview,
+                    $"Se encontraron {overview.ConfiguredTypes.Count} tipos configurados y {overview.BuiltTypes.Count} tipos construidos en la aplicación");
+            }
+            catch (Exception ex)
+            {
+                return ResponseContract<MicrocycleTypesOverviewDto>.Fail($"Error al obtener el resumen de tipos de microciclo: {ex.Message}");
+            }
+        }
+
+        public async Task<ResponseContract<MicrocycleTypeDayDefaultResponseDto>> CreateDayDefault(CreateMicrocycleTypeDayDefaultDto dto)
+        {
+            try
+            {
+                // Verificar que el MicrocycleType exista
+                var microcycleType = await _repository.GetByIdAsync(dto.MicrocycleTypeId);
+                if (microcycleType == null)
+                    return ResponseContract<MicrocycleTypeDayDefaultResponseDto>.Fail("Tipo de microciclo no encontrado");
+
+                var entity = new MicrocycleTypeDayDefault
+                {
+                    MicrocycleTypeDayDefaultId = Guid.NewGuid().ToString(),
+                    MicrocycleTypeId = dto.MicrocycleTypeId,
+                    DayOfWeek = dto.DayOfWeek,
+                    ThrowPercentage = dto.ThrowPercentage
+                };
+
+                var created = await _repository.CreateDayDefaultAsync(entity);
+
+                var response = new MicrocycleTypeDayDefaultResponseDto
+                {
+                    MicrocycleTypeDayDefaultId = created.MicrocycleTypeDayDefaultId,
+                    MicrocycleTypeId = created.MicrocycleTypeId,
+                    DayOfWeek = created.DayOfWeek,
+                    ThrowPercentage = created.ThrowPercentage
+                };
+
+                return ResponseContract<MicrocycleTypeDayDefaultResponseDto>.Ok(response, "Día por defecto creado correctamente");
+            }
+            catch (Exception ex)
+            {
+                return ResponseContract<MicrocycleTypeDayDefaultResponseDto>.Fail($"Error al crear día por defecto: {ex.Message}");
+            }
+        }
+
         // --- Mappers ---
 
         private MicrocycleTypeResponseDto MapToResponse(MicrocycleTypeEntity entity)
