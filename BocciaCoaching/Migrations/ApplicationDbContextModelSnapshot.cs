@@ -722,6 +722,9 @@ namespace BocciaCoaching.Migrations
                     b.Property<string>("MesocycleName")
                         .HasColumnType("longtext");
 
+                    b.Property<string>("MicrocycleTypeId")
+                        .HasColumnType("varchar(255)");
+
                     b.Property<int>("Number")
                         .HasColumnType("int");
 
@@ -745,7 +748,41 @@ namespace BocciaCoaching.Migrations
 
                     b.HasIndex("MacrocycleId");
 
+                    b.HasIndex("MicrocycleTypeId");
+
                     b.ToTable("Microcycle");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.MicrocycleDay", b =>
+                {
+                    b.Property<string>("MicrocycleDayId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("DayOfWeek")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<bool>("IsCustom")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int>("MicrocycleId")
+                        .HasColumnType("int");
+
+                    b.Property<double>("ThrowPercentage")
+                        .HasColumnType("double");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("MicrocycleDayId");
+
+                    b.HasIndex("MicrocycleId");
+
+                    b.ToTable("MicrocycleDay");
                 });
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.MicrocycleType", b =>
@@ -1936,7 +1973,25 @@ namespace BocciaCoaching.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("BocciaCoaching.Models.Entities.MicrocycleType", "MicrocycleType")
+                        .WithMany()
+                        .HasForeignKey("MicrocycleTypeId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.Navigation("Macrocycle");
+
+                    b.Navigation("MicrocycleType");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.MicrocycleDay", b =>
+                {
+                    b.HasOne("BocciaCoaching.Models.Entities.Microcycle", "Microcycle")
+                        .WithMany("Days")
+                        .HasForeignKey("MicrocycleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Microcycle");
                 });
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.MicrocycleTypeDayDefault", b =>
@@ -2197,6 +2252,8 @@ namespace BocciaCoaching.Migrations
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.Microcycle", b =>
                 {
+                    b.Navigation("Days");
+
                     b.Navigation("TrainingSessions");
                 });
 

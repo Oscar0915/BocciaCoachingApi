@@ -17,6 +17,12 @@ namespace BocciaCoaching.Services.Interfaces
         Task<ResponseContract<bool>> UpdateMicrocycle(UpdateMicrocycleDto dto);
         Task<ResponseContract<List<MacrocycleSummaryDto>>> GetCoachMacrocycles(int coachId);
         Task<ResponseContract<MacrocycleResponseDto>> DuplicateMacrocycle(string macrocycleId, DuplicateMacrocycleDto dto);
+
+        /// <summary>
+        /// Actualiza los días (porcentajes de lanzamiento por día de la semana) de un microciclo concreto.
+        /// Reemplaza completamente los días actuales.
+        /// </summary>
+        Task<ResponseContract<bool>> UpdateMicycleDays(UpdateMicycleDaysDto dto);
     }
 }
 

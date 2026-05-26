@@ -3,6 +3,7 @@ using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.Macrocycle;
 using BocciaCoaching.Models.Entities;
 using BocciaCoaching.Repositories.Interfaces.IMacrocycle;
+using BocciaCoaching.Repositories.Interfaces.IMicrocycleType;
 using BocciaCoaching.Repositories.Interfaces.ITeams;
 using BocciaCoaching.Services.Interfaces;
 
@@ -12,11 +13,16 @@ namespace BocciaCoaching.Services
     {
         private readonly IMacrocycleRepository _repository;
         private readonly ITeamValidationRepository _teamValidation;
+        private readonly IMicrocycleTypeRepository _microcycleTypeRepository;
 
-        public MacrocycleService(IMacrocycleRepository repository, ITeamValidationRepository teamValidation)
+        public MacrocycleService(
+            IMacrocycleRepository repository,
+            ITeamValidationRepository teamValidation,
+            IMicrocycleTypeRepository microcycleTypeRepository)
         {
             _repository = repository;
             _teamValidation = teamValidation;
+            _microcycleTypeRepository = microcycleTypeRepository;
         }
 
         public async Task<ResponseContract<MacrocycleResponseDto>> CreateMacrocycle(CreateMacrocycleDto dto)
@@ -74,32 +80,42 @@ namespace BocciaCoaching.Services
                 List<MacrocyclePeriod> periods = new();
                 List<Mesocycle> mesocycles;
 
+                // Pre-cargar el catálogo de tipos de microciclo para relacionarlos
+                var typeMap = await LoadTypesMapAsync();
+
                 bool hasManualMicrocycles = dto.Microcycles != null && dto.Microcycles.Any();
                 bool hasManualMesocycles = dto.Mesocycles != null && dto.Mesocycles.Any();
 
                 if (hasManualMicrocycles)
                 {
                     // Usar microciclos proporcionados por el cliente
-                    microcycles = dto.Microcycles!.Select(mi => new Microcycle
+                    microcycles = dto.Microcycles!.Select(mi =>
                     {
-                        MacrocycleId = macrocycle.MacrocycleId,
-                        Number = mi.Number,
-                        WeekNumber = mi.WeekNumber,
-                        StartDate = mi.StartDate,
-                        EndDate = mi.EndDate,
-                        Type = mi.Type,
-                        PeriodName = mi.PeriodName,
-                        MesocycleName = mi.MesocycleName,
-                        HasPeakPerformance = mi.HasPeakPerformance,
-                        TrainingDistribution = mi.TrainingDistribution != null
-                            ? JsonSerializer.Serialize(mi.TrainingDistribution)
-                            : JsonSerializer.Serialize(GetDefaultDistribution(mi.Type))
+                        var micro = new Microcycle
+                        {
+                            MacrocycleId = macrocycle.MacrocycleId,
+                            Number = mi.Number,
+                            WeekNumber = mi.WeekNumber,
+                            StartDate = mi.StartDate,
+                            EndDate = mi.EndDate,
+                            Type = mi.Type,
+                            PeriodName = mi.PeriodName,
+                            MesocycleName = mi.MesocycleName,
+                            HasPeakPerformance = mi.HasPeakPerformance,
+                            TrainingDistribution = mi.TrainingDistribution != null
+                                ? JsonSerializer.Serialize(mi.TrainingDistribution)
+                                : JsonSerializer.Serialize(GetDefaultDistribution(mi.Type))
+                        };
+
+                        // Relacionar con el tipo del catálogo y poblar días
+                        PopulateMicrocycleTypeAndDays(micro, typeMap);
+                        return micro;
                     }).ToList();
                 }
                 else
                 {
                     // Auto-calcular microciclos
-                    microcycles = BuildMicrocycles(macrocycle.MacrocycleId, normalizedStart, dto.EndDate, macrocycle.Events.ToList());
+                    microcycles = BuildMicrocycles(macrocycle.MacrocycleId, normalizedStart, dto.EndDate, macrocycle.Events.ToList(), typeMap);
                 }
 
                 if (hasManualMesocycles)
@@ -370,13 +386,64 @@ namespace BocciaCoaching.Services
                     micro.TrainingDistribution = JsonSerializer.Serialize(dto.TrainingDistribution);
                 }
 
+                // Actualizar la relación con el tipo del catálogo
+                if (dto.MicrocycleTypeId != null)
+                {
+                    micro.MicrocycleTypeId = string.IsNullOrEmpty(dto.MicrocycleTypeId) ? null : dto.MicrocycleTypeId;
+                }
+
                 await _repository.UpdateMicrocycleAsync(micro);
+
+                // Si se envían días personalizados, guardarlos
+                if (dto.Days != null)
+                {
+                    var newDays = dto.Days.Select(d => new MicrocycleDay
+                    {
+                        MicrocycleDayId = Guid.NewGuid().ToString(),
+                        MicrocycleId = micro.MicrocycleId,
+                        DayOfWeek = d.DayOfWeek,
+                        ThrowPercentage = d.ThrowPercentage,
+                        IsCustom = true,
+                        CreatedAt = DateTime.Now
+                    }).ToList();
+
+                    await _repository.SaveMicycleDaysAsync(micro.MicrocycleId, newDays);
+                }
+
                 return ResponseContract<bool>.Ok(true, "Microciclo actualizado correctamente");
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
                 return ResponseContract<bool>.Fail($"Error al actualizar microciclo: {e.Message}");
+            }
+        }
+
+        public async Task<ResponseContract<bool>> UpdateMicycleDays(UpdateMicycleDaysDto dto)
+        {
+            try
+            {
+                var micro = await _repository.GetMicrocycleByIdAsync(dto.MicrocycleId);
+                if (micro == null)
+                    return ResponseContract<bool>.Fail("Microciclo no encontrado");
+
+                var newDays = dto.Days.Select(d => new MicrocycleDay
+                {
+                    MicrocycleDayId = Guid.NewGuid().ToString(),
+                    MicrocycleId = micro.MicrocycleId,
+                    DayOfWeek = d.DayOfWeek,
+                    ThrowPercentage = d.ThrowPercentage,
+                    IsCustom = true,
+                    CreatedAt = DateTime.Now
+                }).ToList();
+
+                await _repository.SaveMicycleDaysAsync(micro.MicrocycleId, newDays);
+                return ResponseContract<bool>.Ok(true, "Días del microciclo actualizados correctamente");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return ResponseContract<bool>.Fail($"Error al actualizar días del microciclo: {e.Message}");
             }
         }
 
@@ -455,8 +522,11 @@ namespace BocciaCoaching.Services
             await _repository.DeleteMesocyclesAsync(macrocycleId);
             await _repository.DeleteMicrocyclesAsync(macrocycleId);
 
+            // Pre-cargar tipos del catálogo
+            var typeMap = await LoadTypesMapAsync();
+
             var events = macrocycle.Events.ToList();
-            var microcycles = BuildMicrocycles(macrocycleId, macrocycle.StartDate, macrocycle.EndDate, events);
+            var microcycles = BuildMicrocycles(macrocycleId, macrocycle.StartDate, macrocycle.EndDate, events, typeMap);
             var periods = BuildPeriods(macrocycleId, macrocycle.StartDate, macrocycle.EndDate, events, microcycles);
             var mesocycles = BuildMesocycles(macrocycleId, microcycles, periods);
 
@@ -480,7 +550,12 @@ namespace BocciaCoaching.Services
             return date.AddDays(-daysToMonday).Date;
         }
 
-        private static List<Microcycle> BuildMicrocycles(string macrocycleId, DateTime start, DateTime end, List<MacrocycleEvent> events)
+        private static List<Microcycle> BuildMicrocycles(
+            string macrocycleId,
+            DateTime start,
+            DateTime end,
+            List<MacrocycleEvent> events,
+            Dictionary<string, (string TypeId, List<MicrocycleTypeDayDefault> Days)>? typeMap = null)
         {
             var microcycles = new List<Microcycle>();
             var normalizedStart = NormalizeToMonday(start);
@@ -499,7 +574,7 @@ namespace BocciaCoaching.Services
                 var calendar = System.Globalization.CultureInfo.InvariantCulture.Calendar;
                 var weekNumber = calendar.GetWeekOfYear(current, System.Globalization.CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
 
-                microcycles.Add(new Microcycle
+                var micro = new Microcycle
                 {
                     MacrocycleId = macrocycleId,
                     Number = number,
@@ -509,7 +584,12 @@ namespace BocciaCoaching.Services
                     Type = type,
                     HasPeakPerformance = hasPeak,
                     TrainingDistribution = JsonSerializer.Serialize(distribution)
-                });
+                };
+
+                // Relacionar con el tipo del catálogo y poblar días
+                PopulateMicrocycleTypeAndDays(micro, typeMap);
+
+                microcycles.Add(micro);
 
                 current = current.AddDays(7);
                 number++;
@@ -591,7 +671,7 @@ namespace BocciaCoaching.Services
                 {
                     MacrocycleId = macrocycleId,
                     Name = "Preparatorio Especial",
-                    Type = "preparatorioEspecial",
+                    Type = "precompetitivo",
                     StartDate = twoWeeksBefore,
                     EndDate = firstComp.StartDate.AddDays(-1),
                     Weeks = 2
@@ -715,6 +795,49 @@ namespace BocciaCoaching.Services
         private static string CapitalizeFirst(string s) =>
             string.IsNullOrEmpty(s) ? s : char.ToUpper(s[0]) + s[1..];
 
+        // ===================== HELPERS DE TIPOS DE MICROCICLO =====================
+
+        /// <summary>
+        /// Carga el catálogo de tipos de microciclo y construye un diccionario
+        /// indexado por nombre (en minúsculas) para búsqueda rápida.
+        /// </summary>
+        private async Task<Dictionary<string, (string TypeId, List<MicrocycleTypeDayDefault> Days)>> LoadTypesMapAsync()
+        {
+            var types = await _microcycleTypeRepository.GetAllAsync();
+            return types.ToDictionary(
+                t => t.Name.Trim().ToLowerInvariant(),
+                t => (t.MicrocycleTypeId, t.DefaultDays.ToList())
+            );
+        }
+
+        /// <summary>
+        /// Asigna <c>MicrocycleTypeId</c> y puebla <c>Days</c> de un microciclo
+        /// a partir del catálogo de tipos.
+        /// </summary>
+        private static void PopulateMicrocycleTypeAndDays(
+            Microcycle micro,
+            Dictionary<string, (string TypeId, List<MicrocycleTypeDayDefault> Days)>? typeMap)
+        {
+            if (typeMap == null) return;
+
+            var key = micro.Type.Trim().ToLowerInvariant();
+            if (!typeMap.TryGetValue(key, out var typeInfo)) return;
+
+            micro.MicrocycleTypeId = typeInfo.TypeId;
+
+            foreach (var defaultDay in typeInfo.Days)
+            {
+                micro.Days.Add(new MicrocycleDay
+                {
+                    MicrocycleDayId = Guid.NewGuid().ToString(),
+                    DayOfWeek = defaultDay.DayOfWeek,
+                    ThrowPercentage = defaultDay.ThrowPercentage,
+                    IsCustom = false,
+                    CreatedAt = DateTime.Now
+                });
+            }
+        }
+
         // ===================== MAPPING =====================
 
         private static MacrocycleResponseDto MapToResponse(Macrocycle m)
@@ -773,12 +896,22 @@ namespace BocciaCoaching.Services
                     PeriodName = mi.PeriodName,
                     MesocycleName = mi.MesocycleName,
                     HasPeakPerformance = mi.HasPeakPerformance,
+                    MicrocycleTypeId = mi.MicrocycleTypeId,
+                    MicrocycleTypeName = mi.MicrocycleType?.Name,
                     TrainingDistribution = string.IsNullOrEmpty(mi.TrainingDistribution)
                         ? null
-                        : JsonSerializer.Deserialize<TrainingDistributionDto>(mi.TrainingDistribution)
+                        : JsonSerializer.Deserialize<TrainingDistributionDto>(mi.TrainingDistribution),
+                    Days = mi.Days
+                        .OrderBy(d => d.DayOfWeek)
+                        .Select(d => new MicrocycleDayResponseDto
+                        {
+                            MicrocycleDayId = d.MicrocycleDayId,
+                            DayOfWeek = d.DayOfWeek,
+                            ThrowPercentage = d.ThrowPercentage,
+                            IsCustom = d.IsCustom
+                        }).ToList()
                 }).ToList()
             };
         }
     }
 }
-

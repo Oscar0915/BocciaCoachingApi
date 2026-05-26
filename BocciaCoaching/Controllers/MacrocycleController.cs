@@ -136,6 +136,18 @@ namespace BocciaCoaching.Controllers
             var result = await _service.DuplicateMacrocycle(macrocycleId, dto);
             return Ok(result);
         }
+
+        /// <summary>
+        /// Actualizar los días (porcentajes de lanzamiento por día de la semana) de un microciclo concreto.
+        /// Reemplaza completamente los días actuales. Se puede usar para personalizar los días
+        /// heredados del tipo de microciclo.
+        /// </summary>
+        [HttpPut("UpdateMicycleDays")]
+        public async Task<ActionResult<ResponseContract<bool>>> UpdateMicycleDays(UpdateMicycleDaysDto dto)
+        {
+            var result = await _service.UpdateMicycleDays(dto);
+            return Ok(result);
+        }
     }
 }
 

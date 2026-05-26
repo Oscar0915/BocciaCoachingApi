@@ -65,6 +65,25 @@ namespace BocciaCoaching.Models.DTO.Macrocycle
         public string? MesocycleName { get; set; }
         public bool HasPeakPerformance { get; set; }
         public TrainingDistributionDto? TrainingDistribution { get; set; }
+
+        /// <summary>Id del tipo de microciclo del catálogo (nullable)</summary>
+        public string? MicrocycleTypeId { get; set; }
+
+        /// <summary>Nombre del tipo de microciclo del catálogo (nullable)</summary>
+        public string? MicrocycleTypeName { get; set; }
+
+        /// <summary>Días de la semana con sus porcentajes de lanzamiento para este microciclo</summary>
+        public List<MicrocycleDayResponseDto> Days { get; set; } = new();
+    }
+
+    public class MicrocycleDayResponseDto
+    {
+        public string MicrocycleDayId { get; set; } = string.Empty;
+        public string DayOfWeek { get; set; } = string.Empty;
+        public double ThrowPercentage { get; set; }
+
+        /// <summary>false = heredado del catálogo, true = personalizado</summary>
+        public bool IsCustom { get; set; }
     }
 }
 

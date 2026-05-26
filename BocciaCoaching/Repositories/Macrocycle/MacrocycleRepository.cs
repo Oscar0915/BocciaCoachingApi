@@ -80,6 +80,9 @@ namespace BocciaCoaching.Repositories.Macrocycle
                 .Include(m => m.Periods)
                 .Include(m => m.Mesocycles)
                 .Include(m => m.Microcycles)
+                    .ThenInclude(mi => mi.MicrocycleType)
+                .Include(m => m.Microcycles)
+                    .ThenInclude(mi => mi.Days)
                 .Include(m => m.Coach)
                 .Include(m => m.Team)
                 .FirstOrDefaultAsync(m => m.MacrocycleId == macrocycleId);
@@ -174,7 +177,10 @@ namespace BocciaCoaching.Repositories.Macrocycle
 
         public async Task<Microcycle?> GetMicrocycleByIdAsync(int microcycleId)
         {
-            return await _context.Microcycles.FirstOrDefaultAsync(m => m.MicrocycleId == microcycleId);
+            return await _context.Microcycles
+                .Include(m => m.MicrocycleType)
+                .Include(m => m.Days)
+                .FirstOrDefaultAsync(m => m.MicrocycleId == microcycleId);
         }
 
         public async Task<bool> UpdateMicrocycleAsync(Microcycle microcycle)
@@ -249,6 +255,7 @@ namespace BocciaCoaching.Repositories.Macrocycle
 
         public async Task DeleteMicrocyclesAsync(string macrocycleId)
         {
+            // Los MicrocycleDays se eliminan en cascada por la relación configurada en el modelo
             var microcycles = await _context.Microcycles.Where(m => m.MacrocycleId == macrocycleId).ToListAsync();
             _context.Microcycles.RemoveRange(microcycles);
             await _context.SaveChangesAsync();
@@ -269,6 +276,29 @@ namespace BocciaCoaching.Repositories.Macrocycle
         public async Task AddMicrocyclesAsync(IEnumerable<Microcycle> microcycles)
         {
             await _context.Microcycles.AddRangeAsync(microcycles);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<MicrocycleDay>> GetMicycleDaysAsync(int microcycleId)
+        {
+            return await _context.MicrocycleDays
+                .Where(d => d.MicrocycleId == microcycleId)
+                .OrderBy(d => d.DayOfWeek)
+                .ToListAsync();
+        }
+
+        public async Task SaveMicycleDaysAsync(int microcycleId, List<MicrocycleDay> days)
+        {
+            // Eliminar días previos del microciclo
+            var existing = await _context.MicrocycleDays
+                .Where(d => d.MicrocycleId == microcycleId)
+                .ToListAsync();
+            _context.MicrocycleDays.RemoveRange(existing);
+
+            // Insertar los nuevos
+            if (days.Any())
+                await _context.MicrocycleDays.AddRangeAsync(days);
+
             await _context.SaveChangesAsync();
         }
     }

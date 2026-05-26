@@ -29,5 +29,15 @@ namespace BocciaCoaching.Repositories.Interfaces.IMacrocycle
         Task AddPeriodsAsync(IEnumerable<MacrocyclePeriod> periods);
         Task AddMesocyclesAsync(IEnumerable<Mesocycle> mesocycles);
         Task AddMicrocyclesAsync(IEnumerable<Microcycle> microcycles);
+
+        // Microcycle days operations
+        /// <summary>Obtiene los días de un microciclo concreto</summary>
+        Task<List<MicrocycleDay>> GetMicycleDaysAsync(int microcycleId);
+
+        /// <summary>
+        /// Reemplaza todos los días de un microciclo concreto.
+        /// Elimina los días existentes e inserta los nuevos.
+        /// </summary>
+        Task SaveMicycleDaysAsync(int microcycleId, List<MicrocycleDay> days);
     }
 }

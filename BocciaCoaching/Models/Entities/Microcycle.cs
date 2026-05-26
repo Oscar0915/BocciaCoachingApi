@@ -15,6 +15,12 @@ namespace BocciaCoaching.Models.Entities
         [ForeignKey("MacrocycleId")]
         public Macrocycle? Macrocycle { get; set; }
 
+        /// <summary>Relación con el tipo de microciclo del catálogo (nullable)</summary>
+        public string? MicrocycleTypeId { get; set; }
+
+        [ForeignKey("MicrocycleTypeId")]
+        public MicrocycleType? MicrocycleType { get; set; }
+
         public int Number { get; set; }
 
         public int WeekNumber { get; set; }
@@ -39,6 +45,9 @@ namespace BocciaCoaching.Models.Entities
 
         /// <summary>Sesiones de entrenamiento del microciclo</summary>
         public ICollection<TrainingSession> TrainingSessions { get; set; } = new List<TrainingSession>();
+
+        /// <summary>Días de la semana con sus porcentajes de lanzamiento para este microciclo</summary>
+        public ICollection<MicrocycleDay> Days { get; set; } = new List<MicrocycleDay>();
     }
 }
 

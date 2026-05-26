@@ -57,5 +57,28 @@ namespace BocciaCoaching.Data
         public DbSet<MicrocycleType> MicrocycleTypes { get; set; }
         public DbSet<MicrocycleTypeDayDefault> MicrocycleTypeDayDefaults { get; set; }
         public DbSet<CoachMicrocycleTypeDay> CoachMicrocycleTypeDays { get; set; }
+
+        // Microcycle Day (días/porcentajes por instancia de microciclo)
+        public DbSet<MicrocycleDay> MicrocycleDays { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // Microcycle → MicrocycleType (nullable, SetNull on delete del tipo)
+            modelBuilder.Entity<Microcycle>()
+                .HasOne(m => m.MicrocycleType)
+                .WithMany()
+                .HasForeignKey(m => m.MicrocycleTypeId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .IsRequired(false);
+
+            // MicrocycleDay → Microcycle (Cascade: al borrar el microciclo se borran sus días)
+            modelBuilder.Entity<MicrocycleDay>()
+                .HasOne(d => d.Microcycle)
+                .WithMany(m => m.Days)
+                .HasForeignKey(d => d.MicrocycleId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
     }
 }
