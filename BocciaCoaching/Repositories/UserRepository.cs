@@ -23,6 +23,7 @@ namespace BocciaCoaching.Repositories
                     Password = passwordHash,
                     Country = userDto.Region,
                     FirstName = "Name",
+                    Dni = new Guid().ToString(),
                 };
 
                 await context.Users.AddAsync(user);
