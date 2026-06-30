@@ -88,7 +88,15 @@ namespace BocciaCoaching.Repositories.AssessDirection
                 };
                 await _context.AthletesToEvaluatedDirection.AddAsync(athletesInfo);
                 await _context.SaveChangesAsync();
-                return ResponseContract<AthletesToEvaluatedDirection>.Ok(athletesInfo, "Inserción exitosa");
+
+                // Recargar la entidad con las propiedades de navegación para retornar datos completos
+                var savedEntity = await _context.AthletesToEvaluatedDirection
+                    .Include(a => a.Athlete)
+                    .Include(a => a.Coach)
+                    .Include(a => a.AssessDirection)
+                    .FirstOrDefaultAsync(a => a.AthletesToEvaluatedDirectionId == athletesInfo.AthletesToEvaluatedDirectionId);
+
+                return ResponseContract<AthletesToEvaluatedDirection>.Ok(savedEntity!, "Inserción exitosa");
             }
             catch (Exception ex)
             {
