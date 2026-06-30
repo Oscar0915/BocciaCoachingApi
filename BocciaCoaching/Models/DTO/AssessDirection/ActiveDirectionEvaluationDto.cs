@@ -43,6 +43,10 @@ namespace BocciaCoaching.Models.DTO.AssessDirection
         public string? AthleteName { get; set; }
         public bool DeviatedRight { get; set; }
         public bool DeviatedLeft { get; set; }
+        public bool IsStrength { get; set; }
+        public bool IsCadence { get; set; }
+        public bool IsDirection { get; set; }
+        public bool IsTrajectory { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
     }

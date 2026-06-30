@@ -132,6 +132,10 @@ namespace BocciaCoaching.Repositories.AssessDirection
                     entity.CoordinateY = request.CoordinateY;
                     entity.DeviatedRight = request.DeviatedRight;
                     entity.DeviatedLeft = request.DeviatedLeft;
+                    entity.IsStrength = request.IsStrength;
+                    entity.IsCadence = request.IsCadence;
+                    entity.IsDirection = request.IsDirection;
+                    entity.IsTrajectory = request.IsTrajectory;
 
                     _context.EvaluationDetailDirections.Update(entity);
                 }
@@ -150,7 +154,11 @@ namespace BocciaCoaching.Repositories.AssessDirection
                         CoordinateX = request.CoordinateX,
                         CoordinateY = request.CoordinateY,
                         DeviatedRight = request.DeviatedRight,
-                        DeviatedLeft = request.DeviatedLeft
+                        DeviatedLeft = request.DeviatedLeft,
+                        IsStrength = request.IsStrength,
+                        IsCadence = request.IsCadence,
+                        IsDirection = request.IsDirection,
+                        IsTrajectory = request.IsTrajectory
                     };
 
                     await _context.EvaluationDetailDirections.AddAsync(newEntity);
@@ -366,6 +374,10 @@ namespace BocciaCoaching.Repositories.AssessDirection
                         AthleteName = athleteUser != null ? $"{athleteUser.FirstName} {athleteUser.LastName}" : "Atleta desconocido",
                         DeviatedRight = throwDetail.DeviatedRight,
                         DeviatedLeft = throwDetail.DeviatedLeft,
+                        IsStrength = throwDetail.IsStrength,
+                        IsCadence = throwDetail.IsCadence,
+                        IsDirection = throwDetail.IsDirection,
+                        IsTrajectory = throwDetail.IsTrajectory,
                         CreatedAt = throwDetail.CreatedAt,
                         UpdatedAt = throwDetail.UpdatedAt
                     });
@@ -635,6 +647,10 @@ namespace BocciaCoaching.Repositories.AssessDirection
                         AthleteName = athleteUser != null ? $"{athleteUser.FirstName} {athleteUser.LastName}" : "Atleta desconocido",
                         DeviatedRight = throwDetail.DeviatedRight,
                         DeviatedLeft = throwDetail.DeviatedLeft,
+                        IsStrength = throwDetail.IsStrength,
+                        IsCadence = throwDetail.IsCadence,
+                        IsDirection = throwDetail.IsDirection,
+                        IsTrajectory = throwDetail.IsTrajectory,
                         CreatedAt = throwDetail.CreatedAt,
                         UpdatedAt = throwDetail.UpdatedAt
                     });
