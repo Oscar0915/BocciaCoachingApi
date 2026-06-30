@@ -323,7 +323,7 @@ namespace BocciaCoaching.Repositories.AssessDirection
                 var activeAssessment = await _context.AssessDirections
                     .Include(a => a.Team)
                     .Include(a => a.Coach)
-                    .FirstOrDefaultAsync(a => a.TeamId == teamId && a.CoachId == coachId && a.State == "A");
+                    .FirstOrDefaultAsync(a => a.TeamId == teamId && a.State == "A");
 
                 if (activeAssessment == null)
                 {
