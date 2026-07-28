@@ -55,7 +55,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowSpecificOrigins",
         policy =>
         {
-            policy.WithOrigins("http://localhost:4200", "https://localhost:4200", "https://bocciacoaching.com", "http://localhost:3000")
+            policy.WithOrigins("http://localhost:4200", "https://localhost:4200", "https://bocciacoaching.com", "http://localhost:3000", "https://app-bocciacoaching.onrender.com")
                   .AllowAnyHeader()
                   .AllowAnyMethod()
                   .AllowCredentials(); // Necesario para SignalR
