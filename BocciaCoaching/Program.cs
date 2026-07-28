@@ -99,7 +99,26 @@ builder.Services.AddSignalR();
 builder.Services.AddScoped<IUserService, UserService>();
 // File storage
 builder.Services.AddSingleton<BocciaCoaching.Services.IFileStorageService, BocciaCoaching.Services.DiskFileStorageService>();
-builder.Services.AddScoped<IEmailService, EmailService>();
+
+// Servicio de email: usa la API REST de Hostinger Mail (token Bearer) si UseApi = true,
+// de lo contrario usa SMTP mediante MailKit (EmailService).
+var emailSettingsSection = builder.Configuration.GetSection("EmailSettings").Get<EmailSettings>() ?? new EmailSettings();
+if (emailSettingsSection.UseApi)
+{
+    builder.Services.AddHttpClient<IEmailService, BocciaCoaching.Services.HostingerMailService>((sp, client) =>
+    {
+        var settings = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<EmailSettings>>().Value;
+        client.BaseAddress = new Uri(settings.ApiBaseUrl);
+        client.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", settings.ApiToken);
+        client.DefaultRequestHeaders.Accept.Add(
+            new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+    });
+}
+else
+{
+    builder.Services.AddScoped<IEmailService, EmailService>();
+}
 builder.Services.AddScoped<ITeamService, TeamService>();
 builder.Services.AddScoped<IAssessStrengthService, AssessStrengthService>();
 builder.Services.AddScoped<IAssessDirectionService, AssessDirectionService>();
