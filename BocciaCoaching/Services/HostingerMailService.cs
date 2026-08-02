@@ -199,8 +199,10 @@ namespace BocciaCoaching.Services
         /// Envía la solicitud al endpoint de la API de Hostinger Mail:
         /// POST {ApiBaseUrl}/api/v1/mailboxes/{mailboxId}/send
         /// El token Bearer se configura globalmente en el HttpClient (ver Program.cs).
+        /// Si el envío falla, se consulta la autorización (GET /api/v1/me) para validar
+        /// el token Bearer y, si es posible, auto-corregir el MailboxId y reintentar.
         /// </summary>
-        private async Task SendViaApiAsync(HostingerSendEmailRequest request)
+        private async Task SendViaApiAsync(HostingerSendEmailRequest request, bool allowRetry = true)
         {
             if (string.IsNullOrWhiteSpace(_emailSettings.MailboxId))
                 throw new InvalidOperationException("EmailSettings.MailboxId no está configurado para la API de Hostinger Mail.");
@@ -213,14 +215,116 @@ namespace BocciaCoaching.Services
 
             var responseBody = await response.Content.ReadAsStringAsync();
 
-            if (!response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
             {
-                Console.WriteLine($"❌ La API de Hostinger devolvió {(int)response.StatusCode}: {responseBody}");
-                throw new HttpRequestException(
-                    $"La API de Hostinger Mail respondió {(int)response.StatusCode} ({response.StatusCode}): {responseBody}");
+                Console.WriteLine($"✅ Email enviado vía API Hostinger. Respuesta: {responseBody}");
+                return;
             }
 
-            Console.WriteLine($"✅ Email enviado vía API Hostinger. Respuesta: {responseBody}");
+            Console.WriteLine($"❌ La API de Hostinger devolvió {(int)response.StatusCode}: {responseBody}");
+
+            // El envío falló: consultamos la autorización para diagnosticar el problema.
+            var authInfo = await ConsultAuthorizationAsync();
+
+            // Si el token es válido pero el buzón configurado no coincide con ninguno de
+            // los buzones autorizados, intentamos auto-corregir el MailboxId y reintentar.
+            if (allowRetry && authInfo.IsAuthorized && authInfo.Mailboxes.Count > 0)
+            {
+                var matchingMailbox = ResolveMailbox(authInfo.Mailboxes);
+                if (matchingMailbox != null &&
+                    !string.Equals(matchingMailbox.ResourceId, _emailSettings.MailboxId, StringComparison.OrdinalIgnoreCase))
+                {
+                    Console.WriteLine(
+                        $"🔁 MailboxId corregido de '{_emailSettings.MailboxId}' a '{matchingMailbox.ResourceId}' " +
+                        $"({matchingMailbox.Address}). Reintentando envío...");
+
+                    await LogErrorAsync(
+                        $"MailboxId corregido de '{_emailSettings.MailboxId}' a '{matchingMailbox.ResourceId}' tras fallo de envío.",
+                        "SendViaApiAsync");
+
+                    _emailSettings.MailboxId = matchingMailbox.ResourceId!;
+                    await SendViaApiAsync(request, allowRetry: false);
+                    return;
+                }
+            }
+
+            var authDetail = authInfo.IsAuthorized
+                ? $"El token Bearer es válido. Buzones autorizados: {authInfo.Describe()}."
+                : $"El token Bearer NO es válido o no está autorizado (consulta a /api/v1/me: {authInfo.ErrorMessage}).";
+
+            throw new HttpRequestException(
+                $"La API de Hostinger Mail respondió {(int)response.StatusCode} ({response.StatusCode}): {responseBody}. {authDetail}");
+        }
+
+        /// <summary>
+        /// Consulta la autorización contra la API de Hostinger Mail:
+        /// GET {ApiBaseUrl}/api/v1/me
+        /// Valida el token Bearer y devuelve los buzones (mailboxes) autorizados.
+        /// Se invoca automáticamente cuando un envío falla.
+        /// </summary>
+        private async Task<HostingerAuthResult> ConsultAuthorizationAsync()
+        {
+            const string relativeUrl = "/api/v1/me";
+            Console.WriteLine($"🔐 Consultando autorización: {_emailSettings.ApiBaseUrl}{relativeUrl}");
+
+            try
+            {
+                using var response = await _httpClient.GetAsync(relativeUrl);
+                var body = await response.Content.ReadAsStringAsync();
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var msg = $"HTTP {(int)response.StatusCode} ({response.StatusCode}): {body}";
+                    Console.WriteLine($"❌ Autorización no válida. {msg}");
+                    await LogErrorAsync($"Autorización de Hostinger no válida: {msg}", "ConsultAuthorizationAsync");
+                    return new HostingerAuthResult { IsAuthorized = false, ErrorMessage = msg };
+                }
+
+                var me = JsonSerializer.Deserialize<HostingerMeResponse>(body, JsonOptions);
+                var mailboxes = me?.Data?.Mailboxes ?? new List<HostingerMailbox>();
+
+                Console.WriteLine($"✅ Autorización válida. Buzones: {string.Join(", ", mailboxes.Select(m => m.Address))}");
+
+                return new HostingerAuthResult
+                {
+                    IsAuthorized = true,
+                    Mailboxes = mailboxes
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Error consultando autorización: {ex.Message}");
+                await LogErrorAsync($"Error consultando autorización de Hostinger: {ex.Message}", "ConsultAuthorizationAsync");
+                return new HostingerAuthResult { IsAuthorized = false, ErrorMessage = ex.Message };
+            }
+        }
+
+        /// <summary>
+        /// Selecciona el buzón adecuado entre los autorizados: prioriza el que coincide con
+        /// el remitente configurado (FromEmail); si no hay coincidencia, usa el primero.
+        /// </summary>
+        private HostingerMailbox? ResolveMailbox(List<HostingerMailbox> mailboxes)
+        {
+            var match = mailboxes.FirstOrDefault(m =>
+                !string.IsNullOrWhiteSpace(m.ResourceId) &&
+                string.Equals(m.Address, _emailSettings.FromEmail, StringComparison.OrdinalIgnoreCase));
+
+            return match ?? mailboxes.FirstOrDefault(m => !string.IsNullOrWhiteSpace(m.ResourceId));
+        }
+
+        /// <summary>
+        /// Resultado de la consulta de autorización (GET /api/v1/me).
+        /// </summary>
+        private sealed class HostingerAuthResult
+        {
+            public bool IsAuthorized { get; set; }
+            public string? ErrorMessage { get; set; }
+            public List<HostingerMailbox> Mailboxes { get; set; } = new();
+
+            public string Describe() =>
+                Mailboxes.Count == 0
+                    ? "ninguno"
+                    : string.Join(", ", Mailboxes.Select(m => $"{m.Address} ({m.ResourceId})"));
         }
 
         public void SaveCode(EmailParametersDto emailParametersDto)
@@ -293,15 +397,11 @@ namespace BocciaCoaching.Services
         private HostingerSendEmailRequest BuildRequestFromMimeMessage(MimeMessage message)
         {
             var toList = message.To.Mailboxes.Select(m => m.Address).ToList();
-            var ccList = message.Cc.Mailboxes.Select(m => m.Address).ToList();
-            var bccList = message.Bcc.Mailboxes.Select(m => m.Address).ToList();
 
             return new HostingerSendEmailRequest
             {
                 To = toList.Count > 0 ? toList : new List<string> { _emailSettings.FromEmail },
                 DisplayName = message.To.Mailboxes.FirstOrDefault()?.Name ?? _emailSettings.FromName,
-                Cc = ccList.Count > 0 ? ccList : null,
-                Bcc = bccList.Count > 0 ? bccList : null,
                 Subject = message.Subject ?? string.Empty,
                 Text = message.TextBody,
                 Html = message.HtmlBody
