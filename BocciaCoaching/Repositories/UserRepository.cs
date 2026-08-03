@@ -11,18 +11,27 @@ namespace BocciaCoaching.Repositories
 {
     public class UserRepository(ApplicationDbContext context) : IUserRepository
     {
+        // Valores por defecto para los datos del usuario
+        private const string DefaultRegion = "No especificada";
+        private const string DefaultName = "Usuario";
+
         public async Task<ResponseContract<bool>> AddUser(InfoUserRegisterDto userDto)
         {
             try
             {
+                // Validar que el correo no exista previamente
+                var existingUser = await GetUserByEmailAsync(userDto.Email);
+                if (existingUser != null)
+                    return ResponseContract<bool>.Fail("Ya existe un usuario con ese email");
+
                 string passwordHash = BCrypt.Net.BCrypt.HashPassword(userDto.Password);
 
                 var user = new User
                 {
                     Email = userDto.Email,
                     Password = passwordHash,
-                    Country = userDto.Region,
-                    FirstName = "Name",
+                    Country = string.IsNullOrWhiteSpace(userDto.Region) ? DefaultRegion : userDto.Region,
+                    FirstName = string.IsNullOrWhiteSpace(userDto.Name) ? DefaultName : userDto.Name,
                     Dni = new Guid().ToString(),
                 };
 
