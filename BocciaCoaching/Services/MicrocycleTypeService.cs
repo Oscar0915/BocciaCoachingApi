@@ -22,7 +22,7 @@ namespace BocciaCoaching.Services
             {
                 var entity = new MicrocycleTypeEntity
                 {
-                    MicrocycleTypeId = Guid.NewGuid().ToString(),
+                    MicrocycleTypeId = Guid.NewGuid(),
                     Name = dto.Name,
                     ShortCode = dto.ShortCode,
                     Description = dto.Description,
@@ -33,7 +33,7 @@ namespace BocciaCoaching.Services
                 {
                     entity.DayConfigs.Add(new MicrocycleTypeDayDefault
                     {
-                        MicrocycleTypeDayDefaultId = Guid.NewGuid().ToString(),
+                        MicrocycleTypeDayDefaultId = Guid.NewGuid(),
                         MicrocycleTypeId = entity.MicrocycleTypeId,
                         CoachId = null,   // null = default global del sistema
                         DayOfWeek = day.DayOfWeek,
@@ -65,7 +65,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<MicrocycleTypeResponseDto>> GetById(string id)
+        public async Task<ResponseContract<MicrocycleTypeResponseDto>> GetById(Guid id)
         {
             try
             {
@@ -80,7 +80,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<MicrocycleTypeResponseDto>> GetByIdForCoach(string id, int coachId)
+        public async Task<ResponseContract<MicrocycleTypeResponseDto>> GetByIdForCoach(Guid id, Guid coachId)
         {
             try
             {
@@ -97,7 +97,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<List<MicrocycleTypeResponseDto>>> GetAllForCoach(int coachId)
+        public async Task<ResponseContract<List<MicrocycleTypeResponseDto>>> GetAllForCoach(Guid coachId)
         {
             try
             {
@@ -129,7 +129,7 @@ namespace BocciaCoaching.Services
                 // Crear registros con CoachId != null (override del coach)
                 var days = dto.Days.Select(d => new MicrocycleTypeDayDefault
                 {
-                    MicrocycleTypeDayDefaultId = Guid.NewGuid().ToString(),
+                    MicrocycleTypeDayDefaultId = Guid.NewGuid(),
                     CoachId = dto.CoachId,
                     MicrocycleTypeId = dto.MicrocycleTypeId,
                     DayOfWeek = d.DayOfWeek,
@@ -146,7 +146,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<bool>> ResetCoachPercentages(int coachId, string microcycleTypeId)
+        public async Task<ResponseContract<bool>> ResetCoachPercentages(Guid coachId, Guid microcycleTypeId)
         {
             try
             {
@@ -224,7 +224,7 @@ namespace BocciaCoaching.Services
 
                 var entity = new MicrocycleTypeDayDefault
                 {
-                    MicrocycleTypeDayDefaultId = Guid.NewGuid().ToString(),
+                    MicrocycleTypeDayDefaultId = Guid.NewGuid(),
                     MicrocycleTypeId = dto.MicrocycleTypeId,
                     CoachId = null,  // null = global default
                     DayOfWeek = dto.DayOfWeek,
@@ -321,7 +321,7 @@ namespace BocciaCoaching.Services
 
                 var entity = new CoachMicrocycleTypeDistribution
                 {
-                    CoachMicrocycleTypeDistributionId = Guid.NewGuid().ToString(),
+                    CoachMicrocycleTypeDistributionId = Guid.NewGuid(),
                     CoachId = dto.CoachId,
                     MicrocycleTypeId = dto.MicrocycleTypeId,
                     FisicaGeneral = dto.FisicaGeneral,
@@ -346,7 +346,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<CoachMicrocycleTypeDistributionDto?>> GetCoachDistribution(int coachId, string microcycleTypeId)
+        public async Task<ResponseContract<CoachMicrocycleTypeDistributionDto?>> GetCoachDistribution(Guid coachId, Guid microcycleTypeId)
         {
             try
             {
@@ -366,7 +366,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<List<CoachMicrocycleTypeDistributionDto>>> GetAllCoachDistributions(int coachId)
+        public async Task<ResponseContract<List<CoachMicrocycleTypeDistributionDto>>> GetAllCoachDistributions(Guid coachId)
         {
             try
             {
@@ -381,7 +381,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<bool>> DeleteCoachDistribution(int coachId, string microcycleTypeId)
+        public async Task<ResponseContract<bool>> DeleteCoachDistribution(Guid coachId, Guid microcycleTypeId)
         {
             try
             {

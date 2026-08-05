@@ -10,9 +10,8 @@ namespace BocciaCoaching.Models.Entities
         /// ES:
         /// EN: 
         /// </summary>
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public int NotificationMessageId { get; set; }
+        public Guid NotificationMessageId { get; set; }
         /// <summary>
         /// ES:
         /// EN: 
@@ -32,7 +31,7 @@ namespace BocciaCoaching.Models.Entities
         /// ES: ID del usuario que envía la notificación
         /// EN: Sender user ID
         /// </summary>
-        public int SenderId { get; set; }
+        public Guid SenderId { get; set; }
         /// <summary>
         /// ES: Usuario que envía la notificación
         /// EN: Sender user
@@ -42,7 +41,7 @@ namespace BocciaCoaching.Models.Entities
         /// ES: ID del usuario que recibe la notificación
         /// EN: Receiver user ID
         /// </summary>
-        public int ReceiverId { get; set; }
+        public Guid ReceiverId { get; set; }
         /// <summary>
         /// ES: Usuario que recibe la notificación
         /// EN: Receiver user
@@ -52,7 +51,7 @@ namespace BocciaCoaching.Models.Entities
         /// ES:
         /// EN: 
         /// </summary>
-        public int NotificationTypeId { get; set; }
+        public Guid NotificationTypeId { get; set; }
         /// <summary>
         /// ES:
         /// EN: 
@@ -62,6 +61,6 @@ namespace BocciaCoaching.Models.Entities
         /// ES: ID de referencia para invitaciones o acciones relacionadas (ej: TeamId para invitación a equipo)
         /// EN: Reference ID for invitations or related actions (e.g., TeamId for team invitation)
         /// </summary>
-        public int? ReferenceId { get; set; }
+        public Guid? ReferenceId { get; set; }
     }
 }

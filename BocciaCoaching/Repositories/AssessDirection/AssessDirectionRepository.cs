@@ -299,7 +299,7 @@ namespace BocciaCoaching.Repositories.AssessDirection
             }
         }
 
-        public async Task<int?> GetCoachIdByAssessmentAsync(int assessDirectionId)
+        public async Task<Guid?> GetCoachIdByAssessmentAsync(Guid assessDirectionId)
         {
             try
             {
@@ -314,7 +314,7 @@ namespace BocciaCoaching.Repositories.AssessDirection
             }
         }
 
-        public async Task<ActiveDirectionEvaluationDto?> GetActiveEvaluationWithDetailsAsync(int teamId, int coachId)
+        public async Task<ActiveDirectionEvaluationDto?> GetActiveEvaluationWithDetailsAsync(Guid teamId, Guid coachId)
         {
             try
             {
@@ -420,7 +420,7 @@ namespace BocciaCoaching.Repositories.AssessDirection
             }
         }
 
-        public async Task<object> GetEvaluationDebugInfoAsync(int teamId)
+        public async Task<object> GetEvaluationDebugInfoAsync(Guid teamId)
         {
             try
             {
@@ -490,7 +490,7 @@ namespace BocciaCoaching.Repositories.AssessDirection
             }
         }
 
-        public async Task<List<DirectionEvaluationSummaryDto>> GetTeamEvaluationsAsync(int teamId)
+        public async Task<List<DirectionEvaluationSummaryDto>> GetTeamEvaluationsAsync(Guid teamId)
         {
             try
             {
@@ -544,7 +544,7 @@ namespace BocciaCoaching.Repositories.AssessDirection
             }
         }
 
-        public async Task<List<DirectionAthleteStatisticsDto>> GetEvaluationStatisticsAsync(int assessDirectionId)
+        public async Task<List<DirectionAthleteStatisticsDto>> GetEvaluationStatisticsAsync(Guid assessDirectionId)
         {
             try
             {
@@ -592,7 +592,7 @@ namespace BocciaCoaching.Repositories.AssessDirection
             }
         }
 
-        public async Task<DirectionEvaluationDetailsDto?> GetEvaluationDetailsAsync(int assessDirectionId)
+        public async Task<DirectionEvaluationDetailsDto?> GetEvaluationDetailsAsync(Guid assessDirectionId)
         {
             try
             {
@@ -703,7 +703,7 @@ namespace BocciaCoaching.Repositories.AssessDirection
             }
         }
 
-        public async Task<ResponseContract<bool>> CancelAssessmentAsync(int assessDirectionId, int coachId, string? reason)
+        public async Task<ResponseContract<bool>> CancelAssessmentAsync(Guid assessDirectionId, Guid coachId, string? reason)
         {
             await using var transaction = await _context.Database.BeginTransactionAsync();
             try
@@ -761,7 +761,7 @@ namespace BocciaCoaching.Repositories.AssessDirection
         /// <summary>
         /// Verifica si un entrenador ya ha generado alguna evaluación de dirección
         /// </summary>
-        public async Task<CoachHasDirectionEvaluationsDto> CoachHasEvaluationsAsync(int coachId)
+        public async Task<CoachHasDirectionEvaluationsDto> CoachHasEvaluationsAsync(Guid coachId)
         {
             var totalEvaluations = await _context.AssessDirections
                 .Where(a => a.CoachId == coachId)

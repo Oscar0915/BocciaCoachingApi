@@ -2,8 +2,8 @@ namespace BocciaCoaching.Models.DTO.Session
 {
     public class TrainingSessionResponseDto
     {
-        public int TrainingSessionId { get; set; }
-        public int MicrocycleId { get; set; }
+        public Guid TrainingSessionId { get; set; }
+        public Guid MicrocycleId { get; set; }
         public string DayOfWeek { get; set; } = string.Empty;
         public int Duration { get; set; }
         public string Status { get; set; } = string.Empty;
@@ -24,7 +24,7 @@ namespace BocciaCoaching.Models.DTO.Session
 
     public class SessionPartResponseDto
     {
-        public int SessionPartId { get; set; }
+        public Guid SessionPartId { get; set; }
         public string Name { get; set; } = string.Empty;
         public int Order { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -33,8 +33,8 @@ namespace BocciaCoaching.Models.DTO.Session
 
     public class SessionSectionResponseDto
     {
-        public int SessionSectionId { get; set; }
-        public int SessionPartId { get; set; }
+        public Guid SessionSectionId { get; set; }
+        public Guid SessionPartId { get; set; }
         public string Name { get; set; } = string.Empty;
         public int NumberOfThrows { get; set; }
         public string Status { get; set; } = string.Empty;
@@ -48,8 +48,8 @@ namespace BocciaCoaching.Models.DTO.Session
 
     public class TrainingSessionSummaryDto
     {
-        public int TrainingSessionId { get; set; }
-        public int MicrocycleId { get; set; }
+        public Guid TrainingSessionId { get; set; }
+        public Guid MicrocycleId { get; set; }
         public string DayOfWeek { get; set; } = string.Empty;
         public int Duration { get; set; }
         public string Status { get; set; } = string.Empty;

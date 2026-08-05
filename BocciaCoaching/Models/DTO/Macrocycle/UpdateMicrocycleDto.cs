@@ -2,8 +2,8 @@ namespace BocciaCoaching.Models.DTO.Macrocycle
 {
     public class UpdateMicrocycleDto
     {
-        public int MicrocycleId { get; set; }
-        public string MacrocycleId { get; set; } = string.Empty;
+        public Guid MicrocycleId { get; set; }
+        public Guid MacrocycleId { get; set; }
         public string? Type { get; set; }
         public bool? HasPeakPerformance { get; set; }
 
@@ -13,7 +13,7 @@ namespace BocciaCoaching.Models.DTO.Macrocycle
         public TrainingDistributionDto? TrainingDistribution { get; set; }
 
         /// <summary>Id del tipo de microciclo del catálogo para actualizar la relación y sus días (opcional)</summary>
-        public string? MicrocycleTypeId { get; set; }
+        public Guid? MicrocycleTypeId { get; set; }
 
         /// <summary>Porcentajes personalizados por día. Si se envía, reemplaza los días actuales del microciclo.</summary>
         public List<MicrocycleDayUpdateDto>? Days { get; set; }

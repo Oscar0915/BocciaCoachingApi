@@ -12,13 +12,13 @@ namespace BocciaCoaching.Services.Interfaces
         Task<ResponseContract<AthletesToEvaluated>> AgregarAtletaAEvaluacion(
             RequestAddAthleteToEvaluationDto athletesToEvaluated);
         Task<bool> AgregarDetalleDeEvaluacion(RequestAddDetailToEvaluationForAthlete requestAddDetailToEvaluationForAthlete);
-        Task<ResponseContract<ActiveEvaluationDto>> GetActiveEvaluationWithDetails(int teamId, int coachId);
-        Task<object> GetEvaluationDebugInfo(int teamId);
+        Task<ResponseContract<ActiveEvaluationDto>> GetActiveEvaluationWithDetails(Guid teamId, Guid coachId);
+        Task<object> GetEvaluationDebugInfo(Guid teamId);
         Task<ResponseContract<bool>> UpdateEvaluationState(UpdateAssessStregthDto updateDto);
-        Task<ResponseContract<List<EvaluationSummaryDto>>> GetTeamEvaluations(int teamId);
-        Task<ResponseContract<List<AthleteStatisticsDto>>> GetEvaluationStatistics(int assessStrengthId);
-        Task<ResponseContract<EvaluationDetailsDto>> GetEvaluationDetails(int assessStrengthId);
+        Task<ResponseContract<List<EvaluationSummaryDto>>> GetTeamEvaluations(Guid teamId);
+        Task<ResponseContract<List<AthleteStatisticsDto>>> GetEvaluationStatistics(Guid assessStrengthId);
+        Task<ResponseContract<EvaluationDetailsDto>> GetEvaluationDetails(Guid assessStrengthId);
         Task<ResponseContract<bool>> CancelEvaluation(CancelAssessStrengthDto cancelDto);
-        Task<ResponseContract<CoachHasEvaluationsDto>> CoachHasEvaluations(int coachId);
+        Task<ResponseContract<CoachHasEvaluationsDto>> CoachHasEvaluations(Guid coachId);
     }
 }

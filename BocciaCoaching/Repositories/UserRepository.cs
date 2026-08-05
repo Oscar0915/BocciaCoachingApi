@@ -5,6 +5,7 @@ using BocciaCoaching.Models.DTO.User;
 using BocciaCoaching.Models.DTO.User.Atlhete;
 using BocciaCoaching.Models.Entities;
 using BocciaCoaching.Repositories.Interfaces;
+using BocciaCoaching.Utils;
 using Microsoft.EntityFrameworkCore;
 
 namespace BocciaCoaching.Repositories
@@ -75,7 +76,7 @@ namespace BocciaCoaching.Repositories
             }
         }
 
-        public async Task<ResponseContract<InfoBasicUserDto>> GetByIdAsync(int id)
+        public async Task<ResponseContract<InfoBasicUserDto>> GetByIdAsync(Guid id)
         {
             try
             {
@@ -176,7 +177,7 @@ namespace BocciaCoaching.Repositories
         /// </summary>
         /// <param name="atlheteInfoSave"></param>
         /// <returns></returns>
-        public async Task<ResponseContract<int>> RegistrarAtleta(AtlheteInfoSave atlheteInfoSave)
+        public async Task<ResponseContract<Guid>> RegistrarAtleta(AtlheteInfoSave atlheteInfoSave)
         {
             try
             {
@@ -202,19 +203,19 @@ namespace BocciaCoaching.Repositories
 
                 var athlete = new UserRol
                 {
-                    RolId = 3,
+                    RolId = RoleIds.Athlete,
                     UserId = user.UserId
                 };
 
                 await context.UserRoles.AddAsync(athlete);
                 await context.SaveChangesAsync();
 
-                return ResponseContract<int>.Ok(user.UserId, "Atleta registrado exitosamente");
+                return ResponseContract<Guid>.Ok(user.UserId, "Atleta registrado exitosamente");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error en RegistrarAtleta: {ex.Message}");
-                return ResponseContract<int>.Fail($"Error al registrar atleta: {ex.Message}");
+                return ResponseContract<Guid>.Fail($"Error al registrar atleta: {ex.Message}");
             }
         }
 
@@ -283,7 +284,7 @@ namespace BocciaCoaching.Repositories
                         where u.FirstName != null
                               && EF.Functions.Like(u.FirstName, $"%{user.FirstName}%")
                               && tu.TeamId == user.TeamId
-                              && ur.RolId == 3
+                              && ur.RolId == RoleIds.Athlete
                         select u)
                     .Distinct()
                     .ToListAsync();
@@ -422,7 +423,7 @@ namespace BocciaCoaching.Repositories
         /// <summary>
         /// Actualiza la URL/ubicación de la imagen de perfil del usuario
         /// </summary>
-        public async Task<ResponseContract<string?>> UpdateUserImageAsync(int userId, string imageUrl)
+        public async Task<ResponseContract<string?>> UpdateUserImageAsync(Guid userId, string imageUrl)
         {
             try
             {
@@ -450,7 +451,7 @@ namespace BocciaCoaching.Repositories
         /// <summary>
         /// Obtener usuario directamente por ID (para uso en servicios)
         /// </summary>
-        public async Task<User?> GetUserEntityByIdAsync(int id)
+        public async Task<User?> GetUserEntityByIdAsync(Guid id)
         {
             try
             {

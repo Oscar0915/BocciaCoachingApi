@@ -7,7 +7,7 @@ namespace BocciaCoaching.Models.Entities
     public class MicrocycleType
     {
         [Key]
-        public string MicrocycleTypeId { get; set; } = Guid.NewGuid().ToString();
+        public Guid MicrocycleTypeId { get; set; } = Guid.NewGuid();
 
         /// <summary>Nombre del tipo de microciclo: ordinario, choque, activación, competitivo, recuperación, descarga, evaluación</summary>
         [Required]

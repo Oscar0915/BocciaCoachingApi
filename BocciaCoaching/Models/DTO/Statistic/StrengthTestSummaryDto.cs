@@ -11,9 +11,9 @@ public class StrengthTestSummaryDto
     }
 
     public string NameAthlete { get; set; }
-    public int AthleteId { get; set; }
+    public Guid AthleteId { get; set; }
     public double EffectivenessPercentage { get; set; }
     public double AccuracyPercentage { get; set; }
-    public int AssessStrengthId { get; set; }
-    public int StrengthStatisticsId { get; set; }
+    public Guid AssessStrengthId { get; set; }
+    public Guid StrengthStatisticsId { get; set; }
 }

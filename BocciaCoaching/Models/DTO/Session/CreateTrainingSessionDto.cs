@@ -2,7 +2,7 @@ namespace BocciaCoaching.Models.DTO.Session
 {
     public class CreateTrainingSessionDto
     {
-        public int MicrocycleId { get; set; }
+        public Guid MicrocycleId { get; set; }
 
         /// <summary>lunes, martes, miercoles, jueves, viernes, sabado, domingo</summary>
         public string DayOfWeek { get; set; } = string.Empty;

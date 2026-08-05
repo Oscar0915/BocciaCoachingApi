@@ -6,11 +6,10 @@ namespace BocciaCoaching.Models.Entities
     [Table("SessionPart")]
     public class SessionPart
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public int SessionPartId { get; set; }
+        public Guid SessionPartId { get; set; }
 
-        public int TrainingSessionId { get; set; }
+        public Guid TrainingSessionId { get; set; }
 
         [ForeignKey("TrainingSessionId")]
         public TrainingSession? TrainingSession { get; set; }

@@ -6,7 +6,7 @@ namespace BocciaCoaching.Services.Interfaces
 {
     public interface ITeamService
     {
-        Task<ResponseContract<int>> AddTeam(RequestTeamDto requestTeamDto);
+        Task<ResponseContract<Guid>> AddTeam(RequestTeamDto requestTeamDto);
         /// <summary>
         /// Método para agregar mienbros al equipo
         /// </summary>
@@ -14,7 +14,7 @@ namespace BocciaCoaching.Services.Interfaces
         /// <returns></returns>
         Task<ResponseContract<bool>> AddTeamMember(RequestTeamMemberDto requestTeamMemberDto);
 
-        Task<ResponseContract<List<TeamSummaryDto>>> GetTeamsForUser(int coachId);
+        Task<ResponseContract<List<TeamSummaryDto>>> GetTeamsForUser(Guid coachId);
         Task<ResponseContract<List<TeamMemberDto>>> GetUsersForTeam(RequestGetUserForTeamDto requestGetUserForTeamDto);
         Task<bool> UpdateTeam(RequestUpdateTeamDto requestUpdateImageTeamDto);
 

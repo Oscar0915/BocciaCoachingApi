@@ -24,10 +24,10 @@ namespace BocciaCoaching.Controllers
         /// <returns>Lista de estadísticas recientes</returns>
         [HttpGet("RecentStrengthStats")]
         public async Task<ActionResult<ResponseContract<List<StrengthTestSummaryDto>>>> GetRecentStatistics(
-            [FromQuery] int coachId, 
-            [FromQuery] int teamId)
+            [FromQuery] Guid coachId, 
+            [FromQuery] Guid teamId)
         {
-            if (coachId <= 0 || teamId <= 0)
+            if (coachId == Guid.Empty || teamId == Guid.Empty)
             {
                 return BadRequest(ResponseContract<List<StrengthTestSummaryDto>>.Fail("Coach ID y Team ID son requeridos y deben ser válidos"));
             }
@@ -42,9 +42,9 @@ namespace BocciaCoaching.Controllers
         /// <param name="teamId">ID del equipo para filtrar las estadísticas</param>
         /// <returns>Estadísticas completas del equipo con información individual de cada atleta y promedios del equipo</returns>
         [HttpGet("TeamStrengthStats/{teamId}")]
-        public async Task<ActionResult<ResponseContract<TeamStrengthStatisticsDto>>> GetTeamStrengthStatistics(int teamId)
+        public async Task<ActionResult<ResponseContract<TeamStrengthStatisticsDto>>> GetTeamStrengthStatistics(Guid teamId)
         {
-            if (teamId <= 0)
+            if (teamId == Guid.Empty)
             {
                 return BadRequest(ResponseContract<TeamStrengthStatisticsDto>.Fail("Team ID debe ser un valor válido mayor a 0"));
             }
@@ -65,9 +65,9 @@ namespace BocciaCoaching.Controllers
         /// <param name="teamId">ID del equipo para depurar</param>
         /// <returns>Información detallada de evaluaciones, atletas y estadísticas del equipo</returns>
         [HttpGet("DebugTeamEvaluations/{teamId}")]
-        public async Task<ActionResult<ResponseContract<object>>> GetTeamEvaluationsDebug(int teamId)
+        public async Task<ActionResult<ResponseContract<object>>> GetTeamEvaluationsDebug(Guid teamId)
         {
-            if (teamId <= 0)
+            if (teamId == Guid.Empty)
             {
                 return BadRequest(ResponseContract<object>.Fail("Team ID debe ser un valor válido mayor a 0"));
             }
@@ -82,9 +82,9 @@ namespace BocciaCoaching.Controllers
         /// <param name="teamId">ID del equipo para obtener estadísticas individualizadas</param>
         /// <returns>Estadísticas detalladas de cada evaluación individual del equipo</returns>
         [HttpGet("TeamStrengthStatsIndividualized/{teamId}")]
-        public async Task<ActionResult<ResponseContract<TeamStrengthStatisticsDto>>> GetTeamStrengthStatisticsIndividualized(int teamId)
+        public async Task<ActionResult<ResponseContract<TeamStrengthStatisticsDto>>> GetTeamStrengthStatisticsIndividualized(Guid teamId)
         {
-            if (teamId <= 0)
+            if (teamId == Guid.Empty)
             {
                 return BadRequest(ResponseContract<TeamStrengthStatisticsDto>.Fail("Team ID debe ser un valor válido mayor a 0"));
             }
@@ -99,15 +99,15 @@ namespace BocciaCoaching.Controllers
         /// <param name="athleteId">ID del atleta</param>
         /// <returns>Estadísticas detalladas del atleta</returns>
         [HttpGet("AthleteStats/{athleteId}")]
-        public async Task<ActionResult<ResponseContract<List<StrengthTestSummaryDto>>>> GetAthleteStatistics(int athleteId)
+        public async Task<ActionResult<ResponseContract<List<StrengthTestSummaryDto>>>> GetAthleteStatistics(Guid athleteId)
         {
-            if (athleteId <= 0)
+            if (athleteId == Guid.Empty)
             {
                 return BadRequest(ResponseContract<List<StrengthTestSummaryDto>>.Fail("Athlete ID debe ser un valor válido mayor a 0"));
             }
 
             // Por ahora usamos el método existente con coachId = 0 (se puede modificar el repositorio después)
-            var result = await _statisticsService.GetRecentStatistics(0, 0);
+            var result = await _statisticsService.GetRecentStatistics(Guid.Empty, Guid.Empty);
             
             // Filtrar por athleteId
             if (result.Success && result.Data != null && result.Data.Any())
@@ -139,7 +139,7 @@ namespace BocciaCoaching.Controllers
         /// <param name="teamIds">Lista de IDs de equipos para comparar</param>
         /// <returns>Estadísticas comparativas entre los equipos especificados</returns>
         [HttpPost("CompareTeams")]
-        public async Task<ActionResult<ResponseContract<List<TeamStrengthStatisticsDto>>>> CompareTeamStatistics([FromBody] List<int> teamIds)
+        public async Task<ActionResult<ResponseContract<List<TeamStrengthStatisticsDto>>>> CompareTeamStatistics([FromBody] List<Guid> teamIds)
         {
             if (!teamIds.Any())
             {
@@ -172,7 +172,7 @@ namespace BocciaCoaching.Controllers
         /// <param name="teamId">ID del equipo (opcional)</param>
         /// <returns>Indicadores principales del dashboard</returns>
         [HttpGet("DashboardIndicators")]
-        public async Task<ActionResult<ResponseContract<DashboardIndicatorsDto>>> GetDashboardIndicators([FromQuery] int? coachId = null, [FromQuery] int? teamId = null)
+        public async Task<ActionResult<ResponseContract<DashboardIndicatorsDto>>> GetDashboardIndicators([FromQuery] Guid? coachId = null, [FromQuery] Guid? teamId = null)
         {
             var result = await _statisticsService.GetDashboardIndicators(coachId, teamId);
             return Ok(result);
@@ -184,7 +184,7 @@ namespace BocciaCoaching.Controllers
         /// <param name="coachId">ID del coach (opcional, si no se especifica obtiene datos globales)</param>
         /// <returns>Datos completos del dashboard</returns>
         [HttpGet("DashboardComplete")]
-        public async Task<ActionResult<ResponseContract<DashboardCompleteDto>>> GetDashboardComplete([FromQuery] int? coachId = null)
+        public async Task<ActionResult<ResponseContract<DashboardCompleteDto>>> GetDashboardComplete([FromQuery] Guid? coachId = null)
         {
             var result = await _statisticsService.GetDashboardComplete(coachId);
             return Ok(result);
@@ -199,8 +199,8 @@ namespace BocciaCoaching.Controllers
         /// <returns>Lista de atletas con mejor rendimiento</returns>
         [HttpGet("TopPerformanceAthletes")]
         public async Task<ActionResult<ResponseContract<List<TopPerformanceAthleteDto>>>> GetTopPerformanceAthletes(
-            [FromQuery] int? coachId = null,
-            [FromQuery] int? teamId = null,
+            [FromQuery] Guid? coachId = null,
+            [FromQuery] Guid? teamId = null,
             [FromQuery] int limit = 5)
         {
             if (limit <= 0 || limit > 20)
@@ -221,8 +221,8 @@ namespace BocciaCoaching.Controllers
         /// <returns>Lista de pruebas recientes</returns>
         [HttpGet("RecentTests")]
         public async Task<ActionResult<ResponseContract<List<RecentTestDto>>>> GetRecentTests(
-            [FromQuery] int? coachId = null,
-            [FromQuery] int? teamId = null,
+            [FromQuery] Guid? coachId = null,
+            [FromQuery] Guid? teamId = null,
             [FromQuery] int limit = 10)
         {
             if (limit <= 0 || limit > 50)
@@ -242,7 +242,7 @@ namespace BocciaCoaching.Controllers
         /// <returns>Lista de tareas pendientes</returns>
         [HttpGet("PendingTasks")]
         public async Task<ActionResult<ResponseContract<List<PendingTaskDto>>>> GetPendingTasks(
-            [FromQuery] int? coachId = null,
+            [FromQuery] Guid? coachId = null,
             [FromQuery] string? priority = null)
         {
             var result = await _statisticsService.GetPendingTasks(coachId, priority);
@@ -258,8 +258,8 @@ namespace BocciaCoaching.Controllers
         /// <returns>Datos de evolución mensual</returns>
         [HttpGet("MonthlyEvolution")]
         public async Task<ActionResult<ResponseContract<List<MonthlyEvolutionDto>>>> GetMonthlyEvolution(
-            [FromQuery] int? coachId = null,
-            [FromQuery] int? teamId = null,
+            [FromQuery] Guid? coachId = null,
+            [FromQuery] Guid? teamId = null,
             [FromQuery] int months = 12)
         {
             if (months <= 0 || months > 24)
@@ -277,9 +277,9 @@ namespace BocciaCoaching.Controllers
         /// <param name="coachId">ID del coach</param>
         /// <returns>Información de la próxima sesión</returns>
         [HttpGet("NextSession/{coachId}")]
-        public async Task<ActionResult<ResponseContract<NextSessionInfo>>> GetNextSession(int coachId)
+        public async Task<ActionResult<ResponseContract<NextSessionInfo>>> GetNextSession(Guid coachId)
         {
-            if (coachId <= 0)
+            if (coachId == Guid.Empty)
             {
                 return BadRequest(ResponseContract<NextSessionInfo>.Fail("Coach ID debe ser un valor válido mayor a 0"));
             }
@@ -294,9 +294,9 @@ namespace BocciaCoaching.Controllers
         /// <param name="coachId">ID del coach</param>
         /// <returns>Resumen de estadísticas por equipo</returns>
         [HttpGet("CoachTeamsOverview/{coachId}")]
-        public async Task<ActionResult<ResponseContract<List<TeamOverviewDto>>>> GetCoachTeamsOverview(int coachId)
+        public async Task<ActionResult<ResponseContract<List<TeamOverviewDto>>>> GetCoachTeamsOverview(Guid coachId)
         {
-            if (coachId <= 0)
+            if (coachId == Guid.Empty)
             {
                 return BadRequest(ResponseContract<List<TeamOverviewDto>>.Fail("Coach ID debe ser un valor válido mayor a 0"));
             }
@@ -311,9 +311,9 @@ namespace BocciaCoaching.Controllers
         /// Obtiene estadísticas SAREMAS+ por equipo
         /// </summary>
         [HttpGet("SaremasTeamStats/{teamId}")]
-        public async Task<ActionResult<ResponseContract<SaremasTeamStatsDto>>> GetSaremasTeamStats(int teamId)
+        public async Task<ActionResult<ResponseContract<SaremasTeamStatsDto>>> GetSaremasTeamStats(Guid teamId)
         {
-            if (teamId <= 0)
+            if (teamId == Guid.Empty)
                 return BadRequest(ResponseContract<SaremasTeamStatsDto>.Fail("Team ID debe ser un valor válido mayor a 0"));
 
             var result = await _statisticsService.GetSaremasTeamStats(teamId);
@@ -324,9 +324,9 @@ namespace BocciaCoaching.Controllers
         /// Obtiene la evolución SAREMAS+ de un atleta a lo largo del tiempo
         /// </summary>
         [HttpGet("SaremasAthleteStats/{athleteId}")]
-        public async Task<ActionResult<ResponseContract<SaremasAthleteEvolutionDto>>> GetSaremasAthleteStats(int athleteId)
+        public async Task<ActionResult<ResponseContract<SaremasAthleteEvolutionDto>>> GetSaremasAthleteStats(Guid athleteId)
         {
-            if (athleteId <= 0)
+            if (athleteId == Guid.Empty)
                 return BadRequest(ResponseContract<SaremasAthleteEvolutionDto>.Fail("Athlete ID debe ser un valor válido mayor a 0"));
 
             var result = await _statisticsService.GetSaremasAthleteStats(athleteId);
@@ -337,9 +337,9 @@ namespace BocciaCoaching.Controllers
         /// Obtiene el progreso de un macrociclo (semana actual, evaluaciones realizadas)
         /// </summary>
         [HttpGet("MacrocycleProgress/{macrocycleId}")]
-        public async Task<ActionResult<ResponseContract<MacrocycleProgressDto>>> GetMacrocycleProgress(string macrocycleId)
+        public async Task<ActionResult<ResponseContract<MacrocycleProgressDto>>> GetMacrocycleProgress(Guid macrocycleId)
         {
-            if (string.IsNullOrEmpty(macrocycleId))
+            if (macrocycleId == Guid.Empty)
                 return BadRequest(ResponseContract<MacrocycleProgressDto>.Fail("Macrocycle ID es requerido"));
 
             var result = await _statisticsService.GetMacrocycleProgress(macrocycleId);
@@ -350,9 +350,9 @@ namespace BocciaCoaching.Controllers
         /// Dashboard unificado por atleta: Fuerza + Dirección + SAREMAS+ + Macrociclo
         /// </summary>
         [HttpGet("AthleteFullDashboard/{athleteId}")]
-        public async Task<ActionResult<ResponseContract<AthleteFullDashboardDto>>> GetAthleteFullDashboard(int athleteId)
+        public async Task<ActionResult<ResponseContract<AthleteFullDashboardDto>>> GetAthleteFullDashboard(Guid athleteId)
         {
-            if (athleteId <= 0)
+            if (athleteId == Guid.Empty)
                 return BadRequest(ResponseContract<AthleteFullDashboardDto>.Fail("Athlete ID debe ser un valor válido mayor a 0"));
 
             var result = await _statisticsService.GetAthleteFullDashboard(athleteId);

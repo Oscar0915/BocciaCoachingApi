@@ -10,14 +10,13 @@ namespace BocciaCoaching.Models.Entities
         /// ES:
         /// EN: 
         /// </summary>
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public int LogErrorId { get; set; }
+        public Guid LogErrorId { get; set; }
         /// <summary>
         /// ES:
         /// EN: 
         /// </summary>
-        public int ModuleErrorId { get; set; }
+        public Guid ModuleErrorId { get; set; }
         /// <summary>
         /// ES:
         /// EN: 

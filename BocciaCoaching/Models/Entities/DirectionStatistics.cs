@@ -6,9 +6,8 @@ namespace BocciaCoaching.Models.Entities;
 [Table("DirectionStatistics")]
 public class DirectionStatistics
 {
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Key]
-    public int DirectionStatisticsId { get; set; }
+    public Guid DirectionStatisticsId { get; set; }
 
     /// <summary>
     /// Porcentaje de precisión general
@@ -140,11 +139,11 @@ public class DirectionStatistics
     /// </summary>
     public int LongDeviatedLeft { get; set; }
 
-    public int AssessDirectionId { get; set; }
+    public Guid AssessDirectionId { get; set; }
 
     public AssessDirection? AssessDirection { get; set; }
 
-    public int AthleteId { get; set; }
+    public Guid AthleteId { get; set; }
 
     public User? Athlete { get; set; }
 }

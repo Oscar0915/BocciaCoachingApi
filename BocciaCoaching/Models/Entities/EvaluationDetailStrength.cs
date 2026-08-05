@@ -12,9 +12,8 @@ namespace BocciaCoaching.Models.Entities
         /// ES: Identificador de la evaluación
         /// EN: 
         /// </summary>
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public int EvaluationDetailStrengthId { get; set; }
+        public Guid EvaluationDetailStrengthId { get; set; }
         /// <summary>
         /// ES: Numero de cajon
         /// EN: 
@@ -49,7 +48,7 @@ namespace BocciaCoaching.Models.Entities
         /// ES: Identificación del atleta
         /// EN: 
         /// </summary>
-        public int AthleteId { get; set; }
+        public Guid AthleteId { get; set; }
         /// <summary>
         /// ES:
         /// EN: 
@@ -59,7 +58,7 @@ namespace BocciaCoaching.Models.Entities
         /// ES:Número de la evaluacion
         /// EN: 
         /// </summary>
-        public int AssessStrengthId { get; set; }
+        public Guid AssessStrengthId { get; set; }
         /// <summary>
         /// ES:
         /// EN: 

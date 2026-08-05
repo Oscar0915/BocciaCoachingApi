@@ -13,20 +13,20 @@ namespace BocciaCoaching.Services.Interfaces
 
         Task<bool> AgregarDetalleDeEvaluacion(RequestAddDetailToDirectionEvaluation request);
 
-        Task<ResponseContract<ActiveDirectionEvaluationDto>> GetActiveEvaluationWithDetails(int teamId, int coachId);
+        Task<ResponseContract<ActiveDirectionEvaluationDto>> GetActiveEvaluationWithDetails(Guid teamId, Guid coachId);
 
-        Task<object> GetEvaluationDebugInfo(int teamId);
+        Task<object> GetEvaluationDebugInfo(Guid teamId);
 
         Task<ResponseContract<bool>> UpdateEvaluationState(UpdateAssessDirectionDto updateDto);
 
-        Task<ResponseContract<List<DirectionEvaluationSummaryDto>>> GetTeamEvaluations(int teamId);
+        Task<ResponseContract<List<DirectionEvaluationSummaryDto>>> GetTeamEvaluations(Guid teamId);
 
-        Task<ResponseContract<List<DirectionAthleteStatisticsDto>>> GetEvaluationStatistics(int assessDirectionId);
+        Task<ResponseContract<List<DirectionAthleteStatisticsDto>>> GetEvaluationStatistics(Guid assessDirectionId);
 
-        Task<ResponseContract<DirectionEvaluationDetailsDto>> GetEvaluationDetails(int assessDirectionId);
+        Task<ResponseContract<DirectionEvaluationDetailsDto>> GetEvaluationDetails(Guid assessDirectionId);
 
         Task<ResponseContract<bool>> CancelEvaluation(CancelAssessDirectionDto cancelDto);
-        Task<ResponseContract<CoachHasDirectionEvaluationsDto>> CoachHasEvaluations(int coachId);
+        Task<ResponseContract<CoachHasDirectionEvaluationsDto>> CoachHasEvaluations(Guid coachId);
     }
 }
 

@@ -6,7 +6,7 @@ namespace BocciaCoaching.Models.DTO.Session
     public class GetAthleteSessionsDto
     {
         /// <summary>Identificador del atleta</summary>
-        public int AthleteId { get; set; }
+        public Guid AthleteId { get; set; }
 
         /// <summary>Fecha de inicio del rango</summary>
         public DateTime StartDate { get; set; }
@@ -21,10 +21,10 @@ namespace BocciaCoaching.Models.DTO.Session
     public class AthleteUpdateSessionStatusDto
     {
         /// <summary>Identificador de la sesión de entrenamiento</summary>
-        public int TrainingSessionId { get; set; }
+        public Guid TrainingSessionId { get; set; }
 
         /// <summary>Identificador del atleta (para validar que la sesión le pertenece)</summary>
-        public int AthleteId { get; set; }
+        public Guid AthleteId { get; set; }
     }
 
     /// <summary>
@@ -32,8 +32,8 @@ namespace BocciaCoaching.Models.DTO.Session
     /// </summary>
     public class AthleteSessionSummaryDto
     {
-        public int TrainingSessionId { get; set; }
-        public int MicrocycleId { get; set; }
+        public Guid TrainingSessionId { get; set; }
+        public Guid MicrocycleId { get; set; }
         public string MacrocycleName { get; set; } = string.Empty;
         public int MicrocycleNumber { get; set; }
         public DateTime MicrocycleStartDate { get; set; }

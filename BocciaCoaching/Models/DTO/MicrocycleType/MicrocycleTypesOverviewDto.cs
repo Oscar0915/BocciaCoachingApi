@@ -13,7 +13,7 @@ namespace BocciaCoaching.Models.DTO.MicrocycleType
     /// <summary>Tipo de microciclo del catálogo incluyendo cuántos microciclos han sido construidos con ese tipo</summary>
     public class MicrocycleTypeWithCountDto
     {
-        public string MicrocycleTypeId { get; set; } = string.Empty;
+        public Guid MicrocycleTypeId { get; set; }
         public string Name { get; set; } = string.Empty;
         public string? Description { get; set; }
         public bool Status { get; set; }

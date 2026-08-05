@@ -2,14 +2,14 @@ namespace BocciaCoaching.Models.DTO.AssessSaremas
 {
     public class SaremasAthleteHistoryDto
     {
-        public int AthleteId { get; set; }
+        public Guid AthleteId { get; set; }
         public string? AthleteName { get; set; }
         public List<SaremasHistoryItemDto> Evaluations { get; set; } = new();
     }
 
     public class SaremasHistoryItemDto
     {
-        public int SaremasEvaluationId { get; set; }
+        public Guid SaremasEvaluationId { get; set; }
         public DateTime EvaluationDate { get; set; }
         public string? Description { get; set; }
         public string? State { get; set; }

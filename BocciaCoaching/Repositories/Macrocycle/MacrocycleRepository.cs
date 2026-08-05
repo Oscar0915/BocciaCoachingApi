@@ -23,7 +23,7 @@ namespace BocciaCoaching.Repositories.Macrocycle
             return macrocycle;
         }
 
-        public async Task<List<MacrocycleSummaryDto>> GetByAthleteAsync(int athleteId)
+        public async Task<List<MacrocycleSummaryDto>> GetByAthleteAsync(Guid athleteId)
         {
             return await _context.Macrocycles
                 .Include(m => m.Coach)
@@ -48,7 +48,7 @@ namespace BocciaCoaching.Repositories.Macrocycle
                 .ToListAsync();
         }
 
-        public async Task<List<MacrocycleSummaryDto>> GetByTeamAsync(int teamId)
+        public async Task<List<MacrocycleSummaryDto>> GetByTeamAsync(Guid teamId)
         {
             return await _context.Macrocycles
                 .Include(m => m.Coach)
@@ -73,7 +73,7 @@ namespace BocciaCoaching.Repositories.Macrocycle
                 .ToListAsync();
         }
 
-        public async Task<MacrocycleEntity?> GetByIdAsync(string macrocycleId)
+        public async Task<MacrocycleEntity?> GetByIdAsync(Guid macrocycleId)
         {
             return await _context.Macrocycles
                 .Include(m => m.Events)
@@ -104,7 +104,7 @@ namespace BocciaCoaching.Repositories.Macrocycle
             }
         }
 
-        public async Task<bool> DeleteAsync(string macrocycleId)
+        public async Task<bool> DeleteAsync(Guid macrocycleId)
         {
             try
             {
@@ -158,7 +158,7 @@ namespace BocciaCoaching.Repositories.Macrocycle
             }
         }
 
-        public async Task<bool> DeleteEventAsync(string eventId)
+        public async Task<bool> DeleteEventAsync(Guid eventId)
         {
             try
             {
@@ -175,7 +175,7 @@ namespace BocciaCoaching.Repositories.Macrocycle
             }
         }
 
-        public async Task<Microcycle?> GetMicrocycleByIdAsync(int microcycleId)
+        public async Task<Microcycle?> GetMicrocycleByIdAsync(Guid microcycleId)
         {
             return await _context.Microcycles
                 .Include(m => m.MicrocycleType)
@@ -198,7 +198,7 @@ namespace BocciaCoaching.Repositories.Macrocycle
             }
         }
 
-        public async Task<List<MacrocycleSummaryDto>> GetCoachMacrocyclesAsync(int coachId)
+        public async Task<List<MacrocycleSummaryDto>> GetCoachMacrocyclesAsync(Guid coachId)
         {
             return await _context.Macrocycles
                 .Include(m => m.Coach)
@@ -223,37 +223,37 @@ namespace BocciaCoaching.Repositories.Macrocycle
                 .ToListAsync();
         }
 
-        public async Task<bool> ValidateNoOverlapAsync(int athleteId, DateTime startDate, DateTime endDate, string? excludeMacrocycleId = null)
+        public async Task<bool> ValidateNoOverlapAsync(Guid athleteId, DateTime startDate, DateTime endDate, Guid? excludeMacrocycleId = null)
         {
             var query = _context.Macrocycles
                 .Where(m => m.AthleteId == athleteId && m.StartDate < endDate && m.EndDate > startDate);
 
-            if (!string.IsNullOrEmpty(excludeMacrocycleId))
-                query = query.Where(m => m.MacrocycleId != excludeMacrocycleId);
+            if (excludeMacrocycleId.HasValue && excludeMacrocycleId != Guid.Empty)
+                query = query.Where(m => m.MacrocycleId != excludeMacrocycleId.Value);
 
             return !await query.AnyAsync();
         }
 
-        public async Task<MacrocycleEvent?> GetEventByIdAsync(string eventId)
+        public async Task<MacrocycleEvent?> GetEventByIdAsync(Guid eventId)
         {
             return await _context.MacrocycleEvents.FirstOrDefaultAsync(e => e.MacrocycleEventId == eventId);
         }
 
-        public async Task DeletePeriodsAsync(string macrocycleId)
+        public async Task DeletePeriodsAsync(Guid macrocycleId)
         {
             var periods = await _context.MacrocyclePeriods.Where(p => p.MacrocycleId == macrocycleId).ToListAsync();
             _context.MacrocyclePeriods.RemoveRange(periods);
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteMesocyclesAsync(string macrocycleId)
+        public async Task DeleteMesocyclesAsync(Guid macrocycleId)
         {
             var mesocycles = await _context.Mesocycles.Where(m => m.MacrocycleId == macrocycleId).ToListAsync();
             _context.Mesocycles.RemoveRange(mesocycles);
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteMicrocyclesAsync(string macrocycleId)
+        public async Task DeleteMicrocyclesAsync(Guid macrocycleId)
         {
             // Los MicrocycleDays se eliminan en cascada por la relación configurada en el modelo
             var microcycles = await _context.Microcycles.Where(m => m.MacrocycleId == macrocycleId).ToListAsync();
@@ -279,7 +279,7 @@ namespace BocciaCoaching.Repositories.Macrocycle
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<MicrocycleDay>> GetMicycleDaysAsync(int microcycleId)
+        public async Task<List<MicrocycleDay>> GetMicycleDaysAsync(Guid microcycleId)
         {
             return await _context.MicrocycleDays
                 .Where(d => d.MicrocycleId == microcycleId)
@@ -287,7 +287,7 @@ namespace BocciaCoaching.Repositories.Macrocycle
                 .ToListAsync();
         }
 
-        public async Task SaveMicycleDaysAsync(int microcycleId, List<MicrocycleDay> days)
+        public async Task SaveMicycleDaysAsync(Guid microcycleId, List<MicrocycleDay> days)
         {
             // Eliminar días previos del microciclo
             var existing = await _context.MicrocycleDays

@@ -29,7 +29,7 @@ namespace BocciaCoaching.Repositories
                 .ToListAsync();
         }
 
-        public async Task<Subscription?> GetByIdAsync(int id)
+        public async Task<Subscription?> GetByIdAsync(Guid id)
         {
             return await _context.Subscriptions
                 .Include(s => s.User)
@@ -38,7 +38,7 @@ namespace BocciaCoaching.Repositories
                 .FirstOrDefaultAsync(s => s.SubscriptionId == id);
         }
 
-        public async Task<Subscription?> GetByUserIdAsync(int userId)
+        public async Task<Subscription?> GetByUserIdAsync(Guid userId)
         {
             return await _context.Subscriptions
                 .Include(s => s.SubscriptionType)
@@ -48,7 +48,7 @@ namespace BocciaCoaching.Repositories
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<Subscription?> GetActiveByUserIdAsync(int userId)
+        public async Task<Subscription?> GetActiveByUserIdAsync(Guid userId)
         {
             return await _context.Subscriptions
                 .Include(s => s.SubscriptionType)
@@ -56,7 +56,7 @@ namespace BocciaCoaching.Repositories
                 .FirstOrDefaultAsync(s => s.UserId == userId && s.Status == "active");
         }
 
-        public async Task<IEnumerable<Subscription>> GetByUserIdAllAsync(int userId)
+        public async Task<IEnumerable<Subscription>> GetByUserIdAllAsync(Guid userId)
         {
             return await _context.Subscriptions
                 .Include(s => s.SubscriptionType)
@@ -90,7 +90,7 @@ namespace BocciaCoaching.Repositories
             return subscription;
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(Guid id)
         {
             var subscription = await _context.Subscriptions.FindAsync(id);
             if (subscription != null)
@@ -100,7 +100,7 @@ namespace BocciaCoaching.Repositories
             }
         }
 
-        public async Task<bool> HasActiveSubscriptionAsync(int userId)
+        public async Task<bool> HasActiveSubscriptionAsync(Guid userId)
         {
             return await _context.Subscriptions
                 .AnyAsync(s => s.UserId == userId && s.Status == "active");
@@ -129,7 +129,7 @@ namespace BocciaCoaching.Repositories
                 .ToListAsync();
         }
 
-        public async Task<SubscriptionType?> GetSubscriptionTypeByIdAsync(int id)
+        public async Task<SubscriptionType?> GetSubscriptionTypeByIdAsync(Guid id)
         {
             return await _context.SubscriptionTypes
                 .FirstOrDefaultAsync(st => st.SubscriptionTypeId == id && st.IsActive);
@@ -163,7 +163,7 @@ namespace BocciaCoaching.Repositories
             return subscriptionType;
         }
 
-        public async Task DeleteSubscriptionTypeAsync(int id)
+        public async Task DeleteSubscriptionTypeAsync(Guid id)
         {
             var subscriptionType = await _context.SubscriptionTypes.FindAsync(id);
             if (subscriptionType != null)
@@ -178,7 +178,7 @@ namespace BocciaCoaching.Repositories
 
         #region Payment Methods
 
-        public async Task<IEnumerable<Payment>> GetPaymentsByUserIdAsync(int userId)
+        public async Task<IEnumerable<Payment>> GetPaymentsByUserIdAsync(Guid userId)
         {
             return await _context.Payments
                 .Include(p => p.Subscription)
@@ -188,7 +188,7 @@ namespace BocciaCoaching.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Payment>> GetPaymentsBySubscriptionIdAsync(int subscriptionId)
+        public async Task<IEnumerable<Payment>> GetPaymentsBySubscriptionIdAsync(Guid subscriptionId)
         {
             return await _context.Payments
                 .Where(p => p.SubscriptionId == subscriptionId)
@@ -196,7 +196,7 @@ namespace BocciaCoaching.Repositories
                 .ToListAsync();
         }
 
-        public async Task<Payment?> GetPaymentByIdAsync(int id)
+        public async Task<Payment?> GetPaymentByIdAsync(Guid id)
         {
             return await _context.Payments
                 .Include(p => p.User)

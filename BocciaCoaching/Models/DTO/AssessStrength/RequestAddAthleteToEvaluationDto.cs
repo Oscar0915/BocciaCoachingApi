@@ -2,10 +2,10 @@
 {
     public class RequestAddAthleteToEvaluationDto
     {
-        public int CoachId { get; set; }
+        public Guid CoachId { get; set; }
 
-        public int AthleteId { get; set; }
+        public Guid AthleteId { get; set; }
 
-        public int AssessStrengthId { get; set; }
+        public Guid AssessStrengthId { get; set; }
     }
 }

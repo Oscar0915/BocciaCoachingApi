@@ -9,6 +9,6 @@
         }
         public bool Success { get; set; }
         public string Message { get; set; }
-        public int? NewRecordId { get; set; }
+        public Guid? NewRecordId { get; set; }
     }
 }

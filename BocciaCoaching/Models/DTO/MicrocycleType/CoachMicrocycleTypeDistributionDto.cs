@@ -6,9 +6,9 @@ namespace BocciaCoaching.Models.DTO.MicrocycleType
     /// </summary>
     public class CoachMicrocycleTypeDistributionDto
     {
-        public string CoachMicrocycleTypeDistributionId { get; set; } = string.Empty;
-        public int CoachId { get; set; }
-        public string MicrocycleTypeId { get; set; } = string.Empty;
+        public Guid CoachMicrocycleTypeDistributionId { get; set; }
+        public Guid CoachId { get; set; }
+        public Guid MicrocycleTypeId { get; set; }
         public string MicrocycleTypeName { get; set; } = string.Empty;
         public string? MicrocycleTypeShortCode { get; set; }
 
@@ -40,8 +40,8 @@ namespace BocciaCoaching.Models.DTO.MicrocycleType
     /// </summary>
     public class UpsertCoachMicrocycleTypeDistributionDto
     {
-        public int CoachId { get; set; }
-        public string MicrocycleTypeId { get; set; } = string.Empty;
+        public Guid CoachId { get; set; }
+        public Guid MicrocycleTypeId { get; set; }
 
         /// <summary>Porcentaje de Física General (0.0 a 1.0)</summary>
         public double FisicaGeneral { get; set; }

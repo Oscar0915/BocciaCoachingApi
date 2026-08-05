@@ -11,9 +11,8 @@ namespace BocciaCoaching.Models.Entities
         /// ES: Identificador del detalle de evaluación de dirección
         /// EN: Direction evaluation detail identifier
         /// </summary>
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public int EvaluationDetailDirectionId { get; set; }
+        public Guid EvaluationDetailDirectionId { get; set; }
 
         /// <summary>
         /// ES: Numero de cajón (1=Derecho, 2=Izquierdo)
@@ -55,7 +54,7 @@ namespace BocciaCoaching.Models.Entities
         /// ES: Identificación del atleta
         /// EN: Athlete identification
         /// </summary>
-        public int AthleteId { get; set; }
+        public Guid AthleteId { get; set; }
 
         /// <summary>
         /// ES: Navegación al atleta
@@ -67,7 +66,7 @@ namespace BocciaCoaching.Models.Entities
         /// ES: Número de la evaluación de dirección
         /// EN: Direction assessment number
         /// </summary>
-        public int AssessDirectionId { get; set; }
+        public Guid AssessDirectionId { get; set; }
 
         /// <summary>
         /// ES: Navegación a la evaluación de dirección

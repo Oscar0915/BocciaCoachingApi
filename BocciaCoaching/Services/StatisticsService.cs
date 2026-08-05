@@ -18,7 +18,7 @@ namespace BocciaCoaching.Services
             _context = context;
         }
 
-        public async Task<ResponseContract<List<StrengthTestSummaryDto>>> GetRecentStatistics(int coachId, int teamId)
+        public async Task<ResponseContract<List<StrengthTestSummaryDto>>> GetRecentStatistics(Guid coachId, Guid teamId)
         {
             try
             {
@@ -31,11 +31,11 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<TeamStrengthStatisticsDto>> GetTeamStrengthStatistics(int teamId)
+        public async Task<ResponseContract<TeamStrengthStatisticsDto>> GetTeamStrengthStatistics(Guid teamId)
         {
             try
             {
-                if (teamId <= 0)
+                if (teamId == Guid.Empty)
                 {
                     return ResponseContract<TeamStrengthStatisticsDto>.Fail("ID de equipo inválido");
                 }
@@ -49,11 +49,11 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<object>> GetTeamEvaluationsDebug(int teamId)
+        public async Task<ResponseContract<object>> GetTeamEvaluationsDebug(Guid teamId)
         {
             try
             {
-                if (teamId <= 0)
+                if (teamId == Guid.Empty)
                 {
                     return ResponseContract<object>.Fail("ID de equipo inválido");
                 }
@@ -67,11 +67,11 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<TeamStrengthStatisticsDto>> GetTeamStrengthStatisticsIndividualized(int teamId)
+        public async Task<ResponseContract<TeamStrengthStatisticsDto>> GetTeamStrengthStatisticsIndividualized(Guid teamId)
         {
             try
             {
-                if (teamId <= 0)
+                if (teamId == Guid.Empty)
                 {
                     return ResponseContract<TeamStrengthStatisticsDto>.Fail("ID de equipo inválido");
                 }
@@ -85,7 +85,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<DashboardIndicatorsDto>> GetDashboardIndicators(int? coachId, int? teamId)
+        public async Task<ResponseContract<DashboardIndicatorsDto>> GetDashboardIndicators(Guid? coachId, Guid? teamId)
         {
             try
             {
@@ -98,7 +98,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<DashboardCompleteDto>> GetDashboardComplete(int? coachId)
+        public async Task<ResponseContract<DashboardCompleteDto>> GetDashboardComplete(Guid? coachId)
         {
             try
             {
@@ -111,7 +111,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<List<TopPerformanceAthleteDto>>> GetTopPerformanceAthletes(int? coachId, int? teamId, int limit)
+        public async Task<ResponseContract<List<TopPerformanceAthleteDto>>> GetTopPerformanceAthletes(Guid? coachId, Guid? teamId, int limit)
         {
             try
             {
@@ -124,7 +124,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<List<RecentTestDto>>> GetRecentTests(int? coachId, int? teamId, int limit)
+        public async Task<ResponseContract<List<RecentTestDto>>> GetRecentTests(Guid? coachId, Guid? teamId, int limit)
         {
             try
             {
@@ -137,7 +137,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<List<PendingTaskDto>>> GetPendingTasks(int? coachId, string? priority)
+        public async Task<ResponseContract<List<PendingTaskDto>>> GetPendingTasks(Guid? coachId, string? priority)
         {
             try
             {
@@ -150,7 +150,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<List<MonthlyEvolutionDto>>> GetMonthlyEvolution(int? coachId, int? teamId, int months)
+        public async Task<ResponseContract<List<MonthlyEvolutionDto>>> GetMonthlyEvolution(Guid? coachId, Guid? teamId, int months)
         {
             try
             {
@@ -163,7 +163,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<NextSessionInfo>> GetNextSession(int coachId)
+        public async Task<ResponseContract<NextSessionInfo>> GetNextSession(Guid coachId)
         {
             try
             {
@@ -176,7 +176,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<List<TeamOverviewDto>>> GetCoachTeamsOverview(int coachId)
+        public async Task<ResponseContract<List<TeamOverviewDto>>> GetCoachTeamsOverview(Guid coachId)
         {
             try
             {
@@ -191,7 +191,7 @@ namespace BocciaCoaching.Services
 
         // ==================== Cross-Statistics: SAREMAS+ & Macrociclo ====================
 
-        public async Task<ResponseContract<SaremasTeamStatsDto>> GetSaremasTeamStats(int teamId)
+        public async Task<ResponseContract<SaremasTeamStatsDto>> GetSaremasTeamStats(Guid teamId)
         {
             try
             {
@@ -247,7 +247,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<SaremasAthleteEvolutionDto>> GetSaremasAthleteStats(int athleteId)
+        public async Task<ResponseContract<SaremasAthleteEvolutionDto>> GetSaremasAthleteStats(Guid athleteId)
         {
             try
             {
@@ -299,7 +299,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<MacrocycleProgressDto>> GetMacrocycleProgress(string macrocycleId)
+        public async Task<ResponseContract<MacrocycleProgressDto>> GetMacrocycleProgress(Guid macrocycleId)
         {
             try
             {
@@ -348,7 +348,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<AthleteFullDashboardDto>> GetAthleteFullDashboard(int athleteId)
+        public async Task<ResponseContract<AthleteFullDashboardDto>> GetAthleteFullDashboard(Guid athleteId)
         {
             try
             {

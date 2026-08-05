@@ -23,17 +23,17 @@ namespace BocciaCoaching.Repositories.Interfaces.IAssesstStrength
         Task<bool> InsertStrengthTestStats(StrengthStatistics strengthStatistics);
         Task<List<EvaluationDetailStrength>> GetAllDetailsEvaluation(RequestAddDetailToEvaluationForAthlete evaluationDetail);
         Task<ResponseContract<bool>> UpdateState(UpdateAssessStregthDto updateAssessStregthDto);
-        Task<int?> GetCoachIdByAssessmentAsync(int assessStrengthId);
-        Task<ActiveEvaluationDto?> GetActiveEvaluationWithDetailsAsync(int teamId, int coachId);
-        Task<object> GetEvaluationDebugInfoAsync(int teamId);
-        Task<List<EvaluationSummaryDto>> GetTeamEvaluationsAsync(int teamId);
-        Task<List<AthleteStatisticsDto>> GetEvaluationStatisticsAsync(int assessStrengthId);
-        Task<EvaluationDetailsDto?> GetEvaluationDetailsAsync(int assessStrengthId);
-        Task<ResponseContract<bool>> CancelAssessmentAsync(int assessStrengthId, int coachId, string? reason);
+        Task<Guid?> GetCoachIdByAssessmentAsync(Guid assessStrengthId);
+        Task<ActiveEvaluationDto?> GetActiveEvaluationWithDetailsAsync(Guid teamId, Guid coachId);
+        Task<object> GetEvaluationDebugInfoAsync(Guid teamId);
+        Task<List<EvaluationSummaryDto>> GetTeamEvaluationsAsync(Guid teamId);
+        Task<List<AthleteStatisticsDto>> GetEvaluationStatisticsAsync(Guid assessStrengthId);
+        Task<EvaluationDetailsDto?> GetEvaluationDetailsAsync(Guid assessStrengthId);
+        Task<ResponseContract<bool>> CancelAssessmentAsync(Guid assessStrengthId, Guid coachId, string? reason);
 
         /// <summary>
         /// Verifica si un entrenador ya ha generado alguna evaluación de fuerza
         /// </summary>
-        Task<CoachHasEvaluationsDto> CoachHasEvaluationsAsync(int coachId);
+        Task<CoachHasEvaluationsDto> CoachHasEvaluationsAsync(Guid coachId);
     }
 }

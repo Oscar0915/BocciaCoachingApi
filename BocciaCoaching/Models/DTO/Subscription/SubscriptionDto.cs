@@ -6,7 +6,7 @@ namespace BocciaCoaching.Models.DTO.Subscription
     /// </summary>
     public class SubscriptionTypeDto
     {
-        public int SubscriptionTypeId { get; set; }
+        public Guid SubscriptionTypeId { get; set; }
         public string Name { get; set; } = string.Empty;
         public string? Description { get; set; }
         public decimal MonthlyPrice { get; set; }
@@ -44,8 +44,8 @@ namespace BocciaCoaching.Models.DTO.Subscription
     /// </summary>
     public class UserSubscriptionDto
     {
-        public int SubscriptionId { get; set; }
-        public int UserId { get; set; }
+        public Guid SubscriptionId { get; set; }
+        public Guid UserId { get; set; }
         public string UserName { get; set; } = string.Empty;
         public string UserEmail { get; set; } = string.Empty;
         public SubscriptionTypeDto SubscriptionType { get; set; } = new();
@@ -66,8 +66,8 @@ namespace BocciaCoaching.Models.DTO.Subscription
     /// </summary>
     public class CreateSubscriptionDto
     {
-        public int UserId { get; set; }
-        public int SubscriptionTypeId { get; set; }
+        public Guid UserId { get; set; }
+        public Guid SubscriptionTypeId { get; set; }
         public bool IsAnnual { get; set; } = false;
         public bool IsTrial { get; set; } = false;
         public int? TrialDays { get; set; }
@@ -93,7 +93,7 @@ namespace BocciaCoaching.Models.DTO.Subscription
     /// </summary>
     public class CancelSubscriptionDto
     {
-        public int SubscriptionId { get; set; }
+        public Guid SubscriptionId { get; set; }
         public bool CancelAtPeriodEnd { get; set; } = true;
         public string? CancellationReason { get; set; }
     }
@@ -104,8 +104,8 @@ namespace BocciaCoaching.Models.DTO.Subscription
     /// </summary>
     public class UpdateSubscriptionDto
     {
-        public int SubscriptionId { get; set; }
-        public int NewSubscriptionTypeId { get; set; }
+        public Guid SubscriptionId { get; set; }
+        public Guid NewSubscriptionTypeId { get; set; }
         public bool IsAnnual { get; set; } = false;
         public bool ProrationBehavior { get; set; } = true;
     }

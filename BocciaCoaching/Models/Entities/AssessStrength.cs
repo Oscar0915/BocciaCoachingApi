@@ -10,9 +10,8 @@ namespace BocciaCoaching.Models.Entities
         /// ES:
         /// EN: 
         /// </summary>
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public int AssessStrengthId { get; set; }
+        public Guid AssessStrengthId { get; set; }
 
         /// <summary>
         /// ES:
@@ -30,7 +29,7 @@ namespace BocciaCoaching.Models.Entities
         /// </summary>
         public string? State { get; set; }
 
-        public int TeamId { get; set; }
+        public Guid TeamId { get; set; }
 
         public Team? Team { get; set; }
 
@@ -39,7 +38,7 @@ namespace BocciaCoaching.Models.Entities
         /// ES: I'd del entrenador que creó la prueba
         /// EN: I'd of the coach who created the assessment
         /// </summary>
-        public int CoachId { get; set; }
+        public Guid CoachId { get; set; }
 
         /// <summary>
         /// ES: Navegación al usuario (entrenador) que crea la prueba

@@ -6,12 +6,11 @@ namespace BocciaCoaching.Models.Entities
     [Table("TrainingSession")]
     public class TrainingSession
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public int TrainingSessionId { get; set; }
+        public Guid TrainingSessionId { get; set; }
 
         /// <summary>Relación con el microciclo</summary>
-        public int MicrocycleId { get; set; }
+        public Guid MicrocycleId { get; set; }
 
         [ForeignKey("MicrocycleId")]
         public Microcycle? Microcycle { get; set; }

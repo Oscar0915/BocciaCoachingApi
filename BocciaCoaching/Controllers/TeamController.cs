@@ -32,7 +32,7 @@ namespace BocciaCoaching.Controllers
             return Ok(response);
         }
         [HttpGet("GetTeamsForUser/{coachId}")]
-        public async Task<ActionResult<ResponseContract<List<TeamSummaryDto>>>> GetTeamsForUser(int coachId)
+        public async Task<ActionResult<ResponseContract<List<TeamSummaryDto>>>> GetTeamsForUser(Guid coachId)
         {
             var response = await _team.GetTeamsForUser(coachId);
             return Ok(response);

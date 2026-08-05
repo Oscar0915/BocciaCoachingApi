@@ -20,7 +20,7 @@ namespace BocciaCoaching.Models.DTO.MicrocycleType
     public class CreateMicrocycleTypeDayDefaultDto
     {
         /// <summary>Id del tipo de microciclo al que pertenece este día</summary>
-        public string MicrocycleTypeId { get; set; } = string.Empty;
+        public Guid MicrocycleTypeId { get; set; }
 
         /// <summary>Día de la semana: lunes, martes, miercoles, jueves, viernes, sabado, domingo</summary>
         public string DayOfWeek { get; set; } = string.Empty;
@@ -31,8 +31,8 @@ namespace BocciaCoaching.Models.DTO.MicrocycleType
 
     public class MicrocycleTypeDayDefaultResponseDto
     {
-        public string MicrocycleTypeDayDefaultId { get; set; } = string.Empty;
-        public string MicrocycleTypeId { get; set; } = string.Empty;
+        public Guid MicrocycleTypeDayDefaultId { get; set; }
+        public Guid MicrocycleTypeId { get; set; }
         public string DayOfWeek { get; set; } = string.Empty;
         public double ThrowPercentage { get; set; }
     }

@@ -10,16 +10,16 @@ namespace BocciaCoaching.Repositories.NotificationTypes
 
         // Nuevos métodos para NotificationType
         Task<IEnumerable<NotificationType>> GetAllAsync();
-        Task<NotificationType?> GetByIdAsync(int id);
+        Task<NotificationType?> GetByIdAsync(Guid id);
         Task<bool> UpdateAsync(NotificationType? notificationType);
 
         // Métodos para NotificationMessage
         Task<bool> AddMessageAsync(NotificationMessage? message);
         Task<bool> UpdateMessageAsync(NotificationMessage? message);
-        Task<NotificationMessage?> GetMessageByIdAsync(int id);
+        Task<NotificationMessage?> GetMessageByIdAsync(Guid id);
 
         // Nuevos métodos
-        Task<IEnumerable<NotificationMessage>> GetMessagesByCoachAsync(int coachId);
-        Task<IEnumerable<NotificationMessage>> GetMessagesByAthleteAsync(int athleteId);
+        Task<IEnumerable<NotificationMessage>> GetMessagesByCoachAsync(Guid coachId);
+        Task<IEnumerable<NotificationMessage>> GetMessagesByAthleteAsync(Guid athleteId);
     }
 }

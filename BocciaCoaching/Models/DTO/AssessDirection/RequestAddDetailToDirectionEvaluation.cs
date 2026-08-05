@@ -8,8 +8,8 @@ namespace BocciaCoaching.Models.DTO.AssessDirection
         public decimal? ScoreObtained { get; set; }
         public string? Observations { get; set; }
         public bool Status { get; set; } = true;
-        public int AthleteId { get; set; }
-        public int AssessDirectionId { get; set; }
+        public Guid AthleteId { get; set; }
+        public Guid AssessDirectionId { get; set; }
 
         /// <summary>
         /// ES: Coordenada X del lanzamiento

@@ -111,7 +111,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<TrainingSessionResponseDto>> GetById(int sessionId)
+        public async Task<ResponseContract<TrainingSessionResponseDto>> GetById(Guid sessionId)
         {
             try
             {
@@ -127,7 +127,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<List<TrainingSessionSummaryDto>>> GetByMicrocycle(int microcycleId)
+        public async Task<ResponseContract<List<TrainingSessionSummaryDto>>> GetByMicrocycle(Guid microcycleId)
         {
             try
             {
@@ -209,7 +209,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<bool>> DeleteSession(int sessionId)
+        public async Task<ResponseContract<bool>> DeleteSession(Guid sessionId)
         {
             try
             {
@@ -239,7 +239,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<TrainingSessionResponseDto>> UploadPhoto(int sessionId, int photoNumber, IFormFile file)
+        public async Task<ResponseContract<TrainingSessionResponseDto>> UploadPhoto(Guid sessionId, int photoNumber, IFormFile file)
         {
             try
             {
@@ -346,7 +346,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<bool>> DeleteSection(int sectionId)
+        public async Task<ResponseContract<bool>> DeleteSection(Guid sectionId)
         {
             try
             {
@@ -459,7 +459,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<TrainingSessionResponseDto>> GetSessionDetailForAthlete(int sessionId, int athleteId)
+        public async Task<ResponseContract<TrainingSessionResponseDto>> GetSessionDetailForAthlete(Guid sessionId, Guid athleteId)
         {
             try
             {

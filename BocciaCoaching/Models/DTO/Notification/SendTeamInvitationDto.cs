@@ -8,7 +8,7 @@ namespace BocciaCoaching.Models.DTO.Notification
         /// <summary>
         /// ID del entrenador que envía la invitación
         /// </summary>
-        public int CoachId { get; set; }
+        public Guid CoachId { get; set; }
         
         /// <summary>
         /// Email del atleta que recibe la invitación
@@ -18,7 +18,7 @@ namespace BocciaCoaching.Models.DTO.Notification
         /// <summary>
         /// ID del equipo al que se invita
         /// </summary>
-        public int TeamId { get; set; }
+        public Guid TeamId { get; set; }
         
         /// <summary>
         /// Mensaje personalizado de la invitación (opcional)

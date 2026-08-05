@@ -6,9 +6,9 @@ namespace BocciaCoaching.Models.DTO.Payment
     /// </summary>
     public class PaymentDto
     {
-        public int PaymentId { get; set; }
-        public int SubscriptionId { get; set; }
-        public int UserId { get; set; }
+        public Guid PaymentId { get; set; }
+        public Guid SubscriptionId { get; set; }
+        public Guid UserId { get; set; }
         public string UserEmail { get; set; } = string.Empty;
         public decimal Amount { get; set; }
         public string Currency { get; set; } = string.Empty;
@@ -26,8 +26,8 @@ namespace BocciaCoaching.Models.DTO.Payment
     /// </summary>
     public class CreatePaymentIntentDto
     {
-        public int SubscriptionTypeId { get; set; }
-        public int UserId { get; set; }
+        public Guid SubscriptionTypeId { get; set; }
+        public Guid UserId { get; set; }
         public bool IsAnnual { get; set; } = false;
         public string Currency { get; set; } = "USD";
         public string? PaymentMethodId { get; set; }

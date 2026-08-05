@@ -14,7 +14,7 @@ namespace BocciaCoaching.Repositories.Teams
         /// </summary>
         /// <param name="requestTeamDto">Información del equipo</param>
         /// <returns></returns>
-        public async Task<ResponseContract<int>> AddTeam(RequestTeamDto requestTeamDto)
+        public async Task<ResponseContract<Guid>> AddTeam(RequestTeamDto requestTeamDto)
         {
             try
             {
@@ -49,11 +49,11 @@ namespace BocciaCoaching.Repositories.Teams
                 await context.TeamsUsers.AddAsync(teamUser);
                 await context.SaveChangesAsync();
 
-                return ResponseContract<int>.Ok(team.TeamId, "Equipo creado exitosamente");
+                return ResponseContract<Guid>.Ok(team.TeamId, "Equipo creado exitosamente");
             }
             catch (Exception ex)
             {
-                return ResponseContract<int>.Fail(ex.Message);
+                return ResponseContract<Guid>.Fail(ex.Message);
             }
 
         }
@@ -102,7 +102,7 @@ namespace BocciaCoaching.Repositories.Teams
         /// <summary>
         /// Método para obtener los equipos de un coach con la cantidad de integrantes por equipo
         /// </summary>
-        public async Task<ResponseContract<List<TeamSummaryDto>>> GetTeamsForUser(int coachId)
+        public async Task<ResponseContract<List<TeamSummaryDto>>> GetTeamsForUser(Guid coachId)
         {
             try
             {
@@ -254,7 +254,7 @@ namespace BocciaCoaching.Repositories.Teams
         /// <summary>
         /// Verificar si un usuario ya pertenece a un equipo
         /// </summary>
-        public async Task<bool> IsUserInTeam(int userId, int teamId)
+        public async Task<bool> IsUserInTeam(Guid userId, Guid teamId)
         {
             return await context.TeamsUsers
                 .AnyAsync(tu => tu.UserId == userId && tu.TeamId == teamId);
@@ -263,7 +263,7 @@ namespace BocciaCoaching.Repositories.Teams
         /// <summary>
         /// Contar la cantidad de equipos que ha creado un usuario
         /// </summary>
-        public async Task<int> CountTeamsByUserIdAsync(int userId)
+        public async Task<int> CountTeamsByUserIdAsync(Guid userId)
         {
             return await context.Teams
                 .CountAsync(t => t.CoachId == userId && (t.Status == null || t.Status == true));
@@ -272,7 +272,7 @@ namespace BocciaCoaching.Repositories.Teams
         /// <summary>
         /// Contar la cantidad de atletas en un equipo
         /// </summary>
-        public async Task<int> CountAthletesByTeamIdAsync(int teamId)
+        public async Task<int> CountAthletesByTeamIdAsync(Guid teamId)
         {
             return await context.TeamsUsers
                 .CountAsync(tu => tu.TeamId == teamId);

@@ -14,9 +14,8 @@ namespace BocciaCoaching.Models.Entities
         /// ES:
         /// EN: 
         /// </summary>
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public int AchievementId { get; set; }
+        public Guid AchievementId { get; set; }
         /// <summary>
         /// ES:
         /// EN: 
@@ -31,7 +30,7 @@ namespace BocciaCoaching.Models.Entities
         /// ES:
         /// EN: 
         /// </summary>
-        public int EventId { get; set; }
+        public Guid EventId { get; set; }
         /// <summary>
         /// ES:
         /// EN: 

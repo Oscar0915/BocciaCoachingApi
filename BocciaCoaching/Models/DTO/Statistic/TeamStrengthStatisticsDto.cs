@@ -5,7 +5,7 @@ namespace BocciaCoaching.Models.DTO.Statistic;
 /// </summary>
 public class TeamStrengthStatisticsDto
 {
-    public int TeamId { get; set; }
+    public Guid TeamId { get; set; }
     public string TeamName { get; set; } = string.Empty;
     public List<AthleteStatisticsDto> Athletes { get; set; } = new List<AthleteStatisticsDto>();
     public TeamAverageStatisticsDto TeamAverages { get; set; } = new TeamAverageStatisticsDto();
@@ -16,9 +16,9 @@ public class TeamStrengthStatisticsDto
 /// </summary>
 public class AthleteStatisticsDto
 {
-    public int AthleteId { get; set; }
+    public Guid AthleteId { get; set; }
     public string AthleteName { get; set; } = string.Empty;
-    public int AssessStrengthId { get; set; }
+    public Guid AssessStrengthId { get; set; }
     public DateTime EvaluationDate { get; set; }
     
     // Estadísticas generales

@@ -9,21 +9,21 @@ namespace BocciaCoaching.Repositories.Interfaces.IAssessSaremas
         Task<ResponseContract<ResponseAddSaremasDto>> CreateEvaluationIfNoneActiveAsync(AddSaremasEvaluationDto dto);
         Task<ResponseContract<SaremasAthleteEvaluation>> AddAthleteToEvaluationAsync(RequestAddAthleteToSaremasDto dto);
         Task<bool> AddThrowDetailAsync(RequestAddSaremasDetailDto dto, bool isUpdate);
-        Task<ActiveSaremasEvaluationDto?> GetActiveEvaluationAsync(int teamId, int coachId);
+        Task<ActiveSaremasEvaluationDto?> GetActiveEvaluationAsync(Guid teamId, Guid coachId);
         Task<ResponseContract<bool>> UpdateStateAsync(UpdateSaremasStateDto dto);
-        Task<ResponseContract<bool>> CancelAsync(int saremasEvalId, int coachId, string? reason);
-        Task<List<SaremasEvaluationSummaryDto>> GetTeamEvaluationsAsync(int teamId);
-        Task<SaremasEvaluationDetailsDto?> GetEvaluationDetailsAsync(int saremasEvalId);
-        Task<SaremasStatisticsDto?> GetEvaluationStatisticsAsync(int saremasEvalId);
-        Task<SaremasAthleteHistoryDto?> GetAthleteHistoryAsync(int athleteId);
-        Task<List<SaremasThrow>> GetAllThrowsForAthleteAsync(int saremasEvalId, int athleteId);
-        Task<int?> GetCoachIdByEvaluationAsync(int saremasEvalId);
-        Task<bool> UpdateEvaluationScoresAsync(int saremasEvalId, int totalScore, double averageScore);
+        Task<ResponseContract<bool>> CancelAsync(Guid saremasEvalId, Guid coachId, string? reason);
+        Task<List<SaremasEvaluationSummaryDto>> GetTeamEvaluationsAsync(Guid teamId);
+        Task<SaremasEvaluationDetailsDto?> GetEvaluationDetailsAsync(Guid saremasEvalId);
+        Task<SaremasStatisticsDto?> GetEvaluationStatisticsAsync(Guid saremasEvalId);
+        Task<SaremasAthleteHistoryDto?> GetAthleteHistoryAsync(Guid athleteId);
+        Task<List<SaremasThrow>> GetAllThrowsForAthleteAsync(Guid saremasEvalId, Guid athleteId);
+        Task<Guid?> GetCoachIdByEvaluationAsync(Guid saremasEvalId);
+        Task<bool> UpdateEvaluationScoresAsync(Guid saremasEvalId, int totalScore, double averageScore);
 
         /// <summary>
         /// Verifica si un entrenador ya ha generado alguna evaluación SAREMAS+
         /// </summary>
-        Task<CoachHasSaremasEvaluationsDto> CoachHasEvaluationsAsync(int coachId);
+        Task<CoachHasSaremasEvaluationsDto> CoachHasEvaluationsAsync(Guid coachId);
     }
 }
 

@@ -2,7 +2,7 @@ namespace BocciaCoaching.Models.DTO.Session
 {
     public class UpdateTrainingSessionDto
     {
-        public int TrainingSessionId { get; set; }
+        public Guid TrainingSessionId { get; set; }
 
         /// <summary>programada, en_proceso, terminada, finalizada, cancelada</summary>
         public string? Status { get; set; }
@@ -17,7 +17,7 @@ namespace BocciaCoaching.Models.DTO.Session
 
     public class UpdateSessionSectionDto
     {
-        public int SessionSectionId { get; set; }
+        public Guid SessionSectionId { get; set; }
         public string? Name { get; set; }
         public int? NumberOfThrows { get; set; }
         public string? Status { get; set; }
@@ -29,7 +29,7 @@ namespace BocciaCoaching.Models.DTO.Session
 
     public class AddSessionSectionDto
     {
-        public int SessionPartId { get; set; }
+        public Guid SessionPartId { get; set; }
         public string Name { get; set; } = string.Empty;
         public int NumberOfThrows { get; set; }
         public bool IsOwnDiagonal { get; set; } = true;

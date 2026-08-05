@@ -403,7 +403,7 @@ namespace BocciaCoaching.Repositories.AssesstStrength
         /// </summary>
         /// <param name="assessStrengthId"></param>
         /// <returns></returns>
-        public async Task<int?> GetCoachIdByAssessmentAsync(int assessStrengthId)
+        public async Task<Guid?> GetCoachIdByAssessmentAsync(Guid assessStrengthId)
         {
             try
             {
@@ -425,7 +425,7 @@ namespace BocciaCoaching.Repositories.AssesstStrength
         /// <param name="teamId">ID del equipo</param>
         /// <param name="coachId">ID del entrenador</param>
         /// <returns>Información completa de la evaluación activa o null si no hay ninguna</returns>
-        public async Task<ActiveEvaluationDto?> GetActiveEvaluationWithDetailsAsync(int teamId, int coachId)
+        public async Task<ActiveEvaluationDto?> GetActiveEvaluationWithDetailsAsync(Guid teamId, Guid coachId)
         {
             try
             {
@@ -558,7 +558,7 @@ namespace BocciaCoaching.Repositories.AssesstStrength
         /// </summary>
         /// <param name="teamId">ID del equipo</param>
         /// <returns>Información de debugging</returns>
-        public async Task<object> GetEvaluationDebugInfoAsync(int teamId)
+        public async Task<object> GetEvaluationDebugInfoAsync(Guid teamId)
         {
             try
             {
@@ -633,7 +633,7 @@ namespace BocciaCoaching.Repositories.AssesstStrength
         /// </summary>
         /// <param name="teamId">ID del equipo</param>
         /// <returns>Lista de resúmenes de evaluaciones</returns>
-        public async Task<List<EvaluationSummaryDto>> GetTeamEvaluationsAsync(int teamId)
+        public async Task<List<EvaluationSummaryDto>> GetTeamEvaluationsAsync(Guid teamId)
         {
             try
             {
@@ -692,7 +692,7 @@ namespace BocciaCoaching.Repositories.AssesstStrength
         /// </summary>
         /// <param name="assessStrengthId">ID de la evaluación</param>
         /// <returns>Lista de estadísticas por atleta</returns>
-        public async Task<List<AthleteStatisticsDto>> GetEvaluationStatisticsAsync(int assessStrengthId)
+        public async Task<List<AthleteStatisticsDto>> GetEvaluationStatisticsAsync(Guid assessStrengthId)
         {
             try
             {
@@ -735,7 +735,7 @@ namespace BocciaCoaching.Repositories.AssesstStrength
         /// </summary>
         /// <param name="assessStrengthId">ID de la evaluación</param>
         /// <returns>Detalles completos de la evaluación o null si no existe</returns>
-        public async Task<EvaluationDetailsDto?> GetEvaluationDetailsAsync(int assessStrengthId)
+        public async Task<EvaluationDetailsDto?> GetEvaluationDetailsAsync(Guid assessStrengthId)
         {
             try
             {
@@ -845,7 +845,7 @@ namespace BocciaCoaching.Repositories.AssesstStrength
         /// Valida que la evaluación exista, esté en estado 'A' y que el coach coincida.
         /// Marca la evaluación como 'C' y elimina registros relacionados (detalles, atletas, estadísticas).
         /// </summary>
-        public async Task<ResponseContract<bool>> CancelAssessmentAsync(int assessStrengthId, int coachId, string? reason)
+        public async Task<ResponseContract<bool>> CancelAssessmentAsync(Guid assessStrengthId, Guid coachId, string? reason)
         {
             await using var transaction = await _context.Database.BeginTransactionAsync();
             try
@@ -902,7 +902,7 @@ namespace BocciaCoaching.Repositories.AssesstStrength
         /// <summary>
         /// Verifica si un entrenador ya ha generado alguna evaluación de fuerza
         /// </summary>
-        public async Task<CoachHasEvaluationsDto> CoachHasEvaluationsAsync(int coachId)
+        public async Task<CoachHasEvaluationsDto> CoachHasEvaluationsAsync(Guid coachId)
         {
             var totalEvaluations = await _context.AssessStrengths
                 .Where(a => a.CoachId == coachId)

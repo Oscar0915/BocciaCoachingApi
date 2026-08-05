@@ -10,15 +10,19 @@ using BocciaCoaching.Repositories.Interfaces.IAssessDirection;
 using BocciaCoaching.Repositories.Interfaces.IAssessSaremas;
 using BocciaCoaching.Repositories.Interfaces.IMacrocycle;
 using BocciaCoaching.Repositories.Interfaces.IMicrocycleType;
+using BocciaCoaching.Repositories.Interfaces.IRol;
 using BocciaCoaching.Repositories.Interfaces.ITeams;
 using BocciaCoaching.Repositories.Interfaces.ITrainingSession;
+using BocciaCoaching.Repositories.Interfaces.IWellness;
 using BocciaCoaching.Repositories.Macrocycle;
 using BocciaCoaching.Repositories.MicrocycleType;
+using BocciaCoaching.Repositories.Rol;
 using BocciaCoaching.Repositories.TrainingSession;
 using BocciaCoaching.Repositories.NotificationTypes;
 using BocciaCoaching.Repositories.Statistic;
 using BocciaCoaching.Repositories.Statistic.Interfce;
 using BocciaCoaching.Repositories.Teams;
+using BocciaCoaching.Repositories.Wellness;
 using BocciaCoaching.Services;
 using BocciaCoaching.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -132,6 +136,9 @@ builder.Services.AddScoped<IStripePaymentService, StripePaymentServiceSimplified
 // SAREMAS+ Services
 builder.Services.AddScoped<IAssessSaremasService, AssessSaremasService>();
 
+// Daily Wellness Services
+builder.Services.AddScoped<IWellnessService, WellnessService>();
+
 // Macrocycle Services
 builder.Services.AddScoped<IMacrocycleService, MacrocycleService>();
 
@@ -140,6 +147,9 @@ builder.Services.AddScoped<ITrainingSessionService, TrainingSessionService>();
 
 // MicrocycleType Services
 builder.Services.AddScoped<IMicrocycleTypeService, MicrocycleTypeService>();
+
+// Rol Services - Roles
+builder.Services.AddScoped<IRolService, RolService>();
 
 /*
 Repositories - Repositorios
@@ -173,6 +183,9 @@ builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
 builder.Services.AddScoped<IAssessSaremasRepository, AssessSaremasRepository>();
 builder.Services.AddScoped<IValidationsAssessSaremas, ValidationsAssessSaremasRepository>();
 
+// Daily Wellness - Test diario de bienestar
+builder.Services.AddScoped<IWellnessRepository, WellnessRepository>();
+
 // Macrocycle - Macrociclos
 builder.Services.AddScoped<IMacrocycleRepository, MacrocycleRepository>();
 
@@ -181,6 +194,9 @@ builder.Services.AddScoped<ITrainingSessionRepository, TrainingSessionRepository
 
 // MicrocycleType - Tipos de microciclo
 builder.Services.AddScoped<IMicrocycleTypeRepository, MicrocycleTypeRepository>();
+
+// Rol - Roles
+builder.Services.AddScoped<IRolRepository, RolRepository>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

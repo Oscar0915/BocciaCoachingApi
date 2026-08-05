@@ -6,16 +6,15 @@ namespace BocciaCoaching.Models.Entities
     [Table("SaremasThrow")]
     public class SaremasThrow
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public int SaremasThrowId { get; set; }
+        public Guid SaremasThrowId { get; set; }
 
-        public int SaremasEvalId { get; set; }
+        public Guid SaremasEvalId { get; set; }
 
         [ForeignKey("SaremasEvalId")]
         public SaremasEvaluation? SaremasEvaluation { get; set; }
 
-        public int AthleteId { get; set; }
+        public Guid AthleteId { get; set; }
 
         [ForeignKey("AthleteId")]
         public User? Athlete { get; set; }

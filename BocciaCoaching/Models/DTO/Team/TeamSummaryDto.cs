@@ -5,10 +5,10 @@ namespace BocciaCoaching.Models.DTO.Team
     /// </summary>
     public class TeamSummaryDto
     {
-        public int TeamId { get; set; }
+        public Guid TeamId { get; set; }
         public string? NameTeam { get; set; }
         public string? Description { get; set; }
-        public int CoachId { get; set; }
+        public Guid CoachId { get; set; }
         public bool? Status { get; set; }
         public string? Image { get; set; }
         public bool? Bc1 { get; set; }

@@ -16,8 +16,8 @@ namespace BocciaCoaching.Services.Interfaces
         Task<ResponseContract<bool>> CancelPaymentIntentAsync(string paymentIntentId);
 
         // Customer methods
-        Task<ResponseContract<string>> CreateCustomerAsync(int userId, string email, string? name = null);
-        Task<ResponseContract<string>> GetOrCreateCustomerAsync(int userId, string email, string? name = null);
+        Task<ResponseContract<string>> CreateCustomerAsync(Guid userId, string email, string? name = null);
+        Task<ResponseContract<string>> GetOrCreateCustomerAsync(Guid userId, string email, string? name = null);
         Task<ResponseContract<bool>> UpdateCustomerAsync(string customerId, string? email = null, string? name = null);
 
         // Subscription methods (Stripe side)

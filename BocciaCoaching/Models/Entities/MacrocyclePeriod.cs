@@ -6,11 +6,10 @@ namespace BocciaCoaching.Models.Entities
     [Table("MacrocyclePeriod")]
     public class MacrocyclePeriod
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public int MacrocyclePeriodId { get; set; }
+        public Guid MacrocyclePeriodId { get; set; }
 
-        public string MacrocycleId { get; set; } = string.Empty;
+        public Guid MacrocycleId { get; set; }
 
         [ForeignKey("MacrocycleId")]
         public Macrocycle? Macrocycle { get; set; }

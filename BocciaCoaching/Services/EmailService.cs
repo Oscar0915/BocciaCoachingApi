@@ -1,3 +1,4 @@
+using BocciaCoaching.Utils;
 ﻿using BocciaCoaching.Data;
 using BocciaCoaching.Models.Configuration;
 using BocciaCoaching.Models.DTO.Auth;
@@ -47,7 +48,7 @@ namespace BocciaCoaching.Services
 
                 LogError log = new()
                 {
-                    ModuleErrorId = 1,
+                    ModuleErrorId = WellKnownIds.GeneralModule,
                     ErrorMessage = "Sin error",
                     Location = MethodBase.GetCurrentMethod()?.Name ?? "SendSecurityCodeAsync"
                 };
@@ -57,7 +58,7 @@ namespace BocciaCoaching.Services
             {
                 LogError log = new()
                 {
-                    ModuleErrorId = 1,
+                    ModuleErrorId = WellKnownIds.GeneralModule,
                     ErrorMessage = ex.Message,
                     Location = MethodBase.GetCurrentMethod()?.Name ?? "SendSecurityCodeAsync"
                 };
@@ -313,7 +314,7 @@ namespace BocciaCoaching.Services
             {
                 LogError log = new()
                 {
-                    ModuleErrorId = 1,
+                    ModuleErrorId = WellKnownIds.GeneralModule,
                     ErrorMessage = errorMessage,
                     Location = location
                 };

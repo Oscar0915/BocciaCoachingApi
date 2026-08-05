@@ -10,7 +10,7 @@ namespace BocciaCoaching.Repositories.Interfaces.ITeams
         /// </summary>
         /// <param name="requestTeamDto">Información del equipo</param>
         /// <returns></returns>
-        Task<ResponseContract<int>> AddTeam(RequestTeamDto requestTeamDto);
+        Task<ResponseContract<Guid>> AddTeam(RequestTeamDto requestTeamDto);
 
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace BocciaCoaching.Repositories.Interfaces.ITeams
         /// </summary>
         /// <param name="coachId">Identificador del coach</param>
         /// <returns></returns>
-        Task<ResponseContract<List<TeamSummaryDto>>> GetTeamsForUser(int coachId);
+        Task<ResponseContract<List<TeamSummaryDto>>> GetTeamsForUser(Guid coachId);
 
         Task<ResponseContract<List<TeamMemberDto>>> GetUsersForTeam(RequestGetUserForTeamDto requestGetUserForTeamDto);
         Task<bool> UpdateTeam(RequestUpdateTeamDto requestUpdateImageTeamDto);
@@ -33,16 +33,16 @@ namespace BocciaCoaching.Repositories.Interfaces.ITeams
         /// <summary>
         /// Verificar si un usuario ya pertenece a un equipo
         /// </summary>
-        Task<bool> IsUserInTeam(int userId, int teamId);
+        Task<bool> IsUserInTeam(Guid userId, Guid teamId);
 
         /// <summary>
         /// Contar la cantidad de equipos que ha creado un usuario
         /// </summary>
-        Task<int> CountTeamsByUserIdAsync(int userId);
+        Task<int> CountTeamsByUserIdAsync(Guid userId);
 
         /// <summary>
         /// Contar la cantidad de atletas en un equipo
         /// </summary>
-        Task<int> CountAthletesByTeamIdAsync(int teamId);
+        Task<int> CountAthletesByTeamIdAsync(Guid teamId);
     }
 }

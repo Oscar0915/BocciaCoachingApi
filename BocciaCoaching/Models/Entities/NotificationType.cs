@@ -10,9 +10,8 @@ namespace BocciaCoaching.Models.Entities
         /// ES: Identificador de la tabla
         /// EN: 
         /// </summary>
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public int NotificationTypeId { get; set; }
+        public Guid NotificationTypeId { get; set; }
         /// <summary>
         /// ES: Nombre de la notificación
         /// EN: 

@@ -22,7 +22,7 @@ namespace BocciaCoaching.Repositories.TrainingSession
             return session;
         }
 
-        public async Task<TrainingSessionEntity?> GetByIdAsync(int sessionId)
+        public async Task<TrainingSessionEntity?> GetByIdAsync(Guid sessionId)
         {
             return await _context.TrainingSessions
                 .Include(s => s.Parts)
@@ -30,7 +30,7 @@ namespace BocciaCoaching.Repositories.TrainingSession
                 .FirstOrDefaultAsync(s => s.TrainingSessionId == sessionId);
         }
 
-        public async Task<List<TrainingSessionEntity>> GetByMicrocycleAsync(int microcycleId)
+        public async Task<List<TrainingSessionEntity>> GetByMicrocycleAsync(Guid microcycleId)
         {
             return await _context.TrainingSessions
                 .Include(s => s.Parts)
@@ -56,7 +56,7 @@ namespace BocciaCoaching.Repositories.TrainingSession
             }
         }
 
-        public async Task<bool> DeleteAsync(int sessionId)
+        public async Task<bool> DeleteAsync(Guid sessionId)
         {
             try
             {
@@ -85,7 +85,7 @@ namespace BocciaCoaching.Repositories.TrainingSession
             }
         }
 
-        public async Task<SessionSection?> GetSectionByIdAsync(int sectionId)
+        public async Task<SessionSection?> GetSectionByIdAsync(Guid sectionId)
         {
             return await _context.SessionSections
                 .Include(s => s.SessionPart)
@@ -115,7 +115,7 @@ namespace BocciaCoaching.Repositories.TrainingSession
             }
         }
 
-        public async Task<bool> DeleteSectionAsync(int sectionId)
+        public async Task<bool> DeleteSectionAsync(Guid sectionId)
         {
             try
             {
@@ -133,19 +133,19 @@ namespace BocciaCoaching.Repositories.TrainingSession
             }
         }
 
-        public async Task<SessionPart?> GetPartByIdAsync(int partId)
+        public async Task<SessionPart?> GetPartByIdAsync(Guid partId)
         {
             return await _context.SessionParts
                 .Include(p => p.Sections)
                 .FirstOrDefaultAsync(p => p.SessionPartId == partId);
         }
 
-        public async Task<bool> MicrocycleExistsAsync(int microcycleId)
+        public async Task<bool> MicrocycleExistsAsync(Guid microcycleId)
         {
             return await _context.Microcycles.AnyAsync(m => m.MicrocycleId == microcycleId);
         }
 
-        public async Task<List<TrainingSessionEntity>> GetByAthleteAndDateRangeAsync(int athleteId, DateTime startDate, DateTime endDate)
+        public async Task<List<TrainingSessionEntity>> GetByAthleteAndDateRangeAsync(Guid athleteId, DateTime startDate, DateTime endDate)
         {
             return await _context.TrainingSessions
                 .Include(s => s.Parts)
@@ -162,7 +162,7 @@ namespace BocciaCoaching.Repositories.TrainingSession
                 .ToListAsync();
         }
 
-        public async Task<bool> SessionBelongsToAthleteAsync(int sessionId, int athleteId)
+        public async Task<bool> SessionBelongsToAthleteAsync(Guid sessionId, Guid athleteId)
         {
             return await _context.TrainingSessions
                 .Include(s => s.Microcycle)

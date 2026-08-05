@@ -5,9 +5,8 @@ namespace BocciaCoaching.Models.Entities;
 [Table("StrengthStatistics")]
 public class StrengthStatistics
 {
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Key]
-    public int StrengthStatisticsId { get; set; }
+    public Guid StrengthStatisticsId { get; set; }
     
     /// <summary>
     /// Porcentaje de precision
@@ -83,11 +82,11 @@ public class StrengthStatistics
     /// </summary>
     public double LongAccuracyPercentage { get; set; }
     
-    public int AssessStrengthId { get; set; }
+    public Guid AssessStrengthId { get; set; }
     
     public AssessStrength? AssessStrength { get; set; }
     
-    public int AthleteId { get; set; }
+    public Guid AthleteId { get; set; }
     
     public User? Athlete { get; set; }
 }

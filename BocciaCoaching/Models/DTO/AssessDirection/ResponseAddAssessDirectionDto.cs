@@ -4,9 +4,9 @@ namespace BocciaCoaching.Models.DTO.AssessDirection
     {
         public ResponseAddAssessDirectionDto()
         {
-            AssessDirectionId = 0;
+            AssessDirectionId = Guid.Empty;
         }
-        public int AssessDirectionId { get; set; }
+        public Guid AssessDirectionId { get; set; }
         public DateTime DateEvaluation { get; set; }
         public bool State { get; set; }
     }

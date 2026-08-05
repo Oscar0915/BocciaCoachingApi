@@ -23,24 +23,24 @@ namespace BocciaCoaching.Repositories.Interfaces.IAssessDirection
 
         Task<ResponseContract<bool>> UpdateState(UpdateAssessDirectionDto updateAssessDirectionDto);
 
-        Task<int?> GetCoachIdByAssessmentAsync(int assessDirectionId);
+        Task<Guid?> GetCoachIdByAssessmentAsync(Guid assessDirectionId);
 
-        Task<ActiveDirectionEvaluationDto?> GetActiveEvaluationWithDetailsAsync(int teamId, int coachId);
+        Task<ActiveDirectionEvaluationDto?> GetActiveEvaluationWithDetailsAsync(Guid teamId, Guid coachId);
 
-        Task<object> GetEvaluationDebugInfoAsync(int teamId);
+        Task<object> GetEvaluationDebugInfoAsync(Guid teamId);
 
-        Task<List<DirectionEvaluationSummaryDto>> GetTeamEvaluationsAsync(int teamId);
+        Task<List<DirectionEvaluationSummaryDto>> GetTeamEvaluationsAsync(Guid teamId);
 
-        Task<List<DirectionAthleteStatisticsDto>> GetEvaluationStatisticsAsync(int assessDirectionId);
+        Task<List<DirectionAthleteStatisticsDto>> GetEvaluationStatisticsAsync(Guid assessDirectionId);
 
-        Task<DirectionEvaluationDetailsDto?> GetEvaluationDetailsAsync(int assessDirectionId);
+        Task<DirectionEvaluationDetailsDto?> GetEvaluationDetailsAsync(Guid assessDirectionId);
 
-        Task<ResponseContract<bool>> CancelAssessmentAsync(int assessDirectionId, int coachId, string? reason);
+        Task<ResponseContract<bool>> CancelAssessmentAsync(Guid assessDirectionId, Guid coachId, string? reason);
 
         /// <summary>
         /// Verifica si un entrenador ya ha generado alguna evaluación de dirección
         /// </summary>
-        Task<CoachHasDirectionEvaluationsDto> CoachHasEvaluationsAsync(int coachId);
+        Task<CoachHasDirectionEvaluationsDto> CoachHasEvaluationsAsync(Guid coachId);
     }
 }
 

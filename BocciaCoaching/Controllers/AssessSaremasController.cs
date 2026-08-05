@@ -51,7 +51,7 @@ namespace BocciaCoaching.Controllers
         /// Obtener la evaluación SAREMAS+ activa para un equipo y coach
         /// </summary>
         [HttpGet("GetActiveEvaluation/{teamId}/{coachId}")]
-        public async Task<ActionResult<ResponseContract<ActiveSaremasEvaluationDto>>> GetActiveEvaluation(int teamId, int coachId)
+        public async Task<ActionResult<ResponseContract<ActiveSaremasEvaluationDto>>> GetActiveEvaluation(Guid teamId, Guid coachId)
         {
             var result = await _service.GetActiveEvaluation(teamId, coachId);
             return Ok(result);
@@ -81,7 +81,7 @@ namespace BocciaCoaching.Controllers
         /// Obtener todas las evaluaciones SAREMAS+ de un equipo
         /// </summary>
         [HttpGet("GetTeamEvaluations/{teamId}")]
-        public async Task<ActionResult<ResponseContract<List<SaremasEvaluationSummaryDto>>>> GetTeamEvaluations(int teamId)
+        public async Task<ActionResult<ResponseContract<List<SaremasEvaluationSummaryDto>>>> GetTeamEvaluations(Guid teamId)
         {
             var result = await _service.GetTeamEvaluations(teamId);
             return Ok(result);
@@ -91,7 +91,7 @@ namespace BocciaCoaching.Controllers
         /// Obtener el detalle completo de una evaluación SAREMAS+
         /// </summary>
         [HttpGet("GetEvaluationDetails/{saremasEvalId}")]
-        public async Task<ActionResult<ResponseContract<SaremasEvaluationDetailsDto>>> GetEvaluationDetails(int saremasEvalId)
+        public async Task<ActionResult<ResponseContract<SaremasEvaluationDetailsDto>>> GetEvaluationDetails(Guid saremasEvalId)
         {
             var result = await _service.GetEvaluationDetails(saremasEvalId);
             return Ok(result);
@@ -101,7 +101,7 @@ namespace BocciaCoaching.Controllers
         /// Obtener estadísticas desglosadas de una evaluación SAREMAS+
         /// </summary>
         [HttpGet("GetEvaluationStatistics/{saremasEvalId}")]
-        public async Task<ActionResult<ResponseContract<SaremasStatisticsDto>>> GetEvaluationStatistics(int saremasEvalId)
+        public async Task<ActionResult<ResponseContract<SaremasStatisticsDto>>> GetEvaluationStatistics(Guid saremasEvalId)
         {
             var result = await _service.GetEvaluationStatistics(saremasEvalId);
             return Ok(result);
@@ -111,7 +111,7 @@ namespace BocciaCoaching.Controllers
         /// Obtener el historial de evaluaciones SAREMAS+ de un atleta
         /// </summary>
         [HttpGet("GetAthleteHistory/{athleteId}")]
-        public async Task<ActionResult<ResponseContract<SaremasAthleteHistoryDto>>> GetAthleteHistory(int athleteId)
+        public async Task<ActionResult<ResponseContract<SaremasAthleteHistoryDto>>> GetAthleteHistory(Guid athleteId)
         {
             var result = await _service.GetAthleteHistory(athleteId);
             return Ok(result);
@@ -123,7 +123,7 @@ namespace BocciaCoaching.Controllers
         /// <param name="coachId">ID del entrenador a consultar</param>
         /// <returns>Indica si tiene evaluaciones y el total generado</returns>
         [HttpGet("CoachHasEvaluations/{coachId}")]
-        public async Task<ActionResult<ResponseContract<CoachHasSaremasEvaluationsDto>>> CoachHasEvaluations(int coachId)
+        public async Task<ActionResult<ResponseContract<CoachHasSaremasEvaluationsDto>>> CoachHasEvaluations(Guid coachId)
         {
             var result = await _service.CoachHasEvaluations(coachId);
             return Ok(result);

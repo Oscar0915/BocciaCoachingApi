@@ -10,21 +10,20 @@ namespace BocciaCoaching.Models.Entities
         /// ES: Identificador de la tabla
         /// EN: 
         /// </summary>
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public int IdTeamUser { get; set; }
+        public Guid IdTeamUser { get; set; }
 
         /// <summary>
         /// ES: Identificador del usuario
         /// EN: 
         /// </summary>
-        public int UserId { get; set; }
+        public Guid UserId { get; set; }
         public User? User { get; set; }
         /// <summary>
         /// ES: Identificador del equipo
         /// EN: 
         /// </summary>
-        public int TeamId { get; set; }
+        public Guid TeamId { get; set; }
         public Team? Team { get; set; }
 
         /// <summary>

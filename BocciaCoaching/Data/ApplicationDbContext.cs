@@ -1,4 +1,5 @@
 ﻿﻿using BocciaCoaching.Models.Entities;
+using BocciaCoaching.Utils;
 using Microsoft.EntityFrameworkCore;
 
 namespace BocciaCoaching.Data
@@ -41,6 +42,9 @@ namespace BocciaCoaching.Data
         public DbSet<SaremasAthleteEvaluation> SaremasAthleteEvaluations { get; set; }
         public DbSet<SaremasThrow> SaremasThrows { get; set; }
 
+        // Daily Wellness Assessment entities
+        public DbSet<DailyWellness> DailyWellnessAssessments { get; set; }
+
         // Macrocycle entities
         public DbSet<Macrocycle> Macrocycles { get; set; }
         public DbSet<MacrocycleEvent> MacrocycleEvents { get; set; }
@@ -76,6 +80,24 @@ namespace BocciaCoaching.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            // Seed de roles con GUIDs fijos (antes eran 1=Admin, 2=Coach, 3=Atleta)
+            modelBuilder.Entity<Rol>().HasData(
+                new Rol { RolId = RoleIds.Admin, Description = "Admin" },
+                new Rol { RolId = RoleIds.Coach, Description = "Coach" },
+                new Rol { RolId = RoleIds.Athlete, Description = "Atleta" }
+            );
+
+            // Seed del módulo de error general (antes ModuleErrorId = 1)
+            modelBuilder.Entity<ModuleError>().HasData(
+                new ModuleError { ModuleErrorId = WellKnownIds.GeneralModule, Name = "General", Description = "Módulo general" }
+            );
+
+            // Seed de tipos de notificación (antes 1=General, 2=Invitación a equipo)
+            modelBuilder.Entity<NotificationType>().HasData(
+                new NotificationType { NotificationTypeId = WellKnownIds.NotificationTypeGeneral, Name = "General", Description = "Notificación general", Status = true, CreatedAt = new DateTime(2024, 1, 1) },
+                new NotificationType { NotificationTypeId = WellKnownIds.NotificationTypeTeamInvitation, Name = "Invitación a equipo", Description = "Invitación para unirse a un equipo", Status = true, CreatedAt = new DateTime(2024, 1, 1) }
+            );
+
             // MicrocycleTypeDayDefault → MicrocycleType
             modelBuilder.Entity<MicrocycleTypeDayDefault>()
                 .HasOne(d => d.MicrocycleType)
@@ -105,6 +127,26 @@ namespace BocciaCoaching.Data
                 .WithMany(m => m.Days)
                 .HasForeignKey(d => d.MicrocycleId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // DailyWellness → un test por atleta por día
+            modelBuilder.Entity<DailyWellness>()
+                .HasIndex(w => new { w.AthleteId, w.AssessmentDate })
+                .IsUnique();
+
+            // DailyWellness → User (Athlete)
+            modelBuilder.Entity<DailyWellness>()
+                .HasOne(w => w.Athlete)
+                .WithMany()
+                .HasForeignKey(w => w.AthleteId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // DailyWellness → Team (nullable)
+            modelBuilder.Entity<DailyWellness>()
+                .HasOne(w => w.Team)
+                .WithMany()
+                .HasForeignKey(w => w.TeamId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .IsRequired(false);
         }
     }
 }

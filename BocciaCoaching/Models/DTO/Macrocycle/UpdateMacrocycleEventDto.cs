@@ -2,8 +2,8 @@ namespace BocciaCoaching.Models.DTO.Macrocycle
 {
     public class UpdateMacrocycleEventDto
     {
-        public string MacrocycleEventId { get; set; } = string.Empty;
-        public string MacrocycleId { get; set; } = string.Empty;
+        public Guid MacrocycleEventId { get; set; }
+        public Guid MacrocycleId { get; set; }
         public string Name { get; set; } = string.Empty;
 
         /// <summary>competencia, concentracion, evaluacion, descanso, campus, controlTecnico, intercambio</summary>

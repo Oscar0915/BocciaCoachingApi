@@ -5,7 +5,7 @@ namespace BocciaCoaching.Models.DTO.Statistic
     /// </summary>
     public class SaremasTeamStatsDto
     {
-        public int TeamId { get; set; }
+        public Guid TeamId { get; set; }
         public string? TeamName { get; set; }
         public int TotalEvaluations { get; set; }
         public int CompletedEvaluations { get; set; }
@@ -15,7 +15,7 @@ namespace BocciaCoaching.Models.DTO.Statistic
 
     public class SaremasAthleteStatsItemDto
     {
-        public int AthleteId { get; set; }
+        public Guid AthleteId { get; set; }
         public string? AthleteName { get; set; }
         public int EvaluationsCompleted { get; set; }
         public double AverageScore { get; set; }
@@ -28,7 +28,7 @@ namespace BocciaCoaching.Models.DTO.Statistic
     /// </summary>
     public class SaremasAthleteEvolutionDto
     {
-        public int AthleteId { get; set; }
+        public Guid AthleteId { get; set; }
         public string? AthleteName { get; set; }
         public List<SaremasEvolutionPointDto> EvolutionPoints { get; set; } = new();
         public double OverallAverage { get; set; }
@@ -37,7 +37,7 @@ namespace BocciaCoaching.Models.DTO.Statistic
 
     public class SaremasEvolutionPointDto
     {
-        public int EvaluationId { get; set; }
+        public Guid EvaluationId { get; set; }
         public DateTime EvaluationDate { get; set; }
         public int TotalScore { get; set; }
         public double AverageScore { get; set; }
@@ -48,7 +48,7 @@ namespace BocciaCoaching.Models.DTO.Statistic
     /// </summary>
     public class MacrocycleProgressDto
     {
-        public string MacrocycleId { get; set; } = string.Empty;
+        public Guid MacrocycleId { get; set; }
         public string Name { get; set; } = string.Empty;
         public string AthleteName { get; set; } = string.Empty;
         public DateTime StartDate { get; set; }
@@ -69,7 +69,7 @@ namespace BocciaCoaching.Models.DTO.Statistic
     /// </summary>
     public class AthleteFullDashboardDto
     {
-        public int AthleteId { get; set; }
+        public Guid AthleteId { get; set; }
         public string? AthleteName { get; set; }
 
         // Fuerza

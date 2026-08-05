@@ -11,23 +11,22 @@ namespace BocciaCoaching.Models.Entities
         /// ES: Identificador del pago
         /// EN: Payment identifier
         /// </summary>
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public int PaymentId { get; set; }
+        public Guid PaymentId { get; set; }
 
         /// <summary>
         /// ES: ID de la suscripción
         /// EN: Subscription ID
         /// </summary>
         [ForeignKey("Subscription")]
-        public int SubscriptionId { get; set; }
+        public Guid SubscriptionId { get; set; }
 
         /// <summary>
         /// ES: ID del usuario
         /// EN: User ID
         /// </summary>
         [ForeignKey("User")]
-        public int UserId { get; set; }
+        public Guid UserId { get; set; }
 
         /// <summary>
         /// ES: ID del pago en Stripe

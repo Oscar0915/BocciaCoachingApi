@@ -6,11 +6,10 @@ namespace BocciaCoaching.Models.Entities
     [Table("Mesocycle")]
     public class Mesocycle
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public int MesocycleId { get; set; }
+        public Guid MesocycleId { get; set; }
 
-        public string MacrocycleId { get; set; } = string.Empty;
+        public Guid MacrocycleId { get; set; }
 
         [ForeignKey("MacrocycleId")]
         public Macrocycle? Macrocycle { get; set; }

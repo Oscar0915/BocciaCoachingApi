@@ -6,25 +6,25 @@ namespace BocciaCoaching.Repositories.Interfaces.ITrainingSession
     public interface ITrainingSessionRepository
     {
         Task<TrainingSessionEntity> CreateAsync(TrainingSessionEntity session);
-        Task<TrainingSessionEntity?> GetByIdAsync(int sessionId);
-        Task<List<TrainingSessionEntity>> GetByMicrocycleAsync(int microcycleId);
+        Task<TrainingSessionEntity?> GetByIdAsync(Guid sessionId);
+        Task<List<TrainingSessionEntity>> GetByMicrocycleAsync(Guid microcycleId);
         Task<bool> UpdateAsync(TrainingSessionEntity session);
-        Task<bool> DeleteAsync(int sessionId);
+        Task<bool> DeleteAsync(Guid sessionId);
 
         // Session Sections
-        Task<SessionSection?> GetSectionByIdAsync(int sectionId);
+        Task<SessionSection?> GetSectionByIdAsync(Guid sectionId);
         Task<SessionSection> AddSectionAsync(SessionSection section);
         Task<bool> UpdateSectionAsync(SessionSection section);
-        Task<bool> DeleteSectionAsync(int sectionId);
+        Task<bool> DeleteSectionAsync(Guid sectionId);
 
         // Session Parts
-        Task<SessionPart?> GetPartByIdAsync(int partId);
+        Task<SessionPart?> GetPartByIdAsync(Guid partId);
 
         // Validations
-        Task<bool> MicrocycleExistsAsync(int microcycleId);
+        Task<bool> MicrocycleExistsAsync(Guid microcycleId);
 
         // Athlete queries
-        Task<List<TrainingSessionEntity>> GetByAthleteAndDateRangeAsync(int athleteId, DateTime startDate, DateTime endDate);
-        Task<bool> SessionBelongsToAthleteAsync(int sessionId, int athleteId);
+        Task<List<TrainingSessionEntity>> GetByAthleteAndDateRangeAsync(Guid athleteId, DateTime startDate, DateTime endDate);
+        Task<bool> SessionBelongsToAthleteAsync(Guid sessionId, Guid athleteId);
     }
 }

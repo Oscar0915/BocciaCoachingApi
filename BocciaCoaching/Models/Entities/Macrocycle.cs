@@ -7,9 +7,9 @@ namespace BocciaCoaching.Models.Entities
     public class Macrocycle
     {
         [Key]
-        public string MacrocycleId { get; set; } = Guid.NewGuid().ToString();
+        public Guid MacrocycleId { get; set; } = Guid.NewGuid();
 
-        public int AthleteId { get; set; }
+        public Guid AthleteId { get; set; }
 
         [ForeignKey("AthleteId")]
         public User? Athlete { get; set; }
@@ -23,12 +23,12 @@ namespace BocciaCoaching.Models.Entities
 
         public string? Notes { get; set; }
 
-        public int CoachId { get; set; }
+        public Guid CoachId { get; set; }
 
         [ForeignKey("CoachId")]
         public User? Coach { get; set; }
 
-        public int TeamId { get; set; }
+        public Guid TeamId { get; set; }
 
         [ForeignKey("TeamId")]
         public Team? Team { get; set; }

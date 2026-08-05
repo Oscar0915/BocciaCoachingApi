@@ -34,7 +34,7 @@ namespace BocciaCoaching.Controllers
 
         /// <summary>Obtener un tipo de microciclo por Id (valores por defecto)</summary>
         [HttpGet("GetById/{id}")]
-        public async Task<ActionResult<ResponseContract<MicrocycleTypeResponseDto>>> GetById(string id)
+        public async Task<ActionResult<ResponseContract<MicrocycleTypeResponseDto>>> GetById(Guid id)
         {
             var result = await _service.GetById(id);
             return Ok(result);
@@ -42,7 +42,7 @@ namespace BocciaCoaching.Controllers
 
         /// <summary>Obtener todos los tipos con los porcentajes personalizados del coach</summary>
         [HttpGet("GetAllForCoach/{coachId}")]
-        public async Task<ActionResult<ResponseContract<List<MicrocycleTypeResponseDto>>>> GetAllForCoach(int coachId)
+        public async Task<ActionResult<ResponseContract<List<MicrocycleTypeResponseDto>>>> GetAllForCoach(Guid coachId)
         {
             var result = await _service.GetAllForCoach(coachId);
             return Ok(result);
@@ -50,7 +50,7 @@ namespace BocciaCoaching.Controllers
 
         /// <summary>Obtener un tipo de microciclo con los porcentajes del coach</summary>
         [HttpGet("GetForCoach/{id}/{coachId}")]
-        public async Task<ActionResult<ResponseContract<MicrocycleTypeResponseDto>>> GetForCoach(string id, int coachId)
+        public async Task<ActionResult<ResponseContract<MicrocycleTypeResponseDto>>> GetForCoach(Guid id, Guid coachId)
         {
             var result = await _service.GetByIdForCoach(id, coachId);
             return Ok(result);
@@ -66,7 +66,7 @@ namespace BocciaCoaching.Controllers
 
         /// <summary>Restablecer los porcentajes de un coach a los valores por defecto</summary>
         [HttpDelete("ResetCoachPercentages/{coachId}/{microcycleTypeId}")]
-        public async Task<ActionResult<ResponseContract<bool>>> ResetCoachPercentages(int coachId, string microcycleTypeId)
+        public async Task<ActionResult<ResponseContract<bool>>> ResetCoachPercentages(Guid coachId, Guid microcycleTypeId)
         {
             var result = await _service.ResetCoachPercentages(coachId, microcycleTypeId);
             return Ok(result);
@@ -113,7 +113,7 @@ namespace BocciaCoaching.Controllers
         /// </summary>
         [HttpGet("GetCoachDistribution/{coachId}/{microcycleTypeId}")]
         public async Task<ActionResult<ResponseContract<CoachMicrocycleTypeDistributionDto?>>> GetCoachDistribution(
-            int coachId, string microcycleTypeId)
+            Guid coachId, Guid microcycleTypeId)
         {
             var result = await _service.GetCoachDistribution(coachId, microcycleTypeId);
             return Ok(result);
@@ -124,7 +124,7 @@ namespace BocciaCoaching.Controllers
         /// (una por cada tipo de microciclo que haya configurado).
         /// </summary>
         [HttpGet("GetAllCoachDistributions/{coachId}")]
-        public async Task<ActionResult<ResponseContract<List<CoachMicrocycleTypeDistributionDto>>>> GetAllCoachDistributions(int coachId)
+        public async Task<ActionResult<ResponseContract<List<CoachMicrocycleTypeDistributionDto>>>> GetAllCoachDistributions(Guid coachId)
         {
             var result = await _service.GetAllCoachDistributions(coachId);
             return Ok(result);
@@ -135,7 +135,7 @@ namespace BocciaCoaching.Controllers
         /// Los nuevos macrociclos de ese coach usarán los valores por defecto del sistema.
         /// </summary>
         [HttpDelete("DeleteCoachDistribution/{coachId}/{microcycleTypeId}")]
-        public async Task<ActionResult<ResponseContract<bool>>> DeleteCoachDistribution(int coachId, string microcycleTypeId)
+        public async Task<ActionResult<ResponseContract<bool>>> DeleteCoachDistribution(Guid coachId, Guid microcycleTypeId)
         {
             var result = await _service.DeleteCoachDistribution(coachId, microcycleTypeId);
             return Ok(result);

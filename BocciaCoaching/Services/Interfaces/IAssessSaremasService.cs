@@ -9,14 +9,14 @@ namespace BocciaCoaching.Services.Interfaces
         Task<ResponseContract<ResponseAddSaremasDto>> CreateEvaluation(AddSaremasEvaluationDto dto);
         Task<ResponseContract<SaremasAthleteEvaluation>> AddAthleteToEvaluation(RequestAddAthleteToSaremasDto dto);
         Task<ResponseContract<bool>> AddThrowDetail(RequestAddSaremasDetailDto dto);
-        Task<ResponseContract<ActiveSaremasEvaluationDto>> GetActiveEvaluation(int teamId, int coachId);
+        Task<ResponseContract<ActiveSaremasEvaluationDto>> GetActiveEvaluation(Guid teamId, Guid coachId);
         Task<ResponseContract<bool>> UpdateState(UpdateSaremasStateDto dto);
         Task<ResponseContract<bool>> CancelEvaluation(CancelSaremasDto dto);
-        Task<ResponseContract<List<SaremasEvaluationSummaryDto>>> GetTeamEvaluations(int teamId);
-        Task<ResponseContract<SaremasEvaluationDetailsDto>> GetEvaluationDetails(int saremasEvalId);
-        Task<ResponseContract<SaremasStatisticsDto>> GetEvaluationStatistics(int saremasEvalId);
-        Task<ResponseContract<SaremasAthleteHistoryDto>> GetAthleteHistory(int athleteId);
-        Task<ResponseContract<CoachHasSaremasEvaluationsDto>> CoachHasEvaluations(int coachId);
+        Task<ResponseContract<List<SaremasEvaluationSummaryDto>>> GetTeamEvaluations(Guid teamId);
+        Task<ResponseContract<SaremasEvaluationDetailsDto>> GetEvaluationDetails(Guid saremasEvalId);
+        Task<ResponseContract<SaremasStatisticsDto>> GetEvaluationStatistics(Guid saremasEvalId);
+        Task<ResponseContract<SaremasAthleteHistoryDto>> GetAthleteHistory(Guid athleteId);
+        Task<ResponseContract<CoachHasSaremasEvaluationsDto>> CoachHasEvaluations(Guid coachId);
     }
 }
 

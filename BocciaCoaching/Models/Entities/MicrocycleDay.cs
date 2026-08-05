@@ -12,10 +12,10 @@ namespace BocciaCoaching.Models.Entities
     public class MicrocycleDay
     {
         [Key]
-        public string MicrocycleDayId { get; set; } = Guid.NewGuid().ToString();
+        public Guid MicrocycleDayId { get; set; } = Guid.NewGuid();
 
         /// <summary>Relación con el microciclo concreto</summary>
-        public int MicrocycleId { get; set; }
+        public Guid MicrocycleId { get; set; }
 
         [ForeignKey("MicrocycleId")]
         public Microcycle? Microcycle { get; set; }

@@ -41,7 +41,7 @@ namespace BocciaCoaching.Controllers
         /// EN: Gets a subscription type by ID
         /// </summary>
         [HttpGet("types/{id}")]
-        public async Task<ActionResult<ResponseContract<SubscriptionTypeDto>>> GetSubscriptionType(int id)
+        public async Task<ActionResult<ResponseContract<SubscriptionTypeDto>>> GetSubscriptionType(Guid id)
         {
             var response = await _subscriptionService.GetSubscriptionTypeByIdAsync(id);
             return Ok(response);
@@ -63,7 +63,7 @@ namespace BocciaCoaching.Controllers
         /// EN: Updates a subscription type (Admin only)
         /// </summary>
         [HttpPut("types/{id}")]
-        public async Task<ActionResult<ResponseContract<SubscriptionTypeDto>>> UpdateSubscriptionType(int id, CreateSubscriptionTypeDto updateDto)
+        public async Task<ActionResult<ResponseContract<SubscriptionTypeDto>>> UpdateSubscriptionType(Guid id, CreateSubscriptionTypeDto updateDto)
         {
             var response = await _subscriptionService.UpdateSubscriptionTypeAsync(id, updateDto);
             return Ok(response);
@@ -74,7 +74,7 @@ namespace BocciaCoaching.Controllers
         /// EN: Deletes a subscription type (Admin only)
         /// </summary>
         [HttpDelete("types/{id}")]
-        public async Task<ActionResult<ResponseContract<bool>>> DeleteSubscriptionType(int id)
+        public async Task<ActionResult<ResponseContract<bool>>> DeleteSubscriptionType(Guid id)
         {
             var response = await _subscriptionService.DeleteSubscriptionTypeAsync(id);
             return Ok(response);
@@ -89,7 +89,7 @@ namespace BocciaCoaching.Controllers
         /// EN: Gets user's current subscription
         /// </summary>
         [HttpGet("user/{userId}")]
-        public async Task<ActionResult<ResponseContract<UserSubscriptionDto>>> GetUserSubscription(int userId)
+        public async Task<ActionResult<ResponseContract<UserSubscriptionDto>>> GetUserSubscription(Guid userId)
         {
             var response = await _subscriptionService.GetUserSubscriptionAsync(userId);
             return Ok(response);
@@ -100,7 +100,7 @@ namespace BocciaCoaching.Controllers
         /// EN: Gets user's subscription history
         /// </summary>
         [HttpGet("user/{userId}/history")]
-        public async Task<ActionResult<ResponseContract<IEnumerable<UserSubscriptionDto>>>> GetUserSubscriptionHistory(int userId)
+        public async Task<ActionResult<ResponseContract<IEnumerable<UserSubscriptionDto>>>> GetUserSubscriptionHistory(Guid userId)
         {
             var response = await _subscriptionService.GetUserSubscriptionHistoryAsync(userId);
             return Ok(response);
@@ -144,7 +144,7 @@ namespace BocciaCoaching.Controllers
         /// EN: Reactivates a cancelled subscription
         /// </summary>
         [HttpPost("reactivate/{subscriptionId}")]
-        public async Task<ActionResult<ResponseContract<UserSubscriptionDto>>> ReactivateSubscription(int subscriptionId)
+        public async Task<ActionResult<ResponseContract<UserSubscriptionDto>>> ReactivateSubscription(Guid subscriptionId)
         {
             var response = await _subscriptionService.ReactivateSubscriptionAsync(subscriptionId);
             return Ok(response);
@@ -159,7 +159,7 @@ namespace BocciaCoaching.Controllers
         /// EN: Starts a trial period
         /// </summary>
         [HttpPost("trial/start")]
-        public async Task<ActionResult<ResponseContract<UserSubscriptionDto>>> StartTrial(int userId, int subscriptionTypeId, int trialDays = 7)
+        public async Task<ActionResult<ResponseContract<UserSubscriptionDto>>> StartTrial(Guid userId, Guid subscriptionTypeId, int trialDays = 7)
         {
             var response = await _subscriptionService.StartTrialAsync(userId, subscriptionTypeId, trialDays);
             return Ok(response);
@@ -170,7 +170,7 @@ namespace BocciaCoaching.Controllers
         /// EN: Checks if user can use trial period
         /// </summary>
         [HttpGet("trial/available/{userId}/{subscriptionTypeId}")]
-        public async Task<ActionResult<ResponseContract<bool>>> IsTrialAvailable(int userId, int subscriptionTypeId)
+        public async Task<ActionResult<ResponseContract<bool>>> IsTrialAvailable(Guid userId, Guid subscriptionTypeId)
         {
             var response = await _subscriptionService.IsTrialAvailableAsync(userId, subscriptionTypeId);
             return Ok(response);
@@ -185,7 +185,7 @@ namespace BocciaCoaching.Controllers
         /// EN: Validates if user has an active subscription
         /// </summary>
         [HttpGet("validate/{userId}")]
-        public async Task<ActionResult<ResponseContract<bool>>> ValidateUserSubscription(int userId, [FromQuery] string? feature = null)
+        public async Task<ActionResult<ResponseContract<bool>>> ValidateUserSubscription(Guid userId, [FromQuery] string? feature = null)
         {
             ResponseContract<bool> response;
             
@@ -206,7 +206,7 @@ namespace BocciaCoaching.Controllers
         /// EN: Checks if user can access a specific feature
         /// </summary>
         [HttpGet("access/{userId}/{featureName}")]
-        public async Task<ActionResult<ResponseContract<bool>>> CanAccessFeature(int userId, string featureName)
+        public async Task<ActionResult<ResponseContract<bool>>> CanAccessFeature(Guid userId, string featureName)
         {
             var response = await _subscriptionService.CanAccessFeatureAsync(userId, featureName);
             return Ok(response);
@@ -221,7 +221,7 @@ namespace BocciaCoaching.Controllers
         /// EN: Checks if user can create a team
         /// </summary>
         [HttpGet("limits/{userId}/can-create-team")]
-        public async Task<ActionResult<ResponseContract<bool>>> CanCreateTeam(int userId)
+        public async Task<ActionResult<ResponseContract<bool>>> CanCreateTeam(Guid userId)
         {
             var response = await _subscriptionService.CanCreateTeamAsync(userId);
             return Ok(response);
@@ -232,7 +232,7 @@ namespace BocciaCoaching.Controllers
         /// EN: Checks if user can add athlete to team
         /// </summary>
         [HttpGet("limits/{userId}/can-add-athlete/{teamId}")]
-        public async Task<ActionResult<ResponseContract<bool>>> CanAddAthlete(int userId, int teamId)
+        public async Task<ActionResult<ResponseContract<bool>>> CanAddAthlete(Guid userId, Guid teamId)
         {
             var response = await _subscriptionService.CanAddAthleteAsync(userId, teamId);
             return Ok(response);
@@ -243,7 +243,7 @@ namespace BocciaCoaching.Controllers
         /// EN: Checks if user can perform an evaluation
         /// </summary>
         [HttpGet("limits/{userId}/can-evaluate")]
-        public async Task<ActionResult<ResponseContract<bool>>> CanPerformEvaluation(int userId)
+        public async Task<ActionResult<ResponseContract<bool>>> CanPerformEvaluation(Guid userId)
         {
             var response = await _subscriptionService.CanPerformEvaluationAsync(userId);
             return Ok(response);
@@ -254,7 +254,7 @@ namespace BocciaCoaching.Controllers
         /// EN: Gets remaining teams user can create
         /// </summary>
         [HttpGet("limits/{userId}/remaining-teams")]
-        public async Task<ActionResult<ResponseContract<int>>> GetRemainingTeams(int userId)
+        public async Task<ActionResult<ResponseContract<int>>> GetRemainingTeams(Guid userId)
         {
             var response = await _subscriptionService.GetRemainingTeamsAsync(userId);
             return Ok(response);
@@ -265,7 +265,7 @@ namespace BocciaCoaching.Controllers
         /// EN: Gets remaining athletes that can be added to team
         /// </summary>
         [HttpGet("limits/{userId}/remaining-athletes/{teamId}")]
-        public async Task<ActionResult<ResponseContract<int>>> GetRemainingAthletes(int userId, int teamId)
+        public async Task<ActionResult<ResponseContract<int>>> GetRemainingAthletes(Guid userId, Guid teamId)
         {
             var response = await _subscriptionService.GetRemainingAthletesAsync(userId, teamId);
             return Ok(response);
@@ -276,7 +276,7 @@ namespace BocciaCoaching.Controllers
         /// EN: Gets remaining evaluations for the month
         /// </summary>
         [HttpGet("limits/{userId}/remaining-evaluations")]
-        public async Task<ActionResult<ResponseContract<int>>> GetRemainingEvaluations(int userId)
+        public async Task<ActionResult<ResponseContract<int>>> GetRemainingEvaluations(Guid userId)
         {
             var response = await _subscriptionService.GetRemainingEvaluationsAsync(userId);
             return Ok(response);

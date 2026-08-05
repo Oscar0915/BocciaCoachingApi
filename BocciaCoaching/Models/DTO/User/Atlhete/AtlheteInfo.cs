@@ -7,7 +7,7 @@ public class AtlheteInfo
         Name = string.Empty;
     }
 
-    public int AthleteId { get; set; }
+    public Guid AthleteId { get; set; }
     public string Name { get; set; }
     
 }

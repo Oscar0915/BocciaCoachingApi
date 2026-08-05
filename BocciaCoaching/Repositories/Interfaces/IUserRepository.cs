@@ -9,11 +9,11 @@ namespace BocciaCoaching.Repositories.Interfaces
     public interface IUserRepository
     {
         Task<ResponseContract<IEnumerable<InfoBasicUserDto>>> GetAllAsync();
-        Task<ResponseContract<InfoBasicUserDto>> GetByIdAsync(int id);
-        Task<User?> GetUserEntityByIdAsync(int id); // Método que devuelve directamente la entidad
+        Task<ResponseContract<InfoBasicUserDto>> GetByIdAsync(Guid id);
+        Task<User?> GetUserEntityByIdAsync(Guid id); // Método que devuelve directamente la entidad
         Task<ResponseContract<bool>> AddUser(InfoUserRegisterDto userDto);
         Task<ResponseContract<LoginResponseDto>> Login(LoginRequestDto loginDto);
-        Task<ResponseContract<int>> RegistrarAtleta(AtlheteInfoSave atlheteInfoSave);
+        Task<ResponseContract<Guid>> RegistrarAtleta(AtlheteInfoSave atlheteInfoSave);
         Task<ResponseContract<ValidateEmailDto>> ValidateEmail(ValidateEmailDto email);
 
         /// <summary>
@@ -45,6 +45,6 @@ namespace BocciaCoaching.Repositories.Interfaces
         /// <summary>
         /// Actualiza la URL/ubicación de la imagen de perfil del usuario. Devuelve la ruta anterior si existía.
         /// </summary>
-        Task<ResponseContract<string?>> UpdateUserImageAsync(int userId, string imageUrl);
+        Task<ResponseContract<string?>> UpdateUserImageAsync(Guid userId, string imageUrl);
     }
 }

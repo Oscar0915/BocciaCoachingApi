@@ -11,9 +11,8 @@ namespace BocciaCoaching.Models.Entities
         /// ES: Identificador del usuario
         /// EN: 
         /// </summary>
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public int UserId { get; set; }
+        public Guid UserId { get; set; }
         /// <summary>
         /// ES: Numero de identificación 
         /// EN: 

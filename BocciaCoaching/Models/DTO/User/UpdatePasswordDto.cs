@@ -5,7 +5,7 @@ namespace BocciaCoaching.Models.DTO.User
     public class UpdatePasswordDto
     {
         [Required(ErrorMessage = "El usuario es requerido")]
-        public int UserId { get; set; }
+        public Guid UserId { get; set; }
 
         [Required(ErrorMessage = "La contraseña actual es requerida")]
         public string CurrentPassword { get; set; } = string.Empty;

@@ -2,15 +2,15 @@ namespace BocciaCoaching.Models.DTO.Macrocycle
 {
     public class MacrocycleResponseDto
     {
-        public string MacrocycleId { get; set; } = string.Empty;
-        public int AthleteId { get; set; }
+        public Guid MacrocycleId { get; set; }
+        public Guid AthleteId { get; set; }
         public string AthleteName { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public string? Notes { get; set; }
-        public int CoachId { get; set; }
-        public int TeamId { get; set; }
+        public Guid CoachId { get; set; }
+        public Guid TeamId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
@@ -22,7 +22,7 @@ namespace BocciaCoaching.Models.DTO.Macrocycle
 
     public class MacrocycleEventResponseDto
     {
-        public string MacrocycleEventId { get; set; } = string.Empty;
+        public Guid MacrocycleEventId { get; set; }
         public string Name { get; set; } = string.Empty;
 
         /// <summary>competencia, concentracion, evaluacion, descanso, campus, controlTecnico, intercambio</summary>
@@ -39,7 +39,7 @@ namespace BocciaCoaching.Models.DTO.Macrocycle
 
     public class MacrocyclePeriodResponseDto
     {
-        public int MacrocyclePeriodId { get; set; }
+        public Guid MacrocyclePeriodId { get; set; }
         public string Name { get; set; } = string.Empty;
 
         /// <summary>preparatorioGeneral, preparatorioEspecial, competitivo, transicion, precompetitivo</summary>
@@ -55,7 +55,7 @@ namespace BocciaCoaching.Models.DTO.Macrocycle
 
     public class MesocycleResponseDto
     {
-        public int MesocycleId { get; set; }
+        public Guid MesocycleId { get; set; }
         public int Number { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Type { get; set; } = string.Empty;
@@ -67,7 +67,7 @@ namespace BocciaCoaching.Models.DTO.Macrocycle
 
     public class MicrocycleResponseDto
     {
-        public int MicrocycleId { get; set; }
+        public Guid MicrocycleId { get; set; }
         public int Number { get; set; }
         public int WeekNumber { get; set; }
         public DateTime StartDate { get; set; }
@@ -86,7 +86,7 @@ namespace BocciaCoaching.Models.DTO.Macrocycle
         public TrainingDistributionDto? TrainingDistribution { get; set; }
 
         /// <summary>Id del tipo de microciclo del catálogo (nullable)</summary>
-        public string? MicrocycleTypeId { get; set; }
+        public Guid? MicrocycleTypeId { get; set; }
 
         /// <summary>Nombre del tipo de microciclo del catálogo (nullable)</summary>
         public string? MicrocycleTypeName { get; set; }
@@ -100,7 +100,7 @@ namespace BocciaCoaching.Models.DTO.Macrocycle
 
     public class MicrocycleDayResponseDto
     {
-        public string MicrocycleDayId { get; set; } = string.Empty;
+        public Guid MicrocycleDayId { get; set; }
         public string DayOfWeek { get; set; } = string.Empty;
         public double ThrowPercentage { get; set; }
 

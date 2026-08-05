@@ -2,7 +2,7 @@ namespace BocciaCoaching.Models.DTO.AssessSaremas
 {
     public class SaremasStatisticsDto
     {
-        public int EvaluationId { get; set; }
+        public Guid EvaluationId { get; set; }
         public int TotalScore { get; set; }
         public int MaxPossibleScore { get; set; } = 140;
         public double AverageScore { get; set; }

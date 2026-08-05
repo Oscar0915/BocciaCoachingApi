@@ -10,30 +10,30 @@ namespace BocciaCoaching.Repositories.Interfaces
     {
         // Subscription methods
         Task<IEnumerable<Subscription>> GetAllAsync();
-        Task<Subscription?> GetByIdAsync(int id);
-        Task<Subscription?> GetByUserIdAsync(int userId);
-        Task<Subscription?> GetActiveByUserIdAsync(int userId);
-        Task<IEnumerable<Subscription>> GetByUserIdAllAsync(int userId);
+        Task<Subscription?> GetByIdAsync(Guid id);
+        Task<Subscription?> GetByUserIdAsync(Guid userId);
+        Task<Subscription?> GetActiveByUserIdAsync(Guid userId);
+        Task<IEnumerable<Subscription>> GetByUserIdAllAsync(Guid userId);
         Task<Subscription?> GetByStripeSubscriptionIdAsync(string stripeSubscriptionId);
         Task<Subscription> AddAsync(Subscription subscription);
         Task<Subscription> UpdateAsync(Subscription subscription);
-        Task DeleteAsync(int id);
-        Task<bool> HasActiveSubscriptionAsync(int userId);
+        Task DeleteAsync(Guid id);
+        Task<bool> HasActiveSubscriptionAsync(Guid userId);
         Task<IEnumerable<Subscription>> GetExpiringSubscriptionsAsync(DateTime date);
 
         // SubscriptionType methods
         Task<IEnumerable<SubscriptionType>> GetAllSubscriptionTypesAsync();
-        Task<SubscriptionType?> GetSubscriptionTypeByIdAsync(int id);
+        Task<SubscriptionType?> GetSubscriptionTypeByIdAsync(Guid id);
         Task<SubscriptionType?> GetDefaultSubscriptionTypeAsync();
         Task<SubscriptionType?> GetSubscriptionTypeByNameAsync(string name);
         Task<SubscriptionType> AddSubscriptionTypeAsync(SubscriptionType subscriptionType);
         Task<SubscriptionType> UpdateSubscriptionTypeAsync(SubscriptionType subscriptionType);
-        Task DeleteSubscriptionTypeAsync(int id);
+        Task DeleteSubscriptionTypeAsync(Guid id);
 
         // Payment methods
-        Task<IEnumerable<Payment>> GetPaymentsByUserIdAsync(int userId);
-        Task<IEnumerable<Payment>> GetPaymentsBySubscriptionIdAsync(int subscriptionId);
-        Task<Payment?> GetPaymentByIdAsync(int id);
+        Task<IEnumerable<Payment>> GetPaymentsByUserIdAsync(Guid userId);
+        Task<IEnumerable<Payment>> GetPaymentsBySubscriptionIdAsync(Guid subscriptionId);
+        Task<Payment?> GetPaymentByIdAsync(Guid id);
         Task<Payment?> GetPaymentByStripePaymentIntentIdAsync(string stripePaymentIntentId);
         Task<Payment> AddPaymentAsync(Payment payment);
         Task<Payment> UpdatePaymentAsync(Payment payment);

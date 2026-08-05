@@ -11,14 +11,13 @@ namespace BocciaCoaching.Models.Entities
         /// ES:
         /// EN: 
         /// </summary>
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public int AthletesToEvaluatedId { get; set; }
+        public Guid AthletesToEvaluatedId { get; set; }
         /// <summary>
         /// ES:
         /// EN: 
         /// </summary>
-        public int CoachId { get; set; }
+        public Guid CoachId { get; set; }
         /// <summary>
         /// ES:
         /// EN: 
@@ -28,7 +27,7 @@ namespace BocciaCoaching.Models.Entities
         /// ES:
         /// EN: 
         /// </summary>
-        public int AthleteId { get; set; }
+        public Guid AthleteId { get; set; }
         /// <summary>
         /// ES:
         /// EN: 
@@ -38,7 +37,7 @@ namespace BocciaCoaching.Models.Entities
         /// ES:
         /// EN: 
         /// </summary>
-        public int AssessStrengthId { get; set; }
+        public Guid AssessStrengthId { get; set; }
         /// <summary>
         /// ES:
         /// EN: 

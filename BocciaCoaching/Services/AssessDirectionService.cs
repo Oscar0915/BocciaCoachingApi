@@ -1,3 +1,4 @@
+using BocciaCoaching.Utils;
 using BocciaCoaching.Models.DTO.AssessDirection;
 using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.Notification;
@@ -147,7 +148,7 @@ namespace BocciaCoaching.Services
                         Message = "Tu evaluación de control de dirección ha sido completada. Revisa tus estadísticas.",
                         SenderId = coachId.Value,
                         ReceiverId = request.AthleteId,
-                        NotificationTypeId = 2,
+                        NotificationTypeId = WellKnownIds.NotificationTypeGeneral,
                         Status = true
                     };
 
@@ -192,7 +193,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<ActiveDirectionEvaluationDto>> GetActiveEvaluationWithDetails(int teamId, int coachId)
+        public async Task<ResponseContract<ActiveDirectionEvaluationDto>> GetActiveEvaluationWithDetails(Guid teamId, Guid coachId)
         {
             try
             {
@@ -220,7 +221,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<object> GetEvaluationDebugInfo(int teamId)
+        public async Task<object> GetEvaluationDebugInfo(Guid teamId)
         {
             try
             {
@@ -252,7 +253,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<List<DirectionEvaluationSummaryDto>>> GetTeamEvaluations(int teamId)
+        public async Task<ResponseContract<List<DirectionEvaluationSummaryDto>>> GetTeamEvaluations(Guid teamId)
         {
             try
             {
@@ -287,7 +288,7 @@ namespace BocciaCoaching.Services
         }
 
         public async Task<ResponseContract<List<DirectionAthleteStatisticsDto>>> GetEvaluationStatistics(
-            int assessDirectionId)
+            Guid assessDirectionId)
         {
             try
             {
@@ -314,7 +315,7 @@ namespace BocciaCoaching.Services
         }
 
         public async Task<ResponseContract<DirectionEvaluationDetailsDto>> GetEvaluationDetails(
-            int assessDirectionId)
+            Guid assessDirectionId)
         {
             try
             {
@@ -370,7 +371,7 @@ namespace BocciaCoaching.Services
                             $"La evaluación de control de dirección (ID: {cancelDto.AssessDirectionId}) ha sido cancelada. Motivo: {cancelDto.Reason ?? "No especificado"}",
                         SenderId = cancelDto.CoachId,
                         ReceiverId = athleteId,
-                        NotificationTypeId = 3,
+                        NotificationTypeId = WellKnownIds.NotificationTypeGeneral,
                         Status = true,
                         ReferenceId = cancelDto.AssessDirectionId
                     };
@@ -394,7 +395,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<CoachHasDirectionEvaluationsDto>> CoachHasEvaluations(int coachId)
+        public async Task<ResponseContract<CoachHasDirectionEvaluationsDto>> CoachHasEvaluations(Guid coachId)
         {
             try
             {

@@ -44,7 +44,7 @@ public class NextSessionInfo
     public DateTime SessionDate { get; set; }
     public string SessionTime { get; set; } = string.Empty;
     public string TeamName { get; set; } = string.Empty;
-    public int TeamId { get; set; }
+    public Guid TeamId { get; set; }
     public string SessionType { get; set; } = string.Empty; // "Entrenamiento", "Evaluación", etc.
 }
 
@@ -53,7 +53,7 @@ public class NextSessionInfo
 /// </summary>
 public class TopPerformanceAthleteDto
 {
-    public int AthleteId { get; set; }
+    public Guid AthleteId { get; set; }
     public string AthleteName { get; set; } = string.Empty;
     public double PerformanceScore { get; set; }
     public string TeamName { get; set; } = string.Empty;
@@ -65,7 +65,7 @@ public class TopPerformanceAthleteDto
 /// </summary>
 public class RecentTestDto
 {
-    public int TestId { get; set; }
+    public Guid TestId { get; set; }
     public string AthleteName { get; set; } = string.Empty;
     public string TestType { get; set; } = string.Empty;
     public double Score { get; set; }
@@ -78,7 +78,7 @@ public class RecentTestDto
 /// </summary>
 public class PendingTaskDto
 {
-    public int TaskId { get; set; }
+    public Guid TaskId { get; set; }
     public string TaskDescription { get; set; } = string.Empty;
     public string Priority { get; set; } = string.Empty; // "Alta", "Media", "Baja"
     public DateTime DueDate { get; set; }
@@ -115,7 +115,7 @@ public class MonthlyEvolutionDto
 /// </summary>
 public class TeamOverviewDto
 {
-    public int TeamId { get; set; }
+    public Guid TeamId { get; set; }
     public string TeamName { get; set; } = string.Empty;
     public int TotalAthletes { get; set; }
     public int ActiveAthletes { get; set; }

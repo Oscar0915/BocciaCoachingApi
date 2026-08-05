@@ -31,7 +31,7 @@ namespace BocciaCoaching.Controllers
         /// Obtener todos los macrociclos de un atleta
         /// </summary>
         [HttpGet("GetByAthlete/{athleteId}")]
-        public async Task<ActionResult<ResponseContract<List<MacrocycleSummaryDto>>>> GetByAthlete(int athleteId)
+        public async Task<ActionResult<ResponseContract<List<MacrocycleSummaryDto>>>> GetByAthlete(Guid athleteId)
         {
             var result = await _service.GetByAthlete(athleteId);
             return Ok(result);
@@ -41,7 +41,7 @@ namespace BocciaCoaching.Controllers
         /// Obtener todos los macrociclos de un equipo
         /// </summary>
         [HttpGet("GetByTeam/{teamId}")]
-        public async Task<ActionResult<ResponseContract<List<MacrocycleSummaryDto>>>> GetByTeam(int teamId)
+        public async Task<ActionResult<ResponseContract<List<MacrocycleSummaryDto>>>> GetByTeam(Guid teamId)
         {
             var result = await _service.GetByTeam(teamId);
             return Ok(result);
@@ -51,7 +51,7 @@ namespace BocciaCoaching.Controllers
         /// Obtener un macrociclo completo con todas sus sub-entidades
         /// </summary>
         [HttpGet("GetById/{macrocycleId}")]
-        public async Task<ActionResult<ResponseContract<MacrocycleResponseDto>>> GetById(string macrocycleId)
+        public async Task<ActionResult<ResponseContract<MacrocycleResponseDto>>> GetById(Guid macrocycleId)
         {
             var result = await _service.GetById(macrocycleId);
             return Ok(result);
@@ -71,7 +71,7 @@ namespace BocciaCoaching.Controllers
         /// Eliminar un macrociclo y todas sus sub-entidades
         /// </summary>
         [HttpDelete("Delete/{macrocycleId}")]
-        public async Task<ActionResult<ResponseContract<bool>>> Delete(string macrocycleId)
+        public async Task<ActionResult<ResponseContract<bool>>> Delete(Guid macrocycleId)
         {
             var result = await _service.DeleteMacrocycle(macrocycleId);
             return Ok(result);
@@ -101,7 +101,7 @@ namespace BocciaCoaching.Controllers
         /// Eliminar un evento y recalcular estructura
         /// </summary>
         [HttpDelete("DeleteEvent/{eventId}")]
-        public async Task<ActionResult<ResponseContract<MacrocycleResponseDto>>> DeleteEvent(string eventId)
+        public async Task<ActionResult<ResponseContract<MacrocycleResponseDto>>> DeleteEvent(Guid eventId)
         {
             var result = await _service.DeleteEvent(eventId);
             return Ok(result);
@@ -121,7 +121,7 @@ namespace BocciaCoaching.Controllers
         /// Obtener todos los macrociclos creados por un coach
         /// </summary>
         [HttpGet("GetCoachMacrocycles/{coachId}")]
-        public async Task<ActionResult<ResponseContract<List<MacrocycleSummaryDto>>>> GetCoachMacrocycles(int coachId)
+        public async Task<ActionResult<ResponseContract<List<MacrocycleSummaryDto>>>> GetCoachMacrocycles(Guid coachId)
         {
             var result = await _service.GetCoachMacrocycles(coachId);
             return Ok(result);
@@ -131,7 +131,7 @@ namespace BocciaCoaching.Controllers
         /// Duplicar un macrociclo para otro atleta o período
         /// </summary>
         [HttpPost("Duplicate/{macrocycleId}")]
-        public async Task<ActionResult<ResponseContract<MacrocycleResponseDto>>> Duplicate(string macrocycleId, DuplicateMacrocycleDto dto)
+        public async Task<ActionResult<ResponseContract<MacrocycleResponseDto>>> Duplicate(Guid macrocycleId, DuplicateMacrocycleDto dto)
         {
             var result = await _service.DuplicateMacrocycle(macrocycleId, dto);
             return Ok(result);

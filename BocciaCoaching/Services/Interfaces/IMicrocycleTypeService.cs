@@ -7,11 +7,11 @@ namespace BocciaCoaching.Services.Interfaces
     {
         Task<ResponseContract<MicrocycleTypeResponseDto>> Create(CreateMicrocycleTypeDto dto);
         Task<ResponseContract<List<MicrocycleTypeResponseDto>>> GetAll();
-        Task<ResponseContract<MicrocycleTypeResponseDto>> GetById(string id);
-        Task<ResponseContract<MicrocycleTypeResponseDto>> GetByIdForCoach(string id, int coachId);
-        Task<ResponseContract<List<MicrocycleTypeResponseDto>>> GetAllForCoach(int coachId);
+        Task<ResponseContract<MicrocycleTypeResponseDto>> GetById(Guid id);
+        Task<ResponseContract<MicrocycleTypeResponseDto>> GetByIdForCoach(Guid id, Guid coachId);
+        Task<ResponseContract<List<MicrocycleTypeResponseDto>>> GetAllForCoach(Guid coachId);
         Task<ResponseContract<bool>> UpdateCoachPercentages(UpdateCoachPercentagesDto dto);
-        Task<ResponseContract<bool>> ResetCoachPercentages(int coachId, string microcycleTypeId);
+        Task<ResponseContract<bool>> ResetCoachPercentages(Guid coachId, Guid microcycleTypeId);
 
         /// <summary>Obtiene los tipos de microciclo configurados junto con los tipos que están construidos en la aplicación</summary>
         Task<ResponseContract<MicrocycleTypesOverviewDto>> GetOverview();
@@ -29,12 +29,12 @@ namespace BocciaCoaching.Services.Interfaces
         Task<ResponseContract<CoachMicrocycleTypeDistributionDto>> UpsertCoachDistribution(UpsertCoachMicrocycleTypeDistributionDto dto);
 
         /// <summary>Obtiene la distribución personalizada del coach para un tipo de microciclo</summary>
-        Task<ResponseContract<CoachMicrocycleTypeDistributionDto?>> GetCoachDistribution(int coachId, string microcycleTypeId);
+        Task<ResponseContract<CoachMicrocycleTypeDistributionDto?>> GetCoachDistribution(Guid coachId, Guid microcycleTypeId);
 
         /// <summary>Obtiene todas las distribuciones personalizadas del coach</summary>
-        Task<ResponseContract<List<CoachMicrocycleTypeDistributionDto>>> GetAllCoachDistributions(int coachId);
+        Task<ResponseContract<List<CoachMicrocycleTypeDistributionDto>>> GetAllCoachDistributions(Guid coachId);
 
         /// <summary>Elimina la distribución personalizada del coach y vuelve a los valores por defecto</summary>
-        Task<ResponseContract<bool>> DeleteCoachDistribution(int coachId, string microcycleTypeId);
+        Task<ResponseContract<bool>> DeleteCoachDistribution(Guid coachId, Guid microcycleTypeId);
     }
 }

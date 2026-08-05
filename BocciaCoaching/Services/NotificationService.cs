@@ -8,6 +8,7 @@ using BocciaCoaching.Repositories.Interfaces;
 using BocciaCoaching.Repositories.Interfaces.ITeams;
 using BocciaCoaching.Services.Interfaces;
 using BocciaCoaching.Data;
+using BocciaCoaching.Utils;
 using Microsoft.EntityFrameworkCore;
 
 namespace BocciaCoaching.Services
@@ -118,7 +119,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<NotificationTypeDto>> GetTypeById(int id)
+        public async Task<ResponseContract<NotificationTypeDto>> GetTypeById(Guid id)
         {
             try
             {
@@ -164,7 +165,7 @@ namespace BocciaCoaching.Services
         {
             try
             {
-                if (typeDto is null || typeDto.NotificationTypeId <= 0)
+                if (typeDto is null || typeDto.NotificationTypeId == Guid.Empty)
                     return ResponseContract<bool>.Fail("Tipo inválido");
 
                 if (string.IsNullOrWhiteSpace(typeDto.Name))
@@ -189,7 +190,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<NotificationMessageDto>> GetMessageById(int id)
+        public async Task<ResponseContract<NotificationMessageDto>> GetMessageById(Guid id)
         {
             try
             {
@@ -205,7 +206,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        private async Task<(bool exists, string? name)> GetUserInfo(int userId)
+        private async Task<(bool exists, string? name)> GetUserInfo(Guid userId)
         {
             var userResponse = await _userRepo.GetByIdAsync(userId);
             
@@ -251,7 +252,7 @@ namespace BocciaCoaching.Services
                 if (!result) return ResponseContract<bool>.Fail("No se pudo crear el mensaje");
 
                 // Enviar email de notificación si no es una invitación de equipo (tipo 2)
-                if (messageDto.NotificationTypeId != 2)
+                if (messageDto.NotificationTypeId != WellKnownIds.NotificationTypeTeamInvitation)
                 {
                     try
                     {
@@ -296,7 +297,7 @@ namespace BocciaCoaching.Services
         {
             try
             {
-                if (messageDto is null || messageDto.NotificationMessageId <= 0)
+                if (messageDto is null || messageDto.NotificationMessageId == Guid.Empty)
                     return ResponseContract<bool>.Fail("Mensaje inválido");
 
                 // Validar que exista el tipo de notificación
@@ -332,7 +333,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<IEnumerable<NotificationMessageDto>>> GetMessagesByCoach(int coachId, int? page = null, int? pageSize = null)
+        public async Task<ResponseContract<IEnumerable<NotificationMessageDto>>> GetMessagesByCoach(Guid coachId, int? page = null, int? pageSize = null)
         {
             try
             {
@@ -379,7 +380,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<IEnumerable<NotificationMessageDto>>> GetMessagesByAthlete(int athleteId, int? page = null, int? pageSize = null)
+        public async Task<ResponseContract<IEnumerable<NotificationMessageDto>>> GetMessagesByAthlete(Guid athleteId, int? page = null, int? pageSize = null)
         {
             try
             {
@@ -429,7 +430,7 @@ namespace BocciaCoaching.Services
         /// <summary>
         /// Enviar invitación a un atleta para unirse a un equipo
         /// </summary>
-        public async Task<ResponseContract<bool>> SendTeamInvitation(int coachId, string athleteEmail, int teamId, string? message = null)
+        public async Task<ResponseContract<bool>> SendTeamInvitation(Guid coachId, string athleteEmail, Guid teamId, string? message = null)
         {
             try
             {
@@ -471,7 +472,7 @@ namespace BocciaCoaching.Services
                 {
                     SenderId = coachId,
                     ReceiverId = athlete.UserId,
-                    NotificationTypeId = 2, // Tipo 2 para invitaciones de equipo
+                    NotificationTypeId = WellKnownIds.NotificationTypeTeamInvitation, // Tipo 2 para invitaciones de equipo
                     Message = defaultMessage,
                     ReferenceId = teamId,
                     Status = true
@@ -520,7 +521,7 @@ namespace BocciaCoaching.Services
         /// <summary>
         /// Aceptar invitación de equipo y agregar atleta al equipo
         /// </summary>
-        public async Task<ResponseContract<bool>> AcceptTeamInvitation(int notificationMessageId)
+        public async Task<ResponseContract<bool>> AcceptTeamInvitation(Guid notificationMessageId)
         {
             try
             {
@@ -537,7 +538,7 @@ namespace BocciaCoaching.Services
                     return ResponseContract<bool>.Fail("La notificación no tiene un equipo asociado");
 
                 // Validar que sea una invitación de equipo (tipo 2)
-                if (notification.NotificationTypeId != 2)
+                if (notification.NotificationTypeId != WellKnownIds.NotificationTypeTeamInvitation)
                     return ResponseContract<bool>.Fail("Esta notificación no es una invitación de equipo");
 
                 // Agregar el atleta al equipo

@@ -2,13 +2,13 @@ namespace BocciaCoaching.Models.DTO.AssessSaremas
 {
     public class ActiveSaremasEvaluationDto
     {
-        public int SaremasEvaluationId { get; set; }
+        public Guid SaremasEvaluationId { get; set; }
         public DateTime EvaluationDate { get; set; }
         public string? Description { get; set; }
         public string? State { get; set; }
-        public int TeamId { get; set; }
+        public Guid TeamId { get; set; }
         public string? TeamName { get; set; }
-        public int CoachId { get; set; }
+        public Guid CoachId { get; set; }
         public string? CoachName { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
@@ -19,16 +19,16 @@ namespace BocciaCoaching.Models.DTO.AssessSaremas
 
     public class SaremasAthleteInEvaluationDto
     {
-        public int AthleteId { get; set; }
+        public Guid AthleteId { get; set; }
         public string? AthleteName { get; set; }
         public string? AthleteEmail { get; set; }
-        public int CoachId { get; set; }
+        public Guid CoachId { get; set; }
         public string? CoachName { get; set; }
     }
 
     public class SaremasThrowDto
     {
-        public int SaremasThrowId { get; set; }
+        public Guid SaremasThrowId { get; set; }
         public int ThrowNumber { get; set; }
         public string Diagonal { get; set; } = string.Empty;
         public string TechnicalComponent { get; set; } = string.Empty;
@@ -36,7 +36,7 @@ namespace BocciaCoaching.Models.DTO.AssessSaremas
         public string? Observations { get; set; }
         public string? FailureTags { get; set; }
         public bool Status { get; set; }
-        public int AthleteId { get; set; }
+        public Guid AthleteId { get; set; }
         public string? AthleteName { get; set; }
         public double? WhiteBallX { get; set; }
         public double? WhiteBallY { get; set; }

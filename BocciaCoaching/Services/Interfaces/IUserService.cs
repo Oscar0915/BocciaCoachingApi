@@ -8,10 +8,10 @@ namespace BocciaCoaching.Services.Interfaces
     public interface IUserService
     {
         Task<ResponseContract<IEnumerable<InfoBasicUserDto>>> GetAllAsync();
-        Task<ResponseContract<InfoBasicUserDto>> GetByIdAsync(int id);
+        Task<ResponseContract<InfoBasicUserDto>> GetByIdAsync(Guid id);
         Task<ResponseContract<bool>> AddUser(InfoUserRegisterDto userDto);
         Task<ResponseContract<LoginResponseDto>> Login(LoginRequestDto loginDto);
-        Task<ResponseContract<int>> RegistrarAtleta(AtlheteInfoSave atlheteInfoSave);
+        Task<ResponseContract<Guid>> RegistrarAtleta(AtlheteInfoSave atlheteInfoSave);
       
         Task<ResponseContract<ValidateEmailDto>> ValidateEmail(ValidateEmailDto email);
 
@@ -39,7 +39,7 @@ namespace BocciaCoaching.Services.Interfaces
         /// <summary>
         /// Actualiza la URL/ubicación de la imagen de perfil del usuario y devuelve la ruta anterior si existía
         /// </summary>
-        Task<ResponseContract<string?>> UpdateUserImageAsync(int userId, string imageUrl);
+        Task<ResponseContract<string?>> UpdateUserImageAsync(Guid userId, string imageUrl);
 
     }
 }

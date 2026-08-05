@@ -62,7 +62,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<SubscriptionTypeDto>> GetSubscriptionTypeByIdAsync(int id)
+        public async Task<ResponseContract<SubscriptionTypeDto>> GetSubscriptionTypeByIdAsync(Guid id)
         {
             try
             {
@@ -145,7 +145,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<SubscriptionTypeDto>> UpdateSubscriptionTypeAsync(int id, CreateSubscriptionTypeDto updateDto)
+        public async Task<ResponseContract<SubscriptionTypeDto>> UpdateSubscriptionTypeAsync(Guid id, CreateSubscriptionTypeDto updateDto)
         {
             try
             {
@@ -195,7 +195,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<bool>> DeleteSubscriptionTypeAsync(int id)
+        public async Task<ResponseContract<bool>> DeleteSubscriptionTypeAsync(Guid id)
         {
             try
             {
@@ -212,7 +212,7 @@ namespace BocciaCoaching.Services
 
         #region User Subscription Management
 
-        public async Task<ResponseContract<UserSubscriptionDto>> GetUserSubscriptionAsync(int userId)
+        public async Task<ResponseContract<UserSubscriptionDto>> GetUserSubscriptionAsync(Guid userId)
         {
             try
             {
@@ -227,7 +227,7 @@ namespace BocciaCoaching.Services
                         return ResponseContract<UserSubscriptionDto>.Ok(
                             new UserSubscriptionDto
                             {
-                                SubscriptionId = 0,
+                                SubscriptionId = Guid.Empty,
                                 UserId = userId,
                                 SubscriptionType = new SubscriptionTypeDto
                                 {
@@ -290,7 +290,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<IEnumerable<UserSubscriptionDto>>> GetUserSubscriptionHistoryAsync(int userId)
+        public async Task<ResponseContract<IEnumerable<UserSubscriptionDto>>> GetUserSubscriptionHistoryAsync(Guid userId)
         {
             try
             {
@@ -555,7 +555,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<UserSubscriptionDto>> ReactivateSubscriptionAsync(int subscriptionId)
+        public async Task<ResponseContract<UserSubscriptionDto>> ReactivateSubscriptionAsync(Guid subscriptionId)
         {
             try
             {
@@ -589,7 +589,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<UserSubscriptionDto>> StartTrialAsync(int userId, int subscriptionTypeId, int trialDays = 7)
+        public async Task<ResponseContract<UserSubscriptionDto>> StartTrialAsync(Guid userId, Guid subscriptionTypeId, int trialDays = 7)
         {
             try
             {
@@ -617,7 +617,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<bool>> IsTrialAvailableAsync(int userId, int subscriptionTypeId)
+        public async Task<ResponseContract<bool>> IsTrialAvailableAsync(Guid userId, Guid subscriptionTypeId)
         {
             try
             {
@@ -636,7 +636,7 @@ namespace BocciaCoaching.Services
 
         #region Validation Methods
 
-        public async Task<ResponseContract<bool>> ValidateUserSubscriptionAsync(int userId, string feature)
+        public async Task<ResponseContract<bool>> ValidateUserSubscriptionAsync(Guid userId, string feature)
         {
             try
             {
@@ -676,7 +676,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<bool>> HasActiveSubscriptionAsync(int userId)
+        public async Task<ResponseContract<bool>> HasActiveSubscriptionAsync(Guid userId)
         {
             try
             {
@@ -690,7 +690,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<bool>> CanAccessFeatureAsync(int userId, string featureName)
+        public async Task<ResponseContract<bool>> CanAccessFeatureAsync(Guid userId, string featureName)
         {
             try
             {
@@ -721,7 +721,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<bool>> CanCreateTeamAsync(int userId)
+        public async Task<ResponseContract<bool>> CanCreateTeamAsync(Guid userId)
         {
             try
             {
@@ -756,7 +756,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<bool>> CanAddAthleteToTeamAsync(int userId, int teamId)
+        public async Task<ResponseContract<bool>> CanAddAthleteToTeamAsync(Guid userId, Guid teamId)
         {
             try
             {
@@ -791,7 +791,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<bool>> CanAddAthleteAsync(int userId, int teamId)
+        public async Task<ResponseContract<bool>> CanAddAthleteAsync(Guid userId, Guid teamId)
         {
             try
             {
@@ -826,7 +826,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<bool>> CanPerformEvaluationAsync(int userId)
+        public async Task<ResponseContract<bool>> CanPerformEvaluationAsync(Guid userId)
         {
             try
             {
@@ -865,7 +865,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<int>> GetRemainingTeamsAsync(int userId)
+        public async Task<ResponseContract<int>> GetRemainingTeamsAsync(Guid userId)
         {
             try
             {
@@ -895,7 +895,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<int>> GetRemainingAthletesAsync(int userId, int teamId)
+        public async Task<ResponseContract<int>> GetRemainingAthletesAsync(Guid userId, Guid teamId)
         {
             try
             {
@@ -925,7 +925,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<int>> GetRemainingEvaluationsAsync(int userId)
+        public async Task<ResponseContract<int>> GetRemainingEvaluationsAsync(Guid userId)
         {
             try
             {

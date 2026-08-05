@@ -1,3 +1,5 @@
+using BocciaCoaching.Utils;
+using BocciaCoaching.Utils;
 using BocciaCoaching.Models.DTO.AssessSaremas;
 using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.Notification;
@@ -109,7 +111,7 @@ namespace BocciaCoaching.Services
                                 Message = "Tu evaluación SAREMAS+ ha sido completada. Revisa tus estadísticas.",
                                 SenderId = coachId.Value,
                                 ReceiverId = dto.AthleteId,
-                                NotificationTypeId = 2,
+                                NotificationTypeId = WellKnownIds.NotificationTypeGeneral,
                                 Status = true
                             };
                             await _notificationService.CreateMessage(notification);
@@ -126,7 +128,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<ActiveSaremasEvaluationDto>> GetActiveEvaluation(int teamId, int coachId)
+        public async Task<ResponseContract<ActiveSaremasEvaluationDto>> GetActiveEvaluation(Guid teamId, Guid coachId)
         {
             try
             {
@@ -169,7 +171,7 @@ namespace BocciaCoaching.Services
             return await _repository.CancelAsync(dto.SaremasEvalId, dto.CoachId, dto.Reason);
         }
 
-        public async Task<ResponseContract<List<SaremasEvaluationSummaryDto>>> GetTeamEvaluations(int teamId)
+        public async Task<ResponseContract<List<SaremasEvaluationSummaryDto>>> GetTeamEvaluations(Guid teamId)
         {
             try
             {
@@ -189,7 +191,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<SaremasEvaluationDetailsDto>> GetEvaluationDetails(int saremasEvalId)
+        public async Task<ResponseContract<SaremasEvaluationDetailsDto>> GetEvaluationDetails(Guid saremasEvalId)
         {
             try
             {
@@ -206,7 +208,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<SaremasStatisticsDto>> GetEvaluationStatistics(int saremasEvalId)
+        public async Task<ResponseContract<SaremasStatisticsDto>> GetEvaluationStatistics(Guid saremasEvalId)
         {
             try
             {
@@ -223,7 +225,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<SaremasAthleteHistoryDto>> GetAthleteHistory(int athleteId)
+        public async Task<ResponseContract<SaremasAthleteHistoryDto>> GetAthleteHistory(Guid athleteId)
         {
             try
             {
@@ -240,7 +242,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<CoachHasSaremasEvaluationsDto>> CoachHasEvaluations(int coachId)
+        public async Task<ResponseContract<CoachHasSaremasEvaluationsDto>> CoachHasEvaluations(Guid coachId)
         {
             try
             {

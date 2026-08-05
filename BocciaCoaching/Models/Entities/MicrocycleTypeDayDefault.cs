@@ -13,9 +13,9 @@ namespace BocciaCoaching.Models.Entities
     public class MicrocycleTypeDayDefault
     {
         [Key]
-        public string MicrocycleTypeDayDefaultId { get; set; } = Guid.NewGuid().ToString();
+        public Guid MicrocycleTypeDayDefaultId { get; set; } = Guid.NewGuid();
 
-        public string MicrocycleTypeId { get; set; } = string.Empty;
+        public Guid MicrocycleTypeId { get; set; }
 
         [ForeignKey("MicrocycleTypeId")]
         public MicrocycleType? MicrocycleType { get; set; }
@@ -24,7 +24,7 @@ namespace BocciaCoaching.Models.Entities
         /// NULL = valor por defecto global del sistema.
         /// Con valor = override personalizado del coach con ese Id.
         /// </summary>
-        public int? CoachId { get; set; }
+        public Guid? CoachId { get; set; }
 
         [ForeignKey("CoachId")]
         public User? Coach { get; set; }

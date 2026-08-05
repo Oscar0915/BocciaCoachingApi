@@ -15,9 +15,8 @@ namespace BocciaCoaching.Models.Entities
         /// ES:Identificador del equipo
         /// EN: 
         /// </summary>
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public int TeamId { get; set; }
+        public Guid TeamId { get; set; }
         /// <summary>
         /// ES: Nombre del equipo
         /// EN: 
@@ -32,7 +31,7 @@ namespace BocciaCoaching.Models.Entities
         /// ES: Identificador del entrenador
         /// EN: 
         /// </summary>
-        public int CoachId { get; set; }
+        public Guid CoachId { get; set; }
         /// <summary>
         /// ES:
         /// EN: 

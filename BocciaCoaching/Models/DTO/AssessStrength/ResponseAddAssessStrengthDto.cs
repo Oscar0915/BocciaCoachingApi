@@ -4,9 +4,9 @@
     {
         public ResponseAddAssessStrengthDto()
         {
-            AssessStrengthId = 0;
+            AssessStrengthId = Guid.Empty;
         }
-        public int AssessStrengthId { get; set; }
+        public Guid AssessStrengthId { get; set; }
 
         public DateTime DateEvaluation { get; set; }
 

@@ -2,7 +2,7 @@ namespace BocciaCoaching.Models.DTO.MicrocycleType
 {
     public class MicrocycleTypeResponseDto
     {
-        public string MicrocycleTypeId { get; set; } = string.Empty;
+        public Guid MicrocycleTypeId { get; set; }
         public string Name { get; set; } = string.Empty;
 
         /// <summary>Código corto (símbolo) del tipo de microciclo, ej: μ1, μ2, μ3</summary>

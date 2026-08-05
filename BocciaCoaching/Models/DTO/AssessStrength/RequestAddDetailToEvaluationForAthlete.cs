@@ -8,8 +8,8 @@
         public decimal? ScoreObtained { get; set; }
         public string? Observations { get; set; }
         public bool Status { get; set; } = true;
-        public int AthleteId { get; set; }
-        public int AssessStrengthId { get; set; }
+        public Guid AthleteId { get; set; }
+        public Guid AssessStrengthId { get; set; }
         /// <summary>
         /// ES: Coordenada X del lanzamiento
         /// EN: X coordinate of the throw

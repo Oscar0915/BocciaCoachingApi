@@ -5,6 +5,7 @@ using BocciaCoaching.Models.DTO.User;
 using BocciaCoaching.Models.DTO.User.Atlhete;
 using BocciaCoaching.Repositories.Interfaces;
 using BocciaCoaching.Services.Interfaces;
+using BocciaCoaching.Utils;
 
 namespace BocciaCoaching.Services
 {
@@ -30,7 +31,7 @@ namespace BocciaCoaching.Services
             return await _repository.GetAllAsync();
         }
 
-        public async Task<ResponseContract<InfoBasicUserDto>> GetByIdAsync(int id)
+        public async Task<ResponseContract<InfoBasicUserDto>> GetByIdAsync(Guid id)
         {
             return await _repository.GetByIdAsync(id);
         }
@@ -40,16 +41,16 @@ namespace BocciaCoaching.Services
             return await _repository.Login(loginDto);
         }
 
-        public async Task<ResponseContract<int>> RegistrarAtleta(AtlheteInfoSave atlheteInfoSave)
+        public async Task<ResponseContract<Guid>> RegistrarAtleta(AtlheteInfoSave atlheteInfoSave)
         {
             var result = await _repository.RegistrarAtleta(atlheteInfoSave);
             
-            if (result.Success && result.Data > 0)
+            if (result.Success && result.Data != Guid.Empty)
             {
                 // Crear notificación de bienvenida para el atleta recién creado
                 var notificationMessage = new RequestCreateNotificationMessageDto
                 {
-                    NotificationTypeId = 1,
+                    NotificationTypeId = WellKnownIds.NotificationTypeGeneral,
                     ReceiverId = result.Data,
                     SenderId = atlheteInfoSave.CoachId,
                     Message = "Bienvenido a Boccia Coaching. Tu contraseña por defecto es: boccia123. Por favor, cámbiala en tu primer inicio de sesión.",
@@ -59,11 +60,11 @@ namespace BocciaCoaching.Services
                 await _notificationService.CreateMessage(notificationMessage);
 
                 // Si se proporciona un TeamId, enviar invitación de equipo
-                if (atlheteInfoSave.TeamId.HasValue && atlheteInfoSave.TeamId.Value > 0)
+                if (atlheteInfoSave.TeamId.HasValue && atlheteInfoSave.TeamId.Value != Guid.Empty)
                 {
                     var teamInvitation = new RequestCreateNotificationMessageDto
                     {
-                        NotificationTypeId = 2, // Tipo 2 para invitaciones de equipo
+                        NotificationTypeId = WellKnownIds.NotificationTypeTeamInvitation, // Tipo 2 para invitaciones de equipo
                         ReceiverId = result.Data,
                         SenderId = atlheteInfoSave.CoachId,
                         Message = "Has sido invitado a unirte al equipo. ¡Acepta la invitación para formar parte del equipo!",
@@ -118,7 +119,7 @@ namespace BocciaCoaching.Services
             return await _repository.UpdateUserInfo(updateUserInfoDto);
         }
 
-        public async Task<ResponseContract<string?>> UpdateUserImageAsync(int userId, string imageUrl)
+        public async Task<ResponseContract<string?>> UpdateUserImageAsync(Guid userId, string imageUrl)
         {
             return await _repository.UpdateUserImageAsync(userId, imageUrl);
         }

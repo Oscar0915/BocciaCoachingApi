@@ -10,9 +10,8 @@ namespace BocciaCoaching.Models.Entities
         /// ES:
         /// EN: 
         /// </summary>
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public int ModuleErrorId { get; set; }
+        public Guid ModuleErrorId { get; set; }
         /// <summary>
         /// ES:
         /// EN: 

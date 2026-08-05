@@ -2,7 +2,7 @@ namespace BocciaCoaching.Models.DTO.Notification
 {
     public class NotificationTypeDto
     {
-        public int NotificationTypeId { get; set; }
+        public Guid NotificationTypeId { get; set; }
         public string? Name { get; set; }
         public string? Description { get; set; }
         public bool? Status { get; set; }

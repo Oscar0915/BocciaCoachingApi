@@ -6,17 +6,16 @@ namespace BocciaCoaching.Models.Entities
     [Table("Microcycle")]
     public class Microcycle
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public int MicrocycleId { get; set; }
+        public Guid MicrocycleId { get; set; }
 
-        public string MacrocycleId { get; set; } = string.Empty;
+        public Guid MacrocycleId { get; set; }
 
         [ForeignKey("MacrocycleId")]
         public Macrocycle? Macrocycle { get; set; }
 
         /// <summary>Relación con el tipo de microciclo del catálogo (nullable)</summary>
-        public string? MicrocycleTypeId { get; set; }
+        public Guid? MicrocycleTypeId { get; set; }
 
         [ForeignKey("MicrocycleTypeId")]
         public MicrocycleType? MicrocycleType { get; set; }

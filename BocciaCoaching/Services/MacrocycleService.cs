@@ -47,7 +47,7 @@ namespace BocciaCoaching.Services
 
                 var macrocycle = new Macrocycle
                 {
-                    MacrocycleId = Guid.NewGuid().ToString(),
+                    MacrocycleId = Guid.NewGuid(),
                     AthleteId = dto.AthleteId,
                     AthleteName = dto.AthleteName,
                     Name = dto.Name,
@@ -64,7 +64,7 @@ namespace BocciaCoaching.Services
                 {
                     macrocycle.Events.Add(new MacrocycleEvent
                     {
-                        MacrocycleEventId = Guid.NewGuid().ToString(),
+                        MacrocycleEventId = Guid.NewGuid(),
                         MacrocycleId = macrocycle.MacrocycleId,
                         Name = evtDto.Name,
                         Type = evtDto.Type,
@@ -177,7 +177,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<List<MacrocycleSummaryDto>>> GetByAthlete(int athleteId)
+        public async Task<ResponseContract<List<MacrocycleSummaryDto>>> GetByAthlete(Guid athleteId)
         {
             try
             {
@@ -191,7 +191,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<List<MacrocycleSummaryDto>>> GetByTeam(int teamId)
+        public async Task<ResponseContract<List<MacrocycleSummaryDto>>> GetByTeam(Guid teamId)
         {
             try
             {
@@ -205,7 +205,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<MacrocycleResponseDto>> GetById(string macrocycleId)
+        public async Task<ResponseContract<MacrocycleResponseDto>> GetById(Guid macrocycleId)
         {
             try
             {
@@ -264,7 +264,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<bool>> DeleteMacrocycle(string macrocycleId)
+        public async Task<ResponseContract<bool>> DeleteMacrocycle(Guid macrocycleId)
         {
             try
             {
@@ -291,7 +291,7 @@ namespace BocciaCoaching.Services
 
                 var evt = new MacrocycleEvent
                 {
-                    MacrocycleEventId = Guid.NewGuid().ToString(),
+                    MacrocycleEventId = Guid.NewGuid(),
                     MacrocycleId = dto.MacrocycleId,
                     Name = dto.Name,
                     Type = dto.Type,
@@ -342,7 +342,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<MacrocycleResponseDto>> DeleteEvent(string eventId)
+        public async Task<ResponseContract<MacrocycleResponseDto>> DeleteEvent(Guid eventId)
         {
             try
             {
@@ -389,7 +389,7 @@ namespace BocciaCoaching.Services
                 // Actualizar la relación con el tipo del catálogo
                 if (dto.MicrocycleTypeId != null)
                 {
-                    micro.MicrocycleTypeId = string.IsNullOrEmpty(dto.MicrocycleTypeId) ? null : dto.MicrocycleTypeId;
+                    micro.MicrocycleTypeId = dto.MicrocycleTypeId;
                 }
 
                 await _repository.UpdateMicrocycleAsync(micro);
@@ -399,7 +399,7 @@ namespace BocciaCoaching.Services
                 {
                     var newDays = dto.Days.Select(d => new MicrocycleDay
                     {
-                        MicrocycleDayId = Guid.NewGuid().ToString(),
+                        MicrocycleDayId = Guid.NewGuid(),
                         MicrocycleId = micro.MicrocycleId,
                         DayOfWeek = d.DayOfWeek,
                         ThrowPercentage = d.ThrowPercentage,
@@ -429,7 +429,7 @@ namespace BocciaCoaching.Services
 
                 var newDays = dto.Days.Select(d => new MicrocycleDay
                 {
-                    MicrocycleDayId = Guid.NewGuid().ToString(),
+                    MicrocycleDayId = Guid.NewGuid(),
                     MicrocycleId = micro.MicrocycleId,
                     DayOfWeek = d.DayOfWeek,
                     ThrowPercentage = d.ThrowPercentage,
@@ -447,7 +447,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<List<MacrocycleSummaryDto>>> GetCoachMacrocycles(int coachId)
+        public async Task<ResponseContract<List<MacrocycleSummaryDto>>> GetCoachMacrocycles(Guid coachId)
         {
             try
             {
@@ -461,7 +461,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<MacrocycleResponseDto>> DuplicateMacrocycle(string macrocycleId, DuplicateMacrocycleDto dto)
+        public async Task<ResponseContract<MacrocycleResponseDto>> DuplicateMacrocycle(Guid macrocycleId, DuplicateMacrocycleDto dto)
         {
             try
             {
@@ -512,7 +512,7 @@ namespace BocciaCoaching.Services
 
         // ===================== CALCULATION LOGIC =====================
 
-        private async Task RecalculateStructure(string macrocycleId)
+        private async Task RecalculateStructure(Guid macrocycleId)
         {
             var macrocycle = await _repository.GetByIdAsync(macrocycleId);
             if (macrocycle == null) return;
@@ -551,11 +551,11 @@ namespace BocciaCoaching.Services
         }
 
         private static List<Microcycle> BuildMicrocycles(
-            string macrocycleId,
+            Guid macrocycleId,
             DateTime start,
             DateTime end,
             List<MacrocycleEvent> events,
-            Dictionary<string, (string TypeId, List<MicrocycleTypeDayDefault> Days)>? typeMap = null,
+            Dictionary<string, (Guid TypeId, List<MicrocycleTypeDayDefault> Days)>? typeMap = null,
             Dictionary<string, TrainingDistributionDto>? coachDistributions = null)
         {
             var microcycles = new List<Microcycle>();
@@ -627,7 +627,7 @@ namespace BocciaCoaching.Services
             return "ordinario";
         }
 
-        private static List<MacrocyclePeriod> BuildPeriods(string macrocycleId, DateTime start, DateTime end, List<MacrocycleEvent> events, List<Microcycle> microcycles)
+        private static List<MacrocyclePeriod> BuildPeriods(Guid macrocycleId, DateTime start, DateTime end, List<MacrocycleEvent> events, List<Microcycle> microcycles)
         {
             var periods = new List<MacrocyclePeriod>();
             var competitions = events.Where(e => e.Type == "competencia").OrderBy(e => e.StartDate).ToList();
@@ -712,7 +712,7 @@ namespace BocciaCoaching.Services
             return periods;
         }
 
-        private static List<Mesocycle> BuildMesocycles(string macrocycleId, List<Microcycle> microcycles, List<MacrocyclePeriod> periods)
+        private static List<Mesocycle> BuildMesocycles(Guid macrocycleId, List<Microcycle> microcycles, List<MacrocyclePeriod> periods)
         {
             var mesocycles = new List<Mesocycle>();
             if (!microcycles.Any()) return mesocycles;
@@ -840,7 +840,7 @@ namespace BocciaCoaching.Services
         /// Carga las distribuciones personalizadas del coach y las indexa por nombre de tipo
         /// de microciclo (en minúsculas) para búsqueda rápida.
         /// </summary>
-        private async Task<Dictionary<string, TrainingDistributionDto>> LoadCoachDistributionsAsync(int coachId)
+        private async Task<Dictionary<string, TrainingDistributionDto>> LoadCoachDistributionsAsync(Guid coachId)
         {
             var distributions = await _microcycleTypeRepository.GetAllCoachDistributionsAsync(coachId);
             var result = new Dictionary<string, TrainingDistributionDto>();
@@ -867,7 +867,7 @@ namespace BocciaCoaching.Services
         /// Carga el catálogo de tipos de microciclo y construye un diccionario
         /// indexado por nombre (en minúsculas) para búsqueda rápida.
         /// </summary>
-        private async Task<Dictionary<string, (string TypeId, List<MicrocycleTypeDayDefault> Days)>> LoadTypesMapAsync()
+        private async Task<Dictionary<string, (Guid TypeId, List<MicrocycleTypeDayDefault> Days)>> LoadTypesMapAsync()
         {
             var types = await _microcycleTypeRepository.GetAllAsync();
             return types.ToDictionary(
@@ -883,7 +883,7 @@ namespace BocciaCoaching.Services
         /// </summary>
         private static void PopulateMicrocycleTypeAndDays(
             Microcycle micro,
-            Dictionary<string, (string TypeId, List<MicrocycleTypeDayDefault> Days)>? typeMap)
+            Dictionary<string, (Guid TypeId, List<MicrocycleTypeDayDefault> Days)>? typeMap)
         {
             if (typeMap == null) return;
 
@@ -896,7 +896,7 @@ namespace BocciaCoaching.Services
             {
                 micro.Days.Add(new MicrocycleDay
                 {
-                    MicrocycleDayId = Guid.NewGuid().ToString(),
+                    MicrocycleDayId = Guid.NewGuid(),
                     DayOfWeek = defaultDay.DayOfWeek,
                     ThrowPercentage = defaultDay.ThrowPercentage,
                     IsCustom = false,

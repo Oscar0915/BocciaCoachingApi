@@ -24,7 +24,7 @@ namespace BocciaCoaching.Controllers
         }
 
         [HttpGet("GetType/{id}")]
-        public async Task<ActionResult<ResponseContract<NotificationTypeDto>>> GetTypeById(int id)
+        public async Task<ActionResult<ResponseContract<NotificationTypeDto>>> GetTypeById(Guid id)
         {
             var result = await _notificationService.GetTypeById(id);
             return Ok(result);
@@ -45,7 +45,7 @@ namespace BocciaCoaching.Controllers
         }
 
         [HttpGet("GetMessage/{id}")]
-        public async Task<ActionResult<ResponseContract<NotificationMessageDto>>> GetMessageById(int id)
+        public async Task<ActionResult<ResponseContract<NotificationMessageDto>>> GetMessageById(Guid id)
         {
             var result = await _notificationService.GetMessageById(id);
             return Ok(result);
@@ -66,14 +66,14 @@ namespace BocciaCoaching.Controllers
         }
 
         [HttpGet("GetMessagesByCoach/{coachId}")]
-        public async Task<ActionResult<ResponseContract<IEnumerable<NotificationMessageDto>>>> GetMessagesByCoach(int coachId, [FromQuery] int? page = null, [FromQuery] int? pageSize = null)
+        public async Task<ActionResult<ResponseContract<IEnumerable<NotificationMessageDto>>>> GetMessagesByCoach(Guid coachId, [FromQuery] int? page = null, [FromQuery] int? pageSize = null)
         {
             var result = await _notificationService.GetMessagesByCoach(coachId, page, pageSize);
             return Ok(result);
         }
 
         [HttpGet("GetMessagesByAthlete/{athleteId}")]
-        public async Task<ActionResult<ResponseContract<IEnumerable<NotificationMessageDto>>>> GetMessagesByAthlete(int athleteId, [FromQuery] int? page = null, [FromQuery] int? pageSize = null)
+        public async Task<ActionResult<ResponseContract<IEnumerable<NotificationMessageDto>>>> GetMessagesByAthlete(Guid athleteId, [FromQuery] int? page = null, [FromQuery] int? pageSize = null)
         {
             var result = await _notificationService.GetMessagesByAthlete(athleteId, page, pageSize);
             return Ok(result);
@@ -93,7 +93,7 @@ namespace BocciaCoaching.Controllers
         /// Aceptar invitación de equipo
         /// </summary>
         [HttpPut("AcceptTeamInvitation/{notificationMessageId}")]
-        public async Task<ActionResult<ResponseContract<bool>>> AcceptTeamInvitation(int notificationMessageId)
+        public async Task<ActionResult<ResponseContract<bool>>> AcceptTeamInvitation(Guid notificationMessageId)
         {
             var result = await _notificationService.AcceptTeamInvitation(notificationMessageId);
             return Ok(result);

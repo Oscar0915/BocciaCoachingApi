@@ -1,3 +1,4 @@
+using BocciaCoaching.Utils;
 ﻿﻿﻿using BocciaCoaching.Models.DTO.AssessStrength;
 using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.Notification;
@@ -124,7 +125,7 @@ namespace BocciaCoaching.Services
                         Message = "Tu evaluación de fuerza ha sido completada. Revisa tus estadísticas.",
                         SenderId = coachId.Value,
                         ReceiverId = requestAddDetailToEvaluationForAthlete.AthleteId,
-                        NotificationTypeId = 2, // Tipo de notificación para evaluación completada
+                        NotificationTypeId = WellKnownIds.NotificationTypeGeneral, // Tipo de notificación para evaluación completada
                         Status = true
                     };
 
@@ -181,7 +182,7 @@ namespace BocciaCoaching.Services
         /// <param name="teamId">ID del equipo</param>
         /// <param name="coachId">ID del entrenador</param>
         /// <returns>Información completa de la evaluación activa o null si no hay ninguna</returns>
-        public async Task<ResponseContract<ActiveEvaluationDto>> GetActiveEvaluationWithDetails(int teamId, int coachId)
+        public async Task<ResponseContract<ActiveEvaluationDto>> GetActiveEvaluationWithDetails(Guid teamId, Guid coachId)
         {
             try
             {
@@ -214,7 +215,7 @@ namespace BocciaCoaching.Services
         /// </summary>
         /// <param name="teamId">ID del equipo</param>
         /// <returns>Información de debugging</returns>
-        public async Task<object> GetEvaluationDebugInfo(int teamId)
+        public async Task<object> GetEvaluationDebugInfo(Guid teamId)
         {
             try
             {
@@ -256,7 +257,7 @@ namespace BocciaCoaching.Services
         /// </summary>
         /// <param name="teamId">ID del equipo</param>
         /// <returns>Lista de evaluaciones del equipo</returns>
-        public async Task<ResponseContract<List<EvaluationSummaryDto>>> GetTeamEvaluations(int teamId)
+        public async Task<ResponseContract<List<EvaluationSummaryDto>>> GetTeamEvaluations(Guid teamId)
         {
             try
             {
@@ -294,7 +295,7 @@ namespace BocciaCoaching.Services
         /// </summary>
         /// <param name="assessStrengthId">ID de la evaluación</param>
         /// <returns>Estadísticas de la evaluación</returns>
-        public async Task<ResponseContract<List<AthleteStatisticsDto>>> GetEvaluationStatistics(int assessStrengthId)
+        public async Task<ResponseContract<List<AthleteStatisticsDto>>> GetEvaluationStatistics(Guid assessStrengthId)
         {
             try
             {
@@ -324,7 +325,7 @@ namespace BocciaCoaching.Services
         /// </summary>
         /// <param name="assessStrengthId">ID de la evaluación</param>
         /// <returns>Detalles completos de la evaluación</returns>
-        public async Task<ResponseContract<EvaluationDetailsDto>> GetEvaluationDetails(int assessStrengthId)
+        public async Task<ResponseContract<EvaluationDetailsDto>> GetEvaluationDetails(Guid assessStrengthId)
         {
             try
             {
@@ -373,7 +374,7 @@ namespace BocciaCoaching.Services
                         Message = $"La evaluación de fuerza (ID: {cancelDto.AssessStrengthId}) ha sido cancelada. Motivo: {cancelDto.Reason ?? "No especificado"}",
                         SenderId = cancelDto.CoachId,
                         ReceiverId = athleteId,
-                        NotificationTypeId = 3,
+                        NotificationTypeId = WellKnownIds.NotificationTypeGeneral,
                         Status = true,
                         ReferenceId = cancelDto.AssessStrengthId
                     };
@@ -397,7 +398,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<CoachHasEvaluationsDto>> CoachHasEvaluations(int coachId)
+        public async Task<ResponseContract<CoachHasEvaluationsDto>> CoachHasEvaluations(Guid coachId)
         {
             try
             {

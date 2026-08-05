@@ -18,9 +18,9 @@
 
         public bool Status { get; set; } = true;
 
-        public int CoachId { get; set; }
+        public Guid CoachId { get; set; }
 
-        public int? TeamId { get; set; }
+        public Guid? TeamId { get; set; }
      
     }
 }

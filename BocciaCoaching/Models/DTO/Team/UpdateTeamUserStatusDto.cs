@@ -5,7 +5,7 @@ namespace BocciaCoaching.Models.DTO.Team
         /// <summary>
         /// ID del usuario en el equipo
         /// </summary>
-        public int TeamUserId { get; set; }
+        public Guid TeamUserId { get; set; }
 
         /// <summary>
         /// Nuevo estado del usuario en el equipo

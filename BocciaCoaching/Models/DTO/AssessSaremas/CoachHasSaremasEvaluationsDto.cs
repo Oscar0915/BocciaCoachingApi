@@ -15,6 +15,6 @@ public class CoachHasSaremasEvaluationsDto
     /// <summary>
     /// ID del entrenador consultado
     /// </summary>
-    public int CoachId { get; set; }
+    public Guid CoachId { get; set; }
 }
 

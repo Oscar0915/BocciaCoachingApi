@@ -154,7 +154,7 @@ namespace BocciaCoaching.Services
 
         #region Customer Methods
 
-        public async Task<ResponseContract<string>> CreateCustomerAsync(int userId, string email, string? name = null)
+        public async Task<ResponseContract<string>> CreateCustomerAsync(Guid userId, string email, string? name = null)
         {
             try
             {
@@ -178,7 +178,7 @@ namespace BocciaCoaching.Services
             }
         }
 
-        public async Task<ResponseContract<string>> GetOrCreateCustomerAsync(int userId, string email, string? name = null)
+        public async Task<ResponseContract<string>> GetOrCreateCustomerAsync(Guid userId, string email, string? name = null)
         {
             try
             {
@@ -588,36 +588,24 @@ namespace BocciaCoaching.Services
 
         #region Helper Methods
 
-        private decimal GetMonthlyPrice(int subscriptionTypeId)
+        private decimal GetMonthlyPrice(Guid subscriptionTypeId)
         {
             // TODO: Obtener desde base de datos
             // var subscriptionType = await _subscriptionRepository.GetSubscriptionTypeByIdAsync(subscriptionTypeId);
             // return subscriptionType?.PriceInCents / 100m ?? 0;
             
             // Valores por defecto hasta que se implemente la integración con base de datos
-            return subscriptionTypeId switch
-            {
-                1 => 0m,      // Free
-                2 => 9.99m,   // Premium
-                3 => 19.99m,  // Pro
-                _ => 9.99m
-            };
+            return 9.99m;
         }
 
-        private decimal GetAnnualPrice(int subscriptionTypeId)
+        private decimal GetAnnualPrice(Guid subscriptionTypeId)
         {
             // TODO: Obtener desde base de datos
             // var subscriptionType = await _subscriptionRepository.GetSubscriptionTypeByIdAsync(subscriptionTypeId);
             // return subscriptionType?.AnnualPriceInCents / 100m ?? (GetMonthlyPrice(subscriptionTypeId) * 10);
             
             // Valores por defecto hasta que se implemente la integración con base de datos
-            return subscriptionTypeId switch
-            {
-                1 => 0m,       // Free
-                2 => 99.90m,   // Premium (2 meses gratis)
-                3 => 199.90m,  // Pro (2 meses gratis)
-                _ => GetMonthlyPrice(subscriptionTypeId) * 10
-            };
+            return GetMonthlyPrice(subscriptionTypeId) * 10;
         }
 
         #endregion

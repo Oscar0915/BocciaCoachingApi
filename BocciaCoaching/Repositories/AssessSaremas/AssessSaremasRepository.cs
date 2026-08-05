@@ -180,7 +180,7 @@ namespace BocciaCoaching.Repositories.AssessSaremas
             }
         }
 
-        public async Task<ActiveSaremasEvaluationDto?> GetActiveEvaluationAsync(int teamId, int coachId)
+        public async Task<ActiveSaremasEvaluationDto?> GetActiveEvaluationAsync(Guid teamId, Guid coachId)
         {
             try
             {
@@ -289,7 +289,7 @@ namespace BocciaCoaching.Repositories.AssessSaremas
             }
         }
 
-        public async Task<ResponseContract<bool>> CancelAsync(int saremasEvalId, int coachId, string? reason)
+        public async Task<ResponseContract<bool>> CancelAsync(Guid saremasEvalId, Guid coachId, string? reason)
         {
             try
             {
@@ -321,7 +321,7 @@ namespace BocciaCoaching.Repositories.AssessSaremas
             }
         }
 
-        public async Task<List<SaremasEvaluationSummaryDto>> GetTeamEvaluationsAsync(int teamId)
+        public async Task<List<SaremasEvaluationSummaryDto>> GetTeamEvaluationsAsync(Guid teamId)
         {
             try
             {
@@ -368,7 +368,7 @@ namespace BocciaCoaching.Repositories.AssessSaremas
             }
         }
 
-        public async Task<SaremasEvaluationDetailsDto?> GetEvaluationDetailsAsync(int saremasEvalId)
+        public async Task<SaremasEvaluationDetailsDto?> GetEvaluationDetailsAsync(Guid saremasEvalId)
         {
             try
             {
@@ -455,7 +455,7 @@ namespace BocciaCoaching.Repositories.AssessSaremas
             }
         }
 
-        public async Task<SaremasStatisticsDto?> GetEvaluationStatisticsAsync(int saremasEvalId)
+        public async Task<SaremasStatisticsDto?> GetEvaluationStatisticsAsync(Guid saremasEvalId)
         {
             try
             {
@@ -566,7 +566,7 @@ namespace BocciaCoaching.Repositories.AssessSaremas
             }
         }
 
-        public async Task<SaremasAthleteHistoryDto?> GetAthleteHistoryAsync(int athleteId)
+        public async Task<SaremasAthleteHistoryDto?> GetAthleteHistoryAsync(Guid athleteId)
         {
             try
             {
@@ -619,7 +619,7 @@ namespace BocciaCoaching.Repositories.AssessSaremas
             }
         }
 
-        public async Task<List<SaremasThrow>> GetAllThrowsForAthleteAsync(int saremasEvalId, int athleteId)
+        public async Task<List<SaremasThrow>> GetAllThrowsForAthleteAsync(Guid saremasEvalId, Guid athleteId)
         {
             return await _context.SaremasThrows
                 .Where(t => t.SaremasEvalId == saremasEvalId && t.AthleteId == athleteId)
@@ -627,14 +627,14 @@ namespace BocciaCoaching.Repositories.AssessSaremas
                 .ToListAsync();
         }
 
-        public async Task<int?> GetCoachIdByEvaluationAsync(int saremasEvalId)
+        public async Task<Guid?> GetCoachIdByEvaluationAsync(Guid saremasEvalId)
         {
             var evaluation = await _context.SaremasEvaluations
                 .FirstOrDefaultAsync(e => e.SaremasEvaluationId == saremasEvalId);
             return evaluation?.CoachId;
         }
 
-        public async Task<bool> UpdateEvaluationScoresAsync(int saremasEvalId, int totalScore, double averageScore)
+        public async Task<bool> UpdateEvaluationScoresAsync(Guid saremasEvalId, int totalScore, double averageScore)
         {
             try
             {
@@ -658,7 +658,7 @@ namespace BocciaCoaching.Repositories.AssessSaremas
         /// <summary>
         /// Verifica si un entrenador ya ha generado alguna evaluación SAREMAS+
         /// </summary>
-        public async Task<CoachHasSaremasEvaluationsDto> CoachHasEvaluationsAsync(int coachId)
+        public async Task<CoachHasSaremasEvaluationsDto> CoachHasEvaluationsAsync(Guid coachId)
         {
             var totalEvaluations = await _context.SaremasEvaluations
                 .Where(a => a.CoachId == coachId)

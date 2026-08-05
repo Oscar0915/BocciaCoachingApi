@@ -41,7 +41,7 @@ namespace BocciaCoaching.Repositories.NotificationTypes
         }
 
         // Obtener por id
-        public async Task<NotificationType?> GetByIdAsync(int id)
+        public async Task<NotificationType?> GetByIdAsync(Guid id)
         {
             return await _context.NotificationType
                 .AsNoTracking()
@@ -123,7 +123,7 @@ namespace BocciaCoaching.Repositories.NotificationTypes
         }
 
         // Obtener mensaje por id (incluye relaciones)
-        public async Task<NotificationMessage?> GetMessageByIdAsync(int id)
+        public async Task<NotificationMessage?> GetMessageByIdAsync(Guid id)
         {
             return await _context.NotificationMessage
                 .Include(nm => nm.Sender)
@@ -133,7 +133,7 @@ namespace BocciaCoaching.Repositories.NotificationTypes
                 .FirstOrDefaultAsync(nm => nm.NotificationMessageId == id);
         }
 
-        public async Task<IEnumerable<NotificationMessage>> GetMessagesByCoachAsync(int coachId)
+        public async Task<IEnumerable<NotificationMessage>> GetMessagesByCoachAsync(Guid coachId)
         {
             return await _context.NotificationMessage
                 .Where(m => m.ReceiverId == coachId)
@@ -144,7 +144,7 @@ namespace BocciaCoaching.Repositories.NotificationTypes
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<NotificationMessage>> GetMessagesByAthleteAsync(int athleteId)
+        public async Task<IEnumerable<NotificationMessage>> GetMessagesByAthleteAsync(Guid athleteId)
         {
             return await _context.NotificationMessage
                 .Where(m => m.ReceiverId == athleteId)

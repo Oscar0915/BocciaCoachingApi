@@ -5,7 +5,7 @@ namespace BocciaCoaching.Models.DTO.Team
     /// </summary>
     public class TeamMemberDto
     {
-        public int UserId { get; set; }
+        public Guid UserId { get; set; }
         public string? Dni { get; set; }
         public string? FirstName { get; set; }
         public string? LastName { get; set; }

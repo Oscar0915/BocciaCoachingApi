@@ -57,7 +57,7 @@ namespace BocciaCoaching.Controllers
         /// </summary>
         [HttpGet("GetActiveEvaluation/{teamId}/{coachId}")]
         public async Task<ActionResult<ResponseContract<ActiveDirectionEvaluationDto>>> GetActiveEvaluation(
-            int teamId, int coachId)
+            Guid teamId, Guid coachId)
         {
             var result = await _assessDirectionService.GetActiveEvaluationWithDetails(teamId, coachId);
             return Ok(result);
@@ -67,7 +67,7 @@ namespace BocciaCoaching.Controllers
         /// Endpoint de debugging para verificar datos de evaluaciones de dirección
         /// </summary>
         [HttpGet("DebugEvaluations/{teamId}")]
-        public async Task<ActionResult> DebugEvaluations(int teamId)
+        public async Task<ActionResult> DebugEvaluations(Guid teamId)
         {
             var debugInfo = await _assessDirectionService.GetEvaluationDebugInfo(teamId);
             return Ok(debugInfo);
@@ -100,7 +100,7 @@ namespace BocciaCoaching.Controllers
         /// </summary>
         [HttpGet("GetTeamEvaluations/{teamId}")]
         public async Task<ActionResult<ResponseContract<List<DirectionEvaluationSummaryDto>>>> GetTeamEvaluations(
-            int teamId)
+            Guid teamId)
         {
             var result = await _assessDirectionService.GetTeamEvaluations(teamId);
             return Ok(result);
@@ -111,7 +111,7 @@ namespace BocciaCoaching.Controllers
         /// </summary>
         [HttpGet("GetEvaluationStatistics/{assessDirectionId}")]
         public async Task<ActionResult<ResponseContract<List<DirectionAthleteStatisticsDto>>>> GetEvaluationStatistics(
-            int assessDirectionId)
+            Guid assessDirectionId)
         {
             var result = await _assessDirectionService.GetEvaluationStatistics(assessDirectionId);
             return Ok(result);
@@ -122,7 +122,7 @@ namespace BocciaCoaching.Controllers
         /// </summary>
         [HttpGet("GetEvaluationDetails/{assessDirectionId}")]
         public async Task<ActionResult<ResponseContract<DirectionEvaluationDetailsDto>>> GetEvaluationDetails(
-            int assessDirectionId)
+            Guid assessDirectionId)
         {
             var result = await _assessDirectionService.GetEvaluationDetails(assessDirectionId);
             return Ok(result);
@@ -134,7 +134,7 @@ namespace BocciaCoaching.Controllers
         /// <param name="coachId">ID del entrenador a consultar</param>
         /// <returns>Indica si tiene evaluaciones y el total generado</returns>
         [HttpGet("CoachHasEvaluations/{coachId}")]
-        public async Task<ActionResult<ResponseContract<CoachHasDirectionEvaluationsDto>>> CoachHasEvaluations(int coachId)
+        public async Task<ActionResult<ResponseContract<CoachHasDirectionEvaluationsDto>>> CoachHasEvaluations(Guid coachId)
         {
             var result = await _assessDirectionService.CoachHasEvaluations(coachId);
             return Ok(result);

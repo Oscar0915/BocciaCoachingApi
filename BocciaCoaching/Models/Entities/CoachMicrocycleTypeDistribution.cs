@@ -14,14 +14,14 @@ namespace BocciaCoaching.Models.Entities
     public class CoachMicrocycleTypeDistribution
     {
         [Key]
-        public string CoachMicrocycleTypeDistributionId { get; set; } = Guid.NewGuid().ToString();
+        public Guid CoachMicrocycleTypeDistributionId { get; set; } = Guid.NewGuid();
 
-        public int CoachId { get; set; }
+        public Guid CoachId { get; set; }
 
         [ForeignKey("CoachId")]
         public User? Coach { get; set; }
 
-        public string MicrocycleTypeId { get; set; } = string.Empty;
+        public Guid MicrocycleTypeId { get; set; }
 
         [ForeignKey("MicrocycleTypeId")]
         public MicrocycleType? MicrocycleType { get; set; }

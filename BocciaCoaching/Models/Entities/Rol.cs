@@ -10,9 +10,8 @@ namespace BocciaCoaching.Models.Entities
         /// ES:
         /// EN: 
         /// </summary>
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public int RolId { get; set; }
+        public Guid RolId { get; set; }
 
         /// <summary>
         /// ES: Descripción del rol

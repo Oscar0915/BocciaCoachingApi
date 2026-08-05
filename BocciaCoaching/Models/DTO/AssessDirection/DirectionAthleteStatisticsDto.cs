@@ -5,9 +5,9 @@ namespace BocciaCoaching.Models.DTO.AssessDirection
     /// </summary>
     public class DirectionAthleteStatisticsDto
     {
-        public int AthleteId { get; set; }
+        public Guid AthleteId { get; set; }
         public string AthleteName { get; set; } = string.Empty;
-        public int AssessDirectionId { get; set; }
+        public Guid AssessDirectionId { get; set; }
         public DateTime EvaluationDate { get; set; }
 
         // Estadísticas generales

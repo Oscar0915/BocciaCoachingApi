@@ -24,17 +24,15 @@ namespace BocciaCoaching.Migrations
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.Achievement", b =>
                 {
-                    b.Property<int>("AchievementId")
+                    b.Property<Guid>("AchievementId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("AchievementId"));
+                        .HasColumnType("char(36)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("EventId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("char(36)");
 
                     b.Property<int>("Ranked")
                         .HasColumnType("int");
@@ -51,14 +49,12 @@ namespace BocciaCoaching.Migrations
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.AssessDirection", b =>
                 {
-                    b.Property<int>("AssessDirectionId")
+                    b.Property<Guid>("AssessDirectionId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("char(36)");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("AssessDirectionId"));
-
-                    b.Property<int>("CoachId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("CoachId")
+                        .HasColumnType("char(36)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -72,8 +68,8 @@ namespace BocciaCoaching.Migrations
                     b.Property<string>("State")
                         .HasColumnType("longtext");
 
-                    b.Property<int>("TeamId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("TeamId")
+                        .HasColumnType("char(36)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime(6)");
@@ -89,14 +85,12 @@ namespace BocciaCoaching.Migrations
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.AssessStrength", b =>
                 {
-                    b.Property<int>("AssessStrengthId")
+                    b.Property<Guid>("AssessStrengthId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("char(36)");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("AssessStrengthId"));
-
-                    b.Property<int>("CoachId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("CoachId")
+                        .HasColumnType("char(36)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -110,8 +104,8 @@ namespace BocciaCoaching.Migrations
                     b.Property<string>("State")
                         .HasColumnType("longtext");
 
-                    b.Property<int>("TeamId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("TeamId")
+                        .HasColumnType("char(36)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime(6)");
@@ -127,20 +121,18 @@ namespace BocciaCoaching.Migrations
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.AthletesToEvaluated", b =>
                 {
-                    b.Property<int>("AthletesToEvaluatedId")
+                    b.Property<Guid>("AthletesToEvaluatedId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("char(36)");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("AthletesToEvaluatedId"));
+                    b.Property<Guid>("AssessStrengthId")
+                        .HasColumnType("char(36)");
 
-                    b.Property<int>("AssessStrengthId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("AthleteId")
+                        .HasColumnType("char(36)");
 
-                    b.Property<int>("AthleteId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CoachId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("CoachId")
+                        .HasColumnType("char(36)");
 
                     b.HasKey("AthletesToEvaluatedId");
 
@@ -155,20 +147,18 @@ namespace BocciaCoaching.Migrations
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.AthletesToEvaluatedDirection", b =>
                 {
-                    b.Property<int>("AthletesToEvaluatedDirectionId")
+                    b.Property<Guid>("AthletesToEvaluatedDirectionId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("char(36)");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("AthletesToEvaluatedDirectionId"));
+                    b.Property<Guid>("AssessDirectionId")
+                        .HasColumnType("char(36)");
 
-                    b.Property<int>("AssessDirectionId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("AthleteId")
+                        .HasColumnType("char(36)");
 
-                    b.Property<int>("AthleteId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CoachId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("CoachId")
+                        .HasColumnType("char(36)");
 
                     b.HasKey("AthletesToEvaluatedDirectionId");
 
@@ -183,11 +173,12 @@ namespace BocciaCoaching.Migrations
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.CoachMicrocycleTypeDistribution", b =>
                 {
-                    b.Property<string>("CoachMicrocycleTypeDistributionId")
-                        .HasColumnType("varchar(255)");
+                    b.Property<Guid>("CoachMicrocycleTypeDistributionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
 
-                    b.Property<int>("CoachId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("CoachId")
+                        .HasColumnType("char(36)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -198,9 +189,8 @@ namespace BocciaCoaching.Migrations
                     b.Property<double>("FisicaGeneral")
                         .HasColumnType("double");
 
-                    b.Property<string>("MicrocycleTypeId")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
+                    b.Property<Guid>("MicrocycleTypeId")
+                        .HasColumnType("char(36)");
 
                     b.Property<double>("Psicologica")
                         .HasColumnType("double");
@@ -226,22 +216,72 @@ namespace BocciaCoaching.Migrations
                     b.ToTable("CoachMicrocycleTypeDistribution");
                 });
 
-            modelBuilder.Entity("BocciaCoaching.Models.Entities.DirectionStatistics", b =>
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.DailyWellness", b =>
                 {
-                    b.Property<int>("DirectionStatisticsId")
+                    b.Property<Guid>("DailyWellnessId")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("AssessmentDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("AthleteId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<double>("AverageScore")
+                        .HasColumnType("double");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("Fatigue")
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("DirectionStatisticsId"));
+                    b.Property<int>("MusclePain")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Observations")
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("Sleep")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Stress")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("TeamId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<int>("TotalScore")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("DailyWellnessId");
+
+                    b.HasIndex("TeamId");
+
+                    b.HasIndex("AthleteId", "AssessmentDate")
+                        .IsUnique();
+
+                    b.ToTable("DailyWellness");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.DirectionStatistics", b =>
+                {
+                    b.Property<Guid>("DirectionStatisticsId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
 
                     b.Property<double>("AccuracyPercentage")
                         .HasColumnType("double");
 
-                    b.Property<int>("AssessDirectionId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("AssessDirectionId")
+                        .HasColumnType("char(36)");
 
-                    b.Property<int>("AthleteId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("AthleteId")
+                        .HasColumnType("char(36)");
 
                     b.Property<double>("DeviatedLeftPercentage")
                         .HasColumnType("double");
@@ -329,17 +369,15 @@ namespace BocciaCoaching.Migrations
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.EvaluationDetailDirection", b =>
                 {
-                    b.Property<int>("EvaluationDetailDirectionId")
+                    b.Property<Guid>("EvaluationDetailDirectionId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("char(36)");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("EvaluationDetailDirectionId"));
+                    b.Property<Guid>("AssessDirectionId")
+                        .HasColumnType("char(36)");
 
-                    b.Property<int>("AssessDirectionId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("AthleteId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("AthleteId")
+                        .HasColumnType("char(36)");
 
                     b.Property<int>("BoxNumber")
                         .HasColumnType("int");
@@ -400,17 +438,15 @@ namespace BocciaCoaching.Migrations
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.EvaluationDetailStrength", b =>
                 {
-                    b.Property<int>("EvaluationDetailStrengthId")
+                    b.Property<Guid>("EvaluationDetailStrengthId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("char(36)");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("EvaluationDetailStrengthId"));
+                    b.Property<Guid>("AssessStrengthId")
+                        .HasColumnType("char(36)");
 
-                    b.Property<int>("AssessStrengthId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("AthleteId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("AthleteId")
+                        .HasColumnType("char(36)");
 
                     b.Property<int>("BoxNumber")
                         .HasColumnType("int");
@@ -465,11 +501,9 @@ namespace BocciaCoaching.Migrations
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.Event", b =>
                 {
-                    b.Property<int>("EventId")
+                    b.Property<Guid>("EventId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("EventId"));
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("Country")
                         .HasColumnType("longtext");
@@ -483,8 +517,8 @@ namespace BocciaCoaching.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("LevelEventId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("LevelEventId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("Location")
                         .HasColumnType("longtext");
@@ -498,8 +532,8 @@ namespace BocciaCoaching.Migrations
                     b.Property<bool?>("Status")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("char(36)");
 
                     b.HasKey("EventId");
 
@@ -512,11 +546,9 @@ namespace BocciaCoaching.Migrations
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.LevelEvent", b =>
                 {
-                    b.Property<int>("LevelEventId")
+                    b.Property<Guid>("LevelEventId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("LevelEventId"));
+                        .HasColumnType("char(36)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -537,11 +569,9 @@ namespace BocciaCoaching.Migrations
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.LogError", b =>
                 {
-                    b.Property<int>("LogErrorId")
+                    b.Property<Guid>("LogErrorId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("LogErrorId"));
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("ErrorMessage")
                         .IsRequired()
@@ -551,8 +581,8 @@ namespace BocciaCoaching.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("ModuleErrorId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("ModuleErrorId")
+                        .HasColumnType("char(36)");
 
                     b.HasKey("LogErrorId");
 
@@ -563,18 +593,19 @@ namespace BocciaCoaching.Migrations
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.Macrocycle", b =>
                 {
-                    b.Property<string>("MacrocycleId")
-                        .HasColumnType("varchar(255)");
+                    b.Property<Guid>("MacrocycleId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
 
-                    b.Property<int>("AthleteId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("AthleteId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("AthleteName")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("CoachId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("CoachId")
+                        .HasColumnType("char(36)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -592,8 +623,8 @@ namespace BocciaCoaching.Migrations
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("TeamId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("TeamId")
+                        .HasColumnType("char(36)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime(6)");
@@ -611,8 +642,9 @@ namespace BocciaCoaching.Migrations
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.MacrocycleEvent", b =>
                 {
-                    b.Property<string>("MacrocycleEventId")
-                        .HasColumnType("varchar(255)");
+                    b.Property<Guid>("MacrocycleEventId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime(6)");
@@ -624,9 +656,8 @@ namespace BocciaCoaching.Migrations
                     b.Property<string>("Location")
                         .HasColumnType("longtext");
 
-                    b.Property<string>("MacrocycleId")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
+                    b.Property<Guid>("MacrocycleId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -651,18 +682,15 @@ namespace BocciaCoaching.Migrations
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.MacrocyclePeriod", b =>
                 {
-                    b.Property<int>("MacrocyclePeriodId")
+                    b.Property<Guid>("MacrocyclePeriodId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("MacrocyclePeriodId"));
+                        .HasColumnType("char(36)");
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("MacrocycleId")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
+                    b.Property<Guid>("MacrocycleId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -691,18 +719,15 @@ namespace BocciaCoaching.Migrations
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.Mesocycle", b =>
                 {
-                    b.Property<int>("MesocycleId")
+                    b.Property<Guid>("MesocycleId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("MesocycleId"));
+                        .HasColumnType("char(36)");
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("MacrocycleId")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
+                    b.Property<Guid>("MacrocycleId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -733,11 +758,9 @@ namespace BocciaCoaching.Migrations
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.Microcycle", b =>
                 {
-                    b.Property<int>("MicrocycleId")
+                    b.Property<Guid>("MicrocycleId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("MicrocycleId"));
+                        .HasColumnType("char(36)");
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime(6)");
@@ -748,15 +771,14 @@ namespace BocciaCoaching.Migrations
                     b.Property<double>("LoadPercentage")
                         .HasColumnType("double");
 
-                    b.Property<string>("MacrocycleId")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
+                    b.Property<Guid>("MacrocycleId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("MesocycleName")
                         .HasColumnType("longtext");
 
-                    b.Property<string>("MicrocycleTypeId")
-                        .HasColumnType("varchar(255)");
+                    b.Property<Guid?>("MicrocycleTypeId")
+                        .HasColumnType("char(36)");
 
                     b.Property<int>("Number")
                         .HasColumnType("int");
@@ -788,8 +810,9 @@ namespace BocciaCoaching.Migrations
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.MicrocycleDay", b =>
                 {
-                    b.Property<string>("MicrocycleDayId")
-                        .HasColumnType("varchar(255)");
+                    b.Property<Guid>("MicrocycleDayId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -802,8 +825,8 @@ namespace BocciaCoaching.Migrations
                     b.Property<bool>("IsCustom")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<int>("MicrocycleId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("MicrocycleId")
+                        .HasColumnType("char(36)");
 
                     b.Property<double>("ThrowPercentage")
                         .HasColumnType("double");
@@ -820,8 +843,9 @@ namespace BocciaCoaching.Migrations
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.MicrocycleType", b =>
                 {
-                    b.Property<string>("MicrocycleTypeId")
-                        .HasColumnType("varchar(255)");
+                    b.Property<Guid>("MicrocycleTypeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -852,11 +876,12 @@ namespace BocciaCoaching.Migrations
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.MicrocycleTypeDayDefault", b =>
                 {
-                    b.Property<string>("MicrocycleTypeDayDefaultId")
-                        .HasColumnType("varchar(255)");
+                    b.Property<Guid>("MicrocycleTypeDayDefaultId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
 
-                    b.Property<int?>("CoachId")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("CoachId")
+                        .HasColumnType("char(36)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -866,9 +891,8 @@ namespace BocciaCoaching.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("varchar(20)");
 
-                    b.Property<string>("MicrocycleTypeId")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
+                    b.Property<Guid>("MicrocycleTypeId")
+                        .HasColumnType("char(36)");
 
                     b.Property<double>("ThrowPercentage")
                         .HasColumnType("double");
@@ -887,11 +911,9 @@ namespace BocciaCoaching.Migrations
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.ModuleError", b =>
                 {
-                    b.Property<int>("ModuleErrorId")
+                    b.Property<Guid>("ModuleErrorId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("ModuleErrorId"));
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -904,15 +926,21 @@ namespace BocciaCoaching.Migrations
                     b.HasKey("ModuleErrorId");
 
                     b.ToTable("ModuleError");
+
+                    b.HasData(
+                        new
+                        {
+                            ModuleErrorId = new Guid("00000000-0000-0000-0000-0000000000a1"),
+                            Description = "Módulo general",
+                            Name = "General"
+                        });
                 });
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.NotificationMessage", b =>
                 {
-                    b.Property<int>("NotificationMessageId")
+                    b.Property<Guid>("NotificationMessageId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("NotificationMessageId"));
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("Image")
                         .HasColumnType("longtext");
@@ -920,17 +948,17 @@ namespace BocciaCoaching.Migrations
                     b.Property<string>("Message")
                         .HasColumnType("longtext");
 
-                    b.Property<int>("NotificationTypeId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("NotificationTypeId")
+                        .HasColumnType("char(36)");
 
-                    b.Property<int>("ReceiverId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("ReceiverId")
+                        .HasColumnType("char(36)");
 
-                    b.Property<int?>("ReferenceId")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("ReferenceId")
+                        .HasColumnType("char(36)");
 
-                    b.Property<int>("SenderId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("SenderId")
+                        .HasColumnType("char(36)");
 
                     b.Property<bool?>("Status")
                         .HasColumnType("tinyint(1)");
@@ -948,11 +976,9 @@ namespace BocciaCoaching.Migrations
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.NotificationType", b =>
                 {
-                    b.Property<int>("NotificationTypeId")
+                    b.Property<Guid>("NotificationTypeId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("NotificationTypeId"));
+                        .HasColumnType("char(36)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -972,15 +998,31 @@ namespace BocciaCoaching.Migrations
                     b.HasKey("NotificationTypeId");
 
                     b.ToTable("NotificationType");
+
+                    b.HasData(
+                        new
+                        {
+                            NotificationTypeId = new Guid("00000000-0000-0000-0000-0000000000b1"),
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Notificación general",
+                            Name = "General",
+                            Status = true
+                        },
+                        new
+                        {
+                            NotificationTypeId = new Guid("00000000-0000-0000-0000-0000000000b2"),
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Invitación para unirse a un equipo",
+                            Name = "Invitación a equipo",
+                            Status = true
+                        });
                 });
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.Payment", b =>
                 {
-                    b.Property<int>("PaymentId")
+                    b.Property<Guid>("PaymentId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("PaymentId"));
+                        .HasColumnType("char(36)");
 
                     b.Property<int>("AmountInCents")
                         .HasColumnType("int");
@@ -1036,14 +1078,14 @@ namespace BocciaCoaching.Migrations
                     b.Property<string>("StripePaymentIntentId")
                         .HasColumnType("longtext");
 
-                    b.Property<int>("SubscriptionId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("SubscriptionId")
+                        .HasColumnType("char(36)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("char(36)");
 
                     b.HasKey("PaymentId");
 
@@ -1056,11 +1098,9 @@ namespace BocciaCoaching.Migrations
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.Rol", b =>
                 {
-                    b.Property<int>("RolId")
+                    b.Property<Guid>("RolId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("RolId"));
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -1069,24 +1109,39 @@ namespace BocciaCoaching.Migrations
                     b.HasKey("RolId");
 
                     b.ToTable("Rol");
+
+                    b.HasData(
+                        new
+                        {
+                            RolId = new Guid("00000000-0000-0000-0000-000000000001"),
+                            Description = "Admin"
+                        },
+                        new
+                        {
+                            RolId = new Guid("00000000-0000-0000-0000-000000000002"),
+                            Description = "Coach"
+                        },
+                        new
+                        {
+                            RolId = new Guid("00000000-0000-0000-0000-000000000003"),
+                            Description = "Atleta"
+                        });
                 });
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.SaremasAthleteEvaluation", b =>
                 {
-                    b.Property<int>("SaremasAthleteEvaluationId")
+                    b.Property<Guid>("SaremasAthleteEvaluationId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("char(36)");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("SaremasAthleteEvaluationId"));
-
-                    b.Property<int>("AthleteId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("AthleteId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("AthleteName")
                         .HasColumnType("longtext");
 
-                    b.Property<int>("SaremasEvalId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("SaremasEvalId")
+                        .HasColumnType("char(36)");
 
                     b.HasKey("SaremasAthleteEvaluationId");
 
@@ -1099,17 +1154,15 @@ namespace BocciaCoaching.Migrations
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.SaremasEvaluation", b =>
                 {
-                    b.Property<int>("SaremasEvaluationId")
+                    b.Property<Guid>("SaremasEvaluationId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("SaremasEvaluationId"));
+                        .HasColumnType("char(36)");
 
                     b.Property<double?>("AverageScore")
                         .HasColumnType("double");
 
-                    b.Property<int>("CoachId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("CoachId")
+                        .HasColumnType("char(36)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -1123,8 +1176,8 @@ namespace BocciaCoaching.Migrations
                     b.Property<string>("State")
                         .HasColumnType("longtext");
 
-                    b.Property<int>("TeamId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("TeamId")
+                        .HasColumnType("char(36)");
 
                     b.Property<int?>("TotalScore")
                         .HasColumnType("int");
@@ -1143,14 +1196,12 @@ namespace BocciaCoaching.Migrations
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.SaremasThrow", b =>
                 {
-                    b.Property<int>("SaremasThrowId")
+                    b.Property<Guid>("SaremasThrowId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("char(36)");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("SaremasThrowId"));
-
-                    b.Property<int>("AthleteId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("AthleteId")
+                        .HasColumnType("char(36)");
 
                     b.Property<double?>("ColorBallX")
                         .HasColumnType("double");
@@ -1180,8 +1231,8 @@ namespace BocciaCoaching.Migrations
                     b.Property<string>("Observations")
                         .HasColumnType("longtext");
 
-                    b.Property<int>("SaremasEvalId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("SaremasEvalId")
+                        .HasColumnType("char(36)");
 
                     b.Property<int>("ScoreObtained")
                         .HasColumnType("int");
@@ -1216,14 +1267,12 @@ namespace BocciaCoaching.Migrations
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.Session", b =>
                 {
-                    b.Property<int>("SessionId")
+                    b.Property<Guid>("SessionId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("char(36)");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("SessionId"));
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("char(36)");
 
                     b.HasKey("SessionId");
 
@@ -1235,11 +1284,9 @@ namespace BocciaCoaching.Migrations
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.SessionPart", b =>
                 {
-                    b.Property<int>("SessionPartId")
+                    b.Property<Guid>("SessionPartId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("SessionPartId"));
+                        .HasColumnType("char(36)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -1251,8 +1298,8 @@ namespace BocciaCoaching.Migrations
                     b.Property<int>("Order")
                         .HasColumnType("int");
 
-                    b.Property<int>("TrainingSessionId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("TrainingSessionId")
+                        .HasColumnType("char(36)");
 
                     b.HasKey("SessionPartId");
 
@@ -1263,11 +1310,9 @@ namespace BocciaCoaching.Migrations
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.SessionSection", b =>
                 {
-                    b.Property<int>("SessionSectionId")
+                    b.Property<Guid>("SessionSectionId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("SessionSectionId"));
+                        .HasColumnType("char(36)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -1288,8 +1333,8 @@ namespace BocciaCoaching.Migrations
                     b.Property<string>("Observation")
                         .HasColumnType("text");
 
-                    b.Property<int>("SessionPartId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("SessionPartId")
+                        .HasColumnType("char(36)");
 
                     b.Property<DateTime?>("StartTime")
                         .HasColumnType("datetime(6)");
@@ -1310,20 +1355,18 @@ namespace BocciaCoaching.Migrations
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.StrengthStatistics", b =>
                 {
-                    b.Property<int>("StrengthStatisticsId")
+                    b.Property<Guid>("StrengthStatisticsId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("StrengthStatisticsId"));
+                        .HasColumnType("char(36)");
 
                     b.Property<double>("AccuracyPercentage")
                         .HasColumnType("double");
 
-                    b.Property<int>("AssessStrengthId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("AssessStrengthId")
+                        .HasColumnType("char(36)");
 
-                    b.Property<int>("AthleteId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("AthleteId")
+                        .HasColumnType("char(36)");
 
                     b.Property<int>("EffectiveThrow")
                         .HasColumnType("int");
@@ -1381,11 +1424,9 @@ namespace BocciaCoaching.Migrations
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.Subscription", b =>
                 {
-                    b.Property<int>("SubscriptionId")
+                    b.Property<Guid>("SubscriptionId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("SubscriptionId"));
+                        .HasColumnType("char(36)");
 
                     b.Property<DateTime?>("CanceledAt")
                         .HasColumnType("datetime(6)");
@@ -1430,8 +1471,8 @@ namespace BocciaCoaching.Migrations
                     b.Property<string>("StripeSubscriptionId")
                         .HasColumnType("longtext");
 
-                    b.Property<int>("SubscriptionTypeId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("SubscriptionTypeId")
+                        .HasColumnType("char(36)");
 
                     b.Property<DateTime?>("TrialEndDate")
                         .HasColumnType("datetime(6)");
@@ -1439,8 +1480,8 @@ namespace BocciaCoaching.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("char(36)");
 
                     b.HasKey("SubscriptionId");
 
@@ -1453,11 +1494,9 @@ namespace BocciaCoaching.Migrations
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.SubscriptionType", b =>
                 {
-                    b.Property<int>("SubscriptionTypeId")
+                    b.Property<Guid>("SubscriptionTypeId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("SubscriptionTypeId"));
+                        .HasColumnType("char(36)");
 
                     b.Property<int?>("AnnualPriceInCents")
                         .HasColumnType("int");
@@ -1520,11 +1559,9 @@ namespace BocciaCoaching.Migrations
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.Team", b =>
                 {
-                    b.Property<int>("TeamId")
+                    b.Property<Guid>("TeamId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("TeamId"));
+                        .HasColumnType("char(36)");
 
                     b.Property<bool?>("Bc1")
                         .HasColumnType("tinyint(1)");
@@ -1538,8 +1575,8 @@ namespace BocciaCoaching.Migrations
                     b.Property<bool?>("Bc4")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<int>("CoachId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("CoachId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("Country")
                         .HasColumnType("longtext");
@@ -1580,11 +1617,9 @@ namespace BocciaCoaching.Migrations
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.TeamUser", b =>
                 {
-                    b.Property<int>("IdTeamUser")
+                    b.Property<Guid>("IdTeamUser")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("IdTeamUser"));
+                        .HasColumnType("char(36)");
 
                     b.Property<DateTime>("DateCreation")
                         .HasColumnType("datetime(6)");
@@ -1592,11 +1627,11 @@ namespace BocciaCoaching.Migrations
                     b.Property<bool>("Status")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<int>("TeamId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("TeamId")
+                        .HasColumnType("char(36)");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("char(36)");
 
                     b.HasKey("IdTeamUser");
 
@@ -1609,11 +1644,9 @@ namespace BocciaCoaching.Migrations
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.TrainingSession", b =>
                 {
-                    b.Property<int>("TrainingSessionId")
+                    b.Property<Guid>("TrainingSessionId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("TrainingSessionId"));
+                        .HasColumnType("char(36)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -1628,8 +1661,8 @@ namespace BocciaCoaching.Migrations
                     b.Property<DateTime?>("EndTime")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("MicrocycleId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("MicrocycleId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("PhotoEvidence1")
                         .HasColumnType("longtext");
@@ -1668,11 +1701,9 @@ namespace BocciaCoaching.Migrations
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.User", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<Guid>("UserId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("UserId"));
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("Address")
                         .HasColumnType("longtext");
@@ -1720,20 +1751,18 @@ namespace BocciaCoaching.Migrations
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.UserRol", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("char(36)");
 
                     b.Property<DateTime>("DateCreation")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("RolId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("RolId")
+                        .HasColumnType("char(36)");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("char(36)");
 
                     b.HasKey("Id");
 
@@ -1864,6 +1893,24 @@ namespace BocciaCoaching.Migrations
                     b.Navigation("Coach");
 
                     b.Navigation("MicrocycleType");
+                });
+
+            modelBuilder.Entity("BocciaCoaching.Models.Entities.DailyWellness", b =>
+                {
+                    b.HasOne("BocciaCoaching.Models.Entities.User", "Athlete")
+                        .WithMany()
+                        .HasForeignKey("AthleteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BocciaCoaching.Models.Entities.Team", "Team")
+                        .WithMany()
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Athlete");
+
+                    b.Navigation("Team");
                 });
 
             modelBuilder.Entity("BocciaCoaching.Models.Entities.DirectionStatistics", b =>

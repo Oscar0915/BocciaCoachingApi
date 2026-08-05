@@ -32,7 +32,7 @@ namespace BocciaCoaching.Controllers
         /// Obtener una sesión de entrenamiento por ID con todas sus partes y secciones
         /// </summary>
         [HttpGet("GetById/{sessionId}")]
-        public async Task<ActionResult<ResponseContract<TrainingSessionResponseDto>>> GetById(int sessionId)
+        public async Task<ActionResult<ResponseContract<TrainingSessionResponseDto>>> GetById(Guid sessionId)
         {
             var result = await _service.GetById(sessionId);
             return Ok(result);
@@ -42,7 +42,7 @@ namespace BocciaCoaching.Controllers
         /// Obtener todas las sesiones de un microciclo (resumen)
         /// </summary>
         [HttpGet("GetByMicrocycle/{microcycleId}")]
-        public async Task<ActionResult<ResponseContract<List<TrainingSessionSummaryDto>>>> GetByMicrocycle(int microcycleId)
+        public async Task<ActionResult<ResponseContract<List<TrainingSessionSummaryDto>>>> GetByMicrocycle(Guid microcycleId)
         {
             var result = await _service.GetByMicrocycle(microcycleId);
             return Ok(result);
@@ -62,7 +62,7 @@ namespace BocciaCoaching.Controllers
         /// Eliminar una sesión de entrenamiento y todas sus partes/secciones
         /// </summary>
         [HttpDelete("Delete/{sessionId}")]
-        public async Task<ActionResult<ResponseContract<bool>>> Delete(int sessionId)
+        public async Task<ActionResult<ResponseContract<bool>>> Delete(Guid sessionId)
         {
             var result = await _service.DeleteSession(sessionId);
             return Ok(result);
@@ -94,7 +94,7 @@ namespace BocciaCoaching.Controllers
         /// Eliminar una sección
         /// </summary>
         [HttpDelete("DeleteSection/{sectionId}")]
-        public async Task<ActionResult<ResponseContract<bool>>> DeleteSection(int sectionId)
+        public async Task<ActionResult<ResponseContract<bool>>> DeleteSection(Guid sectionId)
         {
             var result = await _service.DeleteSection(sectionId);
             return Ok(result);
@@ -118,7 +118,7 @@ namespace BocciaCoaching.Controllers
         /// Valida que la sesión pertenezca al atleta.
         /// </summary>
         [HttpGet("Athlete/GetSessionDetail/{sessionId}/{athleteId}")]
-        public async Task<ActionResult<ResponseContract<TrainingSessionResponseDto>>> GetSessionDetailForAthlete(int sessionId, int athleteId)
+        public async Task<ActionResult<ResponseContract<TrainingSessionResponseDto>>> GetSessionDetailForAthlete(Guid sessionId, Guid athleteId)
         {
             var result = await _service.GetSessionDetailForAthlete(sessionId, athleteId);
             return Ok(result);

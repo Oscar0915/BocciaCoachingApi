@@ -10,9 +10,8 @@ namespace BocciaCoaching.Models.Entities
         /// ES: Identificador de la evaluación de control de dirección
         /// EN: Direction control assessment identifier
         /// </summary>
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public int AssessDirectionId { get; set; }
+        public Guid AssessDirectionId { get; set; }
 
         /// <summary>
         /// ES: Fecha de la evaluación
@@ -32,7 +31,7 @@ namespace BocciaCoaching.Models.Entities
         /// </summary>
         public string? State { get; set; }
 
-        public int TeamId { get; set; }
+        public Guid TeamId { get; set; }
 
         public Team? Team { get; set; }
 
@@ -40,7 +39,7 @@ namespace BocciaCoaching.Models.Entities
         /// ES: Id del entrenador que creó la prueba
         /// EN: Id of the coach who created the assessment
         /// </summary>
-        public int CoachId { get; set; }
+        public Guid CoachId { get; set; }
 
         /// <summary>
         /// ES: Navegación al usuario (entrenador) que crea la prueba

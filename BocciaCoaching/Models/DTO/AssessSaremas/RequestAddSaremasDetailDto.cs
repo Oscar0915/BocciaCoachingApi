@@ -9,8 +9,8 @@ namespace BocciaCoaching.Models.DTO.AssessSaremas
         public string? Observations { get; set; }
         public string? FailureTags { get; set; }
         public bool Status { get; set; } = true;
-        public int AthleteId { get; set; }
-        public int SaremasEvalId { get; set; }
+        public Guid AthleteId { get; set; }
+        public Guid SaremasEvalId { get; set; }
 
         // Datos de cancha (solo para "Salida")
         public double? WhiteBallX { get; set; }

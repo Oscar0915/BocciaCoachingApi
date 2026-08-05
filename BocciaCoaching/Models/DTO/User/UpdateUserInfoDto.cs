@@ -5,7 +5,7 @@ namespace BocciaCoaching.Models.DTO.User
     public class UpdateUserInfoDto
     {
         [Required(ErrorMessage = "El ID del usuario es requerido")]
-        public int UserId { get; set; }
+        public Guid UserId { get; set; }
 
         [StringLength(20, ErrorMessage = "El DNI no puede tener más de 20 caracteres")]
         public string? Dni { get; set; }

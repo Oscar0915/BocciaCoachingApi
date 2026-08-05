@@ -11,9 +11,8 @@ namespace BocciaCoaching.Models.Entities
         /// ES: Identificador del tipo de suscripción
         /// EN: Subscription type identifier
         /// </summary>
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public int SubscriptionTypeId { get; set; }
+        public Guid SubscriptionTypeId { get; set; }
 
         /// <summary>
         /// ES: Nombre del tipo de suscripción (Free, Premium, etc.)

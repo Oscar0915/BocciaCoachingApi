@@ -69,13 +69,13 @@ namespace BocciaCoaching.Services
 
         #region Customer Methods
 
-        public async Task<ResponseContract<string>> CreateCustomerAsync(int userId, string email, string? name = null)
+        public async Task<ResponseContract<string>> CreateCustomerAsync(Guid userId, string email, string? name = null)
         {
             await Task.CompletedTask;
             return ResponseContract<string>.Ok($"customer_placeholder_{userId}", "Customer creation placeholder");
         }
 
-        public async Task<ResponseContract<string>> GetOrCreateCustomerAsync(int userId, string email, string? name = null)
+        public async Task<ResponseContract<string>> GetOrCreateCustomerAsync(Guid userId, string email, string? name = null)
         {
             await Task.CompletedTask;
             return ResponseContract<string>.Ok($"customer_placeholder_{userId}", "Customer placeholder");

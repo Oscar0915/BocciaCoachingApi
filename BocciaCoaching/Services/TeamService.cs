@@ -23,7 +23,7 @@ namespace BocciaCoaching.Services
         /// </summary>
         /// <param name="requestTeamDto">Información del equipo</param>
         /// <returns></returns>
-        public async Task<ResponseContract<int>> AddTeam(RequestTeamDto requestTeamDto)
+        public async Task<ResponseContract<Guid>> AddTeam(RequestTeamDto requestTeamDto)
         {
             return await _teamRepository.AddTeam(requestTeamDto);
         }
@@ -39,7 +39,7 @@ namespace BocciaCoaching.Services
         }
 
 
-        public async Task<ResponseContract<List<TeamSummaryDto>>> GetTeamsForUser(int coachId)
+        public async Task<ResponseContract<List<TeamSummaryDto>>> GetTeamsForUser(Guid coachId)
         {
             return await _teamRepository.GetTeamsForUser(coachId);
         }

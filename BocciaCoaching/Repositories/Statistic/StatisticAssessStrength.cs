@@ -9,7 +9,7 @@ namespace BocciaCoaching.Repositories.Statistic;
 public class StatisticAssessStrength(ApplicationDbContext context) : IStatisticAssessStrength
 {
 
-    public async Task<ResponseContract<List<StrengthTestSummaryDto>>> GetRecentStatistics(int coachId, int teamId)
+    public async Task<ResponseContract<List<StrengthTestSummaryDto>>> GetRecentStatistics(Guid coachId, Guid teamId)
     {
         try
         {
@@ -45,7 +45,7 @@ public class StatisticAssessStrength(ApplicationDbContext context) : IStatisticA
         }
     }
 
-    public async Task<ResponseContract<TeamStrengthStatisticsDto>> GetTeamStrengthStatistics(int teamId)
+    public async Task<ResponseContract<TeamStrengthStatisticsDto>> GetTeamStrengthStatistics(Guid teamId)
     {
         try
         {
@@ -130,7 +130,7 @@ public class StatisticAssessStrength(ApplicationDbContext context) : IStatisticA
         }
     }
 
-    public async Task<ResponseContract<object>> GetTeamEvaluationsDebug(int teamId)
+    public async Task<ResponseContract<object>> GetTeamEvaluationsDebug(Guid teamId)
     {
         try
         {
@@ -234,7 +234,7 @@ public class StatisticAssessStrength(ApplicationDbContext context) : IStatisticA
         }
     }
 
-    public async Task<ResponseContract<TeamStrengthStatisticsDto>> GetTeamStrengthStatisticsIndividualized(int teamId)
+    public async Task<ResponseContract<TeamStrengthStatisticsDto>> GetTeamStrengthStatisticsIndividualized(Guid teamId)
     {
         try
         {
@@ -434,7 +434,7 @@ public class StatisticAssessStrength(ApplicationDbContext context) : IStatisticA
         }
     }
 
-    public async Task<ResponseContract<DashboardIndicatorsDto>> GetDashboardIndicators(int? coachId, int? teamId)
+    public async Task<ResponseContract<DashboardIndicatorsDto>> GetDashboardIndicators(Guid? coachId, Guid? teamId)
     {
         try
         {
@@ -477,7 +477,7 @@ public class StatisticAssessStrength(ApplicationDbContext context) : IStatisticA
                 SessionDate = DateTime.Now.AddDays(1),
                 SessionTime = "15:00",
                 TeamName = "Próxima sesión programada",
-                TeamId = teamId ?? 1,
+                TeamId = teamId ?? Guid.Empty,
                 SessionType = "Entrenamiento"
             };
 
@@ -500,7 +500,7 @@ public class StatisticAssessStrength(ApplicationDbContext context) : IStatisticA
         }
     }
 
-    public async Task<ResponseContract<DashboardCompleteDto>> GetDashboardComplete(int? coachId)
+    public async Task<ResponseContract<DashboardCompleteDto>> GetDashboardComplete(Guid? coachId)
     {
         try
         {
@@ -528,7 +528,7 @@ public class StatisticAssessStrength(ApplicationDbContext context) : IStatisticA
         }
     }
 
-    public async Task<ResponseContract<List<TopPerformanceAthleteDto>>> GetTopPerformanceAthletes(int? coachId, int? teamId, int limit)
+    public async Task<ResponseContract<List<TopPerformanceAthleteDto>>> GetTopPerformanceAthletes(Guid? coachId, Guid? teamId, int limit)
     {
         try
         {
@@ -572,7 +572,7 @@ public class StatisticAssessStrength(ApplicationDbContext context) : IStatisticA
         }
     }
 
-    public async Task<ResponseContract<List<RecentTestDto>>> GetRecentTests(int? coachId, int? teamId, int limit)
+    public async Task<ResponseContract<List<RecentTestDto>>> GetRecentTests(Guid? coachId, Guid? teamId, int limit)
     {
         try
         {
@@ -615,7 +615,7 @@ public class StatisticAssessStrength(ApplicationDbContext context) : IStatisticA
         }
     }
 
-    public async Task<ResponseContract<List<PendingTaskDto>>> GetPendingTasks(int? coachId, string? priority)
+    public async Task<ResponseContract<List<PendingTaskDto>>> GetPendingTasks(Guid? coachId, string? priority)
     {
         try
         {
@@ -655,7 +655,7 @@ public class StatisticAssessStrength(ApplicationDbContext context) : IStatisticA
         }
     }
 
-    public async Task<ResponseContract<List<MonthlyEvolutionDto>>> GetMonthlyEvolution(int? coachId, int? teamId, int months)
+    public async Task<ResponseContract<List<MonthlyEvolutionDto>>> GetMonthlyEvolution(Guid? coachId, Guid? teamId, int months)
     {
         try
         {
@@ -701,7 +701,7 @@ public class StatisticAssessStrength(ApplicationDbContext context) : IStatisticA
         }
     }
 
-    public async Task<ResponseContract<NextSessionInfo>> GetNextSession(int coachId)
+    public async Task<ResponseContract<NextSessionInfo>> GetNextSession(Guid coachId)
     {
         try
         {
@@ -715,7 +715,7 @@ public class StatisticAssessStrength(ApplicationDbContext context) : IStatisticA
                 SessionDate = DateTime.Now.AddDays(1),
                 SessionTime = "15:00",
                 TeamName = nextTeam?.NameTeam ?? "Sin equipo asignado",
-                TeamId = nextTeam?.TeamId ?? 0,
+                TeamId = nextTeam?.TeamId ?? Guid.Empty,
                 SessionType = "Entrenamiento"
             };
 
@@ -728,7 +728,7 @@ public class StatisticAssessStrength(ApplicationDbContext context) : IStatisticA
         }
     }
 
-    public async Task<ResponseContract<List<TeamOverviewDto>>> GetCoachTeamsOverview(int coachId)
+    public async Task<ResponseContract<List<TeamOverviewDto>>> GetCoachTeamsOverview(Guid coachId)
     {
         try
         {

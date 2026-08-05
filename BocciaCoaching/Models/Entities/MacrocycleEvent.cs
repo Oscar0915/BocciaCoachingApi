@@ -7,9 +7,9 @@ namespace BocciaCoaching.Models.Entities
     public class MacrocycleEvent
     {
         [Key]
-        public string MacrocycleEventId { get; set; } = Guid.NewGuid().ToString();
+        public Guid MacrocycleEventId { get; set; } = Guid.NewGuid();
 
-        public string MacrocycleId { get; set; } = string.Empty;
+        public Guid MacrocycleId { get; set; }
 
         [ForeignKey("MacrocycleId")]
         public Macrocycle? Macrocycle { get; set; }

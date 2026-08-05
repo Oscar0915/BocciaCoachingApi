@@ -10,14 +10,13 @@ namespace BocciaCoaching.Models.Entities
         /// ES:Identificador de la tabla Session
         /// EN: 
         /// </summary>
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
-        public int SessionId { get; set; }
+        public Guid SessionId { get; set; }
         /// <summary>
         /// ES: Identificador del usuario
         /// EN: 
         /// </summary>
-        public int UserId { get; set; }
+        public Guid UserId { get; set; }
 
         /// <summary>
         /// ES: 
