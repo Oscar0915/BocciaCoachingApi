@@ -1,0 +1,9 @@
+  Determinando los proyectos que se van a restaurar...
+  Todos los proyectos están actualizados para la restauración.
+  BocciaCoaching -> /Users/oscar/Documents/BocciaCoaching/BocciaCoaching/bin/Debug/net8.0/BocciaCoaching.dll
+
+Compilación correcta.
+    0 Advertencia(s)
+    0 Errores
+
+Tiempo transcurrido 00:00:00.44
