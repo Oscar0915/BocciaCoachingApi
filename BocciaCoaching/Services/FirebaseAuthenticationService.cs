@@ -47,21 +47,37 @@ public class FirebaseAuthenticationService : IFirebaseAuthenticationService
             }
             catch (ArgumentException)
             {
-                var configuredCredentialPath = _configuration["Firebase:CredentialsPath"];
-                if (!string.IsNullOrWhiteSpace(configuredCredentialPath) &&
-                    !File.Exists(configuredCredentialPath))
-                {
-                    throw new InvalidOperationException(
-                        "No se encontró el archivo de credenciales configurado para Firebase.");
-                }
-
-                var credential = string.IsNullOrWhiteSpace(configuredCredentialPath)
-                    ? GoogleCredential.GetApplicationDefault()
-                    : GoogleCredential.FromFile(configuredCredentialPath);
-
-                var app = FirebaseApp.Create(new AppOptions { Credential = credential }, FirebaseAppName);
+                var app = FirebaseApp.Create(new AppOptions { Credential = ResolveCredential() }, FirebaseAppName);
                 return FirebaseAuth.GetAuth(app);
             }
         }
+    }
+
+    private GoogleCredential ResolveCredential()
+    {
+        // Prioridad 1: JSON de credenciales embebido en una variable de entorno
+        // (usado en despliegues como Render, donde no se puede subir el archivo al repo).
+        var credentialsJson = _configuration["Firebase:CredentialsJson"]
+                               ?? Environment.GetEnvironmentVariable("FIREBASE_CREDENTIALS_JSON");
+        if (!string.IsNullOrWhiteSpace(credentialsJson))
+        {
+            return GoogleCredential.FromJson(credentialsJson);
+        }
+
+        // Prioridad 2: ruta a un archivo de credenciales en disco (uso local).
+        var configuredCredentialPath = _configuration["Firebase:CredentialsPath"];
+        if (!string.IsNullOrWhiteSpace(configuredCredentialPath))
+        {
+            if (!File.Exists(configuredCredentialPath))
+            {
+                throw new InvalidOperationException(
+                    "No se encontró el archivo de credenciales configurado para Firebase.");
+            }
+
+            return GoogleCredential.FromFile(configuredCredentialPath);
+        }
+
+        // Prioridad 3: Application Default Credentials del entorno.
+        return GoogleCredential.GetApplicationDefault();
     }
 }
