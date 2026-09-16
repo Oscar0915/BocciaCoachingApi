@@ -111,6 +111,12 @@ namespace BocciaCoaching.Services
 
         public async Task<ResponseContract<bool>> UpdatePassword(UpdatePasswordDto updatePasswordDto)
         {
+            if (updatePasswordDto.UserId == Guid.Empty && string.IsNullOrWhiteSpace(updatePasswordDto.Email))
+                return ResponseContract<bool>.Fail("Debe proporcionar el usuario o el email.");
+
+            if (!string.IsNullOrWhiteSpace(updatePasswordDto.Email))
+                updatePasswordDto.Email = updatePasswordDto.Email.Trim();
+
             return await _repository.UpdatePassword(updatePasswordDto);
         }
 

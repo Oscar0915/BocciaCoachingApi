@@ -303,18 +303,21 @@ namespace BocciaCoaching.Repositories
         {
             try
             {
-                // Buscar el usuario por ID
-                var user = await context.Users.FirstOrDefaultAsync(u => u.UserId == updatePasswordDto.UserId);
+                var isPasswordRecovery = updatePasswordDto.UserId == Guid.Empty;
+                if (isPasswordRecovery && string.IsNullOrWhiteSpace(updatePasswordDto.Email))
+                    return ResponseContract<bool>.Fail("El email es requerido para recuperar la contraseña");
+
+                var user = isPasswordRecovery
+                    ? await context.Users.FirstOrDefaultAsync(u => u.Email == updatePasswordDto.Email)
+                    : await context.Users.FirstOrDefaultAsync(u => u.UserId == updatePasswordDto.UserId);
                 
                 if (user == null)
                 {
                     return ResponseContract<bool>.Fail("Usuario no encontrado");
                 }
 
-                // Verificar la contraseña actual
-                bool validCurrentPassword = BCrypt.Net.BCrypt.Verify(updatePasswordDto.CurrentPassword, user.Password);
-                
-                if (!validCurrentPassword)
+                if (!isPasswordRecovery &&
+                    !BCrypt.Net.BCrypt.Verify(updatePasswordDto.CurrentPassword, user.Password ?? string.Empty))
                 {
                     return ResponseContract<bool>.Fail("La contraseña actual es incorrecta");
                 }
