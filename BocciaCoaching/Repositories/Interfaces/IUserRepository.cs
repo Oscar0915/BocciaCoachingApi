@@ -13,6 +13,7 @@ namespace BocciaCoaching.Repositories.Interfaces
         Task<User?> GetUserEntityByIdAsync(Guid id); // Método que devuelve directamente la entidad
         Task<ResponseContract<bool>> AddUser(InfoUserRegisterDto userDto);
         Task<ResponseContract<LoginResponseDto>> Login(LoginRequestDto loginDto);
+        Task<ResponseContract<LoginResponseDto>> LoginWithEmailAsync(string email);
         Task<ResponseContract<Guid>> RegistrarAtleta(AtlheteInfoSave atlheteInfoSave);
         Task<ResponseContract<ValidateEmailDto>> ValidateEmail(ValidateEmailDto email);
 

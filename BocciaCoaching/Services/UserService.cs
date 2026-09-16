@@ -6,6 +6,7 @@ using BocciaCoaching.Models.DTO.User.Atlhete;
 using BocciaCoaching.Repositories.Interfaces;
 using BocciaCoaching.Services.Interfaces;
 using BocciaCoaching.Utils;
+using FirebaseAdmin.Auth;
 
 namespace BocciaCoaching.Services
 {
@@ -13,11 +14,16 @@ namespace BocciaCoaching.Services
     {
         private readonly IUserRepository _repository;
         private readonly INotificationService _notificationService;
+        private readonly IFirebaseAuthenticationService _firebaseAuthenticationService;
 
-        public UserService(IUserRepository repository, INotificationService notificationService)
+        public UserService(
+            IUserRepository repository,
+            INotificationService notificationService,
+            IFirebaseAuthenticationService firebaseAuthenticationService)
         {
             _repository = repository;
             _notificationService = notificationService;
+            _firebaseAuthenticationService = firebaseAuthenticationService;
         }
 
         public async Task<ResponseContract<bool>> AddUser(InfoUserRegisterDto userDto)
@@ -39,6 +45,34 @@ namespace BocciaCoaching.Services
         public async Task<ResponseContract<LoginResponseDto>> Login(LoginRequestDto loginDto)
         {
             return await _repository.Login(loginDto);
+        }
+
+        public async Task<ResponseContract<LoginResponseDto>> LoginWithGoogle(FirebaseLoginRequestDto loginDto)
+        {
+            if (string.IsNullOrWhiteSpace(loginDto.IdToken))
+                return ResponseContract<LoginResponseDto>.Fail("El token de Firebase es requerido");
+
+            try
+            {
+                var identity = await _firebaseAuthenticationService.VerifyIdTokenAsync(loginDto.IdToken);
+                if (!identity.EmailVerified)
+                    return ResponseContract<LoginResponseDto>.Fail("El email de Google debe estar verificado");
+
+                return await _repository.LoginWithEmailAsync(identity.Email);
+            }
+            catch (FirebaseAuthException)
+            {
+                return ResponseContract<LoginResponseDto>.Fail("El token de Firebase no es válido o ha expirado");
+            }
+            catch (ArgumentException)
+            {
+                return ResponseContract<LoginResponseDto>.Fail("El token de Firebase no es válido");
+            }
+            catch (InvalidOperationException)
+            {
+                return ResponseContract<LoginResponseDto>.Fail(
+                    "La autenticación con Firebase no está configurada correctamente");
+            }
         }
 
         public async Task<ResponseContract<Guid>> RegistrarAtleta(AtlheteInfoSave atlheteInfoSave)

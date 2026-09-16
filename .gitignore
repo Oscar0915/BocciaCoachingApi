@@ -285,6 +285,9 @@ FakesAssemblies/
 .ntvs_analysis.dat
 node_modules/
 
+# Firebase service-account credentials
+firebase-service-account*.json
+
 # Visual Studio 6 build log
 *.plg
 

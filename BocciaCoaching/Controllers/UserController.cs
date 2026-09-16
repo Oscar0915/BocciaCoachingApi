@@ -47,6 +47,13 @@ namespace BocciaCoaching.Controllers
             return Ok(response);
         }
 
+        [HttpPost("login/google")]
+        public async Task<ActionResult<ResponseContract<LoginResponseDto>>> LoginWithGoogle(FirebaseLoginRequestDto login)
+        {
+            var response = await _user.LoginWithGoogle(login);
+            return Ok(response);
+        }
+
 
         [HttpPost("AddAthlete")]
         public async Task<ActionResult<ResponseContract<int>>> NewAthlete(AtlheteInfoSave user)

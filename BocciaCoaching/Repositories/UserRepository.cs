@@ -130,6 +130,9 @@ namespace BocciaCoaching.Repositories
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(loginDto.Email) || string.IsNullOrWhiteSpace(loginDto.Password))
+                    return ResponseContract<LoginResponseDto>.Fail("El email y la contraseña son requeridos");
+
                 var user = await GetUserByEmailAsync(loginDto.Email);
                 if (user == null) 
                     return ResponseContract<LoginResponseDto>.Fail("Usuario no encontrado");
@@ -139,37 +142,62 @@ namespace BocciaCoaching.Repositories
                 if (!validPassword) 
                     return ResponseContract<LoginResponseDto>.Fail("Contraseña incorrecta");
 
-                var roles = context.UserRoles.Where(x => x.UserId == user.UserId).ToList();
-
-                if (roles.Count == 0)
-                    return ResponseContract<LoginResponseDto>.Fail("Usuario sin roles asignados");
-
-                // Generar respuesta
-                var response = new LoginResponseDto
-                {
-                    UserId = user.UserId,
-                    Dni = user.Dni,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    Email = user.Email,
-                    Address = user.Address,
-                    Country = user.Country,
-                    Image = user.Image,
-                    Category = user.Category,
-                    Seniority = user.Seniority,
-                    Status = user.Status,
-                    RolId = roles[0].RolId,
-                    CreatedAt = user.CreatedAt,
-                    UpdatedAt = user.UpdatedAt
-                };
-
-                return ResponseContract<LoginResponseDto>.Ok(response, "Login exitoso");
+                return await CreateLoginResponseAsync(user);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error en Login: {ex.Message}");
                 return ResponseContract<LoginResponseDto>.Fail($"Error al iniciar sesión: {ex.Message}");
             }
+        }
+
+        public async Task<ResponseContract<LoginResponseDto>> LoginWithEmailAsync(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return ResponseContract<LoginResponseDto>.Fail("El email es requerido");
+
+            try
+            {
+                var user = await GetUserByEmailAsync(email.Trim());
+                return user == null
+                    ? ResponseContract<LoginResponseDto>.Fail("Usuario no encontrado")
+                    : await CreateLoginResponseAsync(user);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en LoginWithEmailAsync: {ex.Message}");
+                return ResponseContract<LoginResponseDto>.Fail($"Error al iniciar sesión: {ex.Message}");
+            }
+        }
+
+        private async Task<ResponseContract<LoginResponseDto>> CreateLoginResponseAsync(User user)
+        {
+            var roles = await context.UserRoles
+                .Where(x => x.UserId == user.UserId)
+                .ToListAsync();
+
+            if (roles.Count == 0)
+                return ResponseContract<LoginResponseDto>.Fail("Usuario sin roles asignados");
+
+            var response = new LoginResponseDto
+            {
+                UserId = user.UserId,
+                Dni = user.Dni,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                Address = user.Address,
+                Country = user.Country,
+                Image = user.Image,
+                Category = user.Category,
+                Seniority = user.Seniority,
+                Status = user.Status,
+                RolId = roles[0].RolId,
+                CreatedAt = user.CreatedAt,
+                UpdatedAt = user.UpdatedAt
+            };
+
+            return ResponseContract<LoginResponseDto>.Ok(response, "Login exitoso");
         }
 
         /// <summary>

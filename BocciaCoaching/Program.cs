@@ -101,6 +101,7 @@ builder.Services.AddSignalR();
 
 //Services
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddSingleton<IFirebaseAuthenticationService, FirebaseAuthenticationService>();
 // File storage
 builder.Services.AddSingleton<BocciaCoaching.Services.IFileStorageService, BocciaCoaching.Services.DiskFileStorageService>();
 
