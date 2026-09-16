@@ -85,6 +85,13 @@ namespace BocciaCoaching.Controllers
             return Ok(response);
         }
 
+        [HttpPost("ResetPassword")]
+        public async Task<ActionResult<ResponseContract<bool>>> ResetPassword(ResetPasswordDto resetPasswordDto)
+        {
+            var response = await _user.ResetPassword(resetPasswordDto);
+            return Ok(response);
+        }
+
         [HttpPut("UpdateUserInfo")]
         public async Task<ActionResult<ResponseContract<bool>>> UpdateUserInfo(UpdateUserInfoDto updateUserInfoDto)
         {

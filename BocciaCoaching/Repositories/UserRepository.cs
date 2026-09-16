@@ -369,6 +369,35 @@ namespace BocciaCoaching.Repositories
             }
         }
 
+        /// <summary>
+        /// Restablecer la contraseña de un usuario a partir de su email (recuperación de contraseña)
+        /// </summary>
+        public async Task<ResponseContract<bool>> ResetPassword(ResetPasswordDto resetPasswordDto)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(resetPasswordDto.Email))
+                    return ResponseContract<bool>.Fail("El email es requerido");
+
+                var user = await context.Users.FirstOrDefaultAsync(u => u.Email == resetPasswordDto.Email.Trim());
+                if (user == null)
+                    return ResponseContract<bool>.Fail("Usuario no encontrado");
+
+                user.Password = BCrypt.Net.BCrypt.HashPassword(resetPasswordDto.NewPassword);
+                user.UpdatedAt = DateTime.Now;
+
+                context.Users.Update(user);
+                await context.SaveChangesAsync();
+
+                return ResponseContract<bool>.Ok(true, "Contraseña restablecida exitosamente");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error en ResetPassword: {ex.Message}");
+                return ResponseContract<bool>.Fail($"Error al restablecer la contraseña: {ex.Message}");
+            }
+        }
+
         public async Task<ResponseContract<bool>> UpdateUserInfo(UpdateUserInfoDto updateUserInfoDto)
         {
             try

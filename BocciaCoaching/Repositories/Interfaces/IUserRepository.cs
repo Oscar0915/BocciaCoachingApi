@@ -37,6 +37,13 @@ namespace BocciaCoaching.Repositories.Interfaces
         Task<ResponseContract<bool>> UpdatePassword(UpdatePasswordDto updatePasswordDto);
 
         /// <summary>
+        /// Restablecer la contraseña de un usuario a partir de su email (recuperación de contraseña)
+        /// </summary>
+        /// <param name="resetPasswordDto"></param>
+        /// <returns></returns>
+        Task<ResponseContract<bool>> ResetPassword(ResetPasswordDto resetPasswordDto);
+
+        /// <summary>
         /// Actualizar la información de un usuario
         /// </summary>
         /// <param name="updateUserInfoDto"></param>

@@ -159,6 +159,16 @@ namespace BocciaCoaching.Services
             return await _repository.UpdateUserInfo(updateUserInfoDto);
         }
 
+        public async Task<ResponseContract<bool>> ResetPassword(ResetPasswordDto resetPasswordDto)
+        {
+            if (string.IsNullOrWhiteSpace(resetPasswordDto.Email))
+                return ResponseContract<bool>.Fail("El email es requerido");
+
+            resetPasswordDto.Email = resetPasswordDto.Email.Trim();
+
+            return await _repository.ResetPassword(resetPasswordDto);
+        }
+
         public async Task<ResponseContract<string?>> UpdateUserImageAsync(Guid userId, string imageUrl)
         {
             return await _repository.UpdateUserImageAsync(userId, imageUrl);
