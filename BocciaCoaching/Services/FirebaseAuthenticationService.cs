@@ -2,6 +2,7 @@ using FirebaseAdmin;
 using FirebaseAdmin.Auth;
 using Google.Apis.Auth.OAuth2;
 using BocciaCoaching.Services.Interfaces;
+using Newtonsoft.Json.Linq;
 
 namespace BocciaCoaching.Services;
 
@@ -34,7 +35,15 @@ public class FirebaseAuthenticationService : IFirebaseAuthenticationService
                             verifiedValue is bool verified &&
                             verified;
 
-        return new FirebaseIdentity(email.Trim(), emailVerified);
+        string? signInProvider = null;
+        if (token.Claims.TryGetValue("firebase", out var firebaseValue) && firebaseValue != null)
+        {
+            var provider = JObject.FromObject(firebaseValue)["sign_in_provider"];
+            if (provider?.Type == JTokenType.String)
+                signInProvider = provider.Value<string>();
+        }
+
+        return new FirebaseIdentity(email.Trim(), emailVerified, signInProvider);
     }
 
     private FirebaseAuth GetFirebaseAuth()

@@ -54,6 +54,20 @@ namespace BocciaCoaching.Controllers
             return Ok(response);
         }
 
+        [HttpPost("verify-email/google")]
+        public async Task<ActionResult<ResponseContract<GoogleEmailVerificationDto>>> VerifyGoogleEmail(FirebaseLoginRequestDto request)
+        {
+            var response = await _user.VerifyGoogleEmail(request);
+            return Ok(response);
+        }
+
+        [HttpPost("register/google")]
+        public async Task<ActionResult<ResponseContract<bool>>> RegisterWithGoogle(GoogleRegisterRequestDto request)
+        {
+            var response = await _user.RegisterWithGoogle(request);
+            return Ok(response);
+        }
+
 
         [HttpPost("AddAthlete")]
         public async Task<ActionResult<ResponseContract<int>>> NewAthlete(AtlheteInfoSave user)

@@ -17,7 +17,7 @@ public class UserServiceFirebaseLoginTests
         var repository = new Mock<IUserRepository>();
         var firebase = new Mock<IFirebaseAuthenticationService>();
         firebase.Setup(service => service.VerifyIdTokenAsync("token"))
-            .ReturnsAsync(new FirebaseIdentity("usuario@example.com", false));
+            .ReturnsAsync(new FirebaseIdentity("usuario@example.com", false, "google.com"));
         var service = new UserService(
             repository.Object,
             Mock.Of<INotificationService>(),
@@ -38,7 +38,7 @@ public class UserServiceFirebaseLoginTests
         var repository = new Mock<IUserRepository>();
         var firebase = new Mock<IFirebaseAuthenticationService>();
         firebase.Setup(service => service.VerifyIdTokenAsync("token"))
-            .ReturnsAsync(new FirebaseIdentity("usuario@example.com", true));
+            .ReturnsAsync(new FirebaseIdentity("usuario@example.com", true, "google.com"));
         repository.Setup(repository => repository.LoginWithEmailAsync("usuario@example.com"))
             .ReturnsAsync(ResponseContract<LoginResponseDto>.Ok(
                 new LoginResponseDto { UserId = Guid.NewGuid() }));

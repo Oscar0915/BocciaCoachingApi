@@ -12,6 +12,8 @@ namespace BocciaCoaching.Services.Interfaces
         Task<ResponseContract<bool>> AddUser(InfoUserRegisterDto userDto);
         Task<ResponseContract<LoginResponseDto>> Login(LoginRequestDto loginDto);
         Task<ResponseContract<LoginResponseDto>> LoginWithGoogle(FirebaseLoginRequestDto loginDto);
+        Task<ResponseContract<GoogleEmailVerificationDto>> VerifyGoogleEmail(FirebaseLoginRequestDto request);
+        Task<ResponseContract<bool>> RegisterWithGoogle(GoogleRegisterRequestDto request);
         Task<ResponseContract<Guid>> RegistrarAtleta(AtlheteInfoSave atlheteInfoSave);
       
         Task<ResponseContract<ValidateEmailDto>> ValidateEmail(ValidateEmailDto email);

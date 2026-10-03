@@ -37,12 +37,11 @@ namespace BocciaCoaching.Repositories
                 };
 
                 await context.Users.AddAsync(user);
-                await context.SaveChangesAsync();
 
                 var athlete = new UserRol
                 {
                     RolId = userDto.Rol,
-                    UserId = user.UserId
+                    User = user
                 };
 
                 await context.UserRoles.AddAsync(athlete);
