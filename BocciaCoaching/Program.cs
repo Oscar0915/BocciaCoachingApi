@@ -1,4 +1,5 @@
 using BocciaCoaching.Data;
+using BocciaCoaching.Infrastructure.Api;
 using BocciaCoaching.Models.Configuration;
 using BocciaCoaching.Repositories;
 using BocciaCoaching.Repositories.AssesstStrength;
@@ -74,12 +75,19 @@ builder.Services.AddCors(options =>
         });
 });
 
+// La versión del servidor MySQL se detecta UNA sola vez al arrancar. Antes, ServerVersion.AutoDetect
+// estaba dentro del lambda de AddDbContext, que se ejecuta por cada DbContext (es decir, por cada
+// request): abría una conexión extra a la BD en cada petición solo para consultar la versión.
+// Opcional: fijar "Database:ServerVersion" (p. ej. "8.0.36-mysql") para no conectar ni al arrancar.
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException("Falta la cadena de conexión 'DefaultConnection'.");
+var configuredServerVersion = builder.Configuration["Database:ServerVersion"];
+var mySqlServerVersion = string.IsNullOrWhiteSpace(configuredServerVersion)
+    ? ServerVersion.AutoDetect(connectionString)
+    : ServerVersion.Parse(configuredServerVersion);
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseMySql(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
-    )
-);
+    options.UseMySql(connectionString, mySqlServerVersion));
 
 // Configurar EmailSettings
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
@@ -91,8 +99,18 @@ builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
-        options.JsonSerializerOptions.WriteIndented = true;
-    });
+        // JSON indentado solo en desarrollo: en producción aumenta el tamaño de las respuestas sin aportar nada.
+        options.JsonSerializerOptions.WriteIndented = builder.Environment.IsDevelopment();
+    })
+    // Errores de validación con el mismo contrato { success, message, data } en /api/v1.
+    .AddStandardValidationResponse();
+
+// Manejo global de errores: log + respuesta estándar + código HTTP correcto (200 en rutas legacy).
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
+builder.Services.AddRouting(options => options.LowercaseUrls = true);
+builder.Services.AddHealthChecks();
 
 builder.Services.AddMemoryCache();
 
@@ -203,21 +221,25 @@ builder.Services.AddScoped<IRolRepository, RolRepository>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "BocciaCoaching API", Version = "v1" });
-    
-    
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "BocciaCoaching API",
+        Version = "v1",
+        Description = "Rutas REST en /api/v1. Las rutas antiguas (/api/Team, /api/Wellness, ...) aparecen como obsoletas."
+    });
+
+    // Incluye los comentarios /// de controladores y DTOs en la documentación.
+    var xmlFile = Path.Combine(AppContext.BaseDirectory, $"{typeof(Program).Assembly.GetName().Name}.xml");
+    if (System.IO.File.Exists(xmlFile))
+        c.IncludeXmlComments(xmlFile);
 });
 
 
 
 var app = builder.Build();
-app.UseRouting(); 
 
-// Use CORS - permitir credenciales para SignalR
-app.UseCors("AllowSpecificOrigins");
-
-// Servir archivos estáticos (wwwroot)
-app.UseStaticFiles();
+// Debe ir primero para capturar las excepciones de todo el pipeline.
+app.UseExceptionHandler();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -228,8 +250,17 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// Servir archivos estáticos (wwwroot)
+app.UseStaticFiles();
+
+app.UseRouting();
+
+// Use CORS - permitir credenciales para SignalR
+app.UseCors("AllowSpecificOrigins");
+
 app.UseAuthorization();
 
+app.MapHealthChecks("/health");
 app.MapControllers();
 
 app.Run();

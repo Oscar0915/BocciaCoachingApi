@@ -1,5 +1,5 @@
-﻿﻿﻿using BocciaCoaching.Data;
-using BocciaCoaching.Models.DTO.General;
+﻿using System.Linq.Expressions;
+using BocciaCoaching.Data;
 using BocciaCoaching.Models.DTO.Team;
 using BocciaCoaching.Models.Entities;
 using BocciaCoaching.Repositories.Interfaces.ITeams;
@@ -10,272 +10,166 @@ namespace BocciaCoaching.Repositories.Teams
     public class TeamRepository(ApplicationDbContext context) : ITeamRepository
     {
         /// <summary>
-        /// Método para agregar un nuevo equipo
+        /// ES: Proyección a <see cref="TeamSummaryDto"/> traducida a SQL (el conteo de integrantes
+        /// se resuelve con una subconsulta, sin cargar entidades en memoria).
         /// </summary>
-        /// <param name="requestTeamDto">Información del equipo</param>
-        /// <returns></returns>
-        public async Task<ResponseContract<Guid>> AddTeam(RequestTeamDto requestTeamDto)
+        private Expression<Func<Team, TeamSummaryDto>> ToSummary => t => new TeamSummaryDto
         {
-            try
+            TeamId = t.TeamId,
+            NameTeam = t.NameTeam,
+            Description = t.Description,
+            CoachId = t.CoachId,
+            Status = t.Status,
+            Image = t.Image,
+            Bc1 = t.Bc1,
+            Bc2 = t.Bc2,
+            Bc3 = t.Bc3,
+            Bc4 = t.Bc4,
+            Pairs = t.Pairs,
+            Teams = t.Teams,
+            Country = t.Country,
+            Region = t.Region,
+            CreatedAt = t.CreatedAt,
+            UpdatedAt = t.UpdatedAt,
+            MemberCount = context.TeamsUsers.Count(tu => tu.TeamId == t.TeamId && tu.Status)
+        };
+
+        public async Task<Guid> AddTeamAsync(RequestTeamDto requestTeamDto, CancellationToken cancellationToken = default)
+        {
+            var team = new Team
             {
-                var team = new Team()
-                {
-                    CoachId = requestTeamDto.CoachId,
-                    NameTeam = requestTeamDto.NameTeam,
-                    Description = requestTeamDto.Description,
-                    Image = requestTeamDto.Image,
-                    Bc1 = requestTeamDto.Bc1,
-                    Bc2 = requestTeamDto.Bc2,
-                    Bc3 = requestTeamDto.Bc3,
-                    Bc4 = requestTeamDto.Bc4,
-                    Pairs = requestTeamDto.Pairs,
-                    Teams = requestTeamDto.Teams,
-                    Country = requestTeamDto.Country,
-                    Region = requestTeamDto.Region,
-                    CreatedAt = DateTime.UtcNow
-                };
+                CoachId = requestTeamDto.CoachId,
+                NameTeam = requestTeamDto.NameTeam,
+                Description = requestTeamDto.Description,
+                Image = requestTeamDto.Image,
+                Bc1 = requestTeamDto.Bc1,
+                Bc2 = requestTeamDto.Bc2,
+                Bc3 = requestTeamDto.Bc3,
+                Bc4 = requestTeamDto.Bc4,
+                Pairs = requestTeamDto.Pairs,
+                Teams = requestTeamDto.Teams,
+                Country = requestTeamDto.Country,
+                Region = requestTeamDto.Region,
+                CreatedAt = DateTime.UtcNow
+            };
 
-                await context.Teams.AddAsync(team);
-                await context.SaveChangesAsync();
-
-                // Relacionar automáticamente al entrenador con el equipo
-                var teamUser = new TeamUser()
-                {
-                    TeamId = team.TeamId,
-                    UserId = requestTeamDto.CoachId,
-                    DateCreation = DateTime.Now
-                };
-
-                await context.TeamsUsers.AddAsync(teamUser);
-                await context.SaveChangesAsync();
-
-                return ResponseContract<Guid>.Ok(team.TeamId, "Equipo creado exitosamente");
-            }
-            catch (Exception ex)
+            // El entrenador queda vinculado al equipo. Un único SaveChanges = una sola transacción:
+            // antes eran dos escrituras y un fallo en la segunda dejaba el equipo sin entrenador.
+            context.Teams.Add(team);
+            context.TeamsUsers.Add(new TeamUser
             {
-                return ResponseContract<Guid>.Fail(ex.Message);
-            }
+                Team = team,
+                UserId = requestTeamDto.CoachId,
+                DateCreation = DateTime.Now
+            });
 
+            await context.SaveChangesAsync(cancellationToken);
+            return team.TeamId;
         }
 
-        /// <summary>
-        /// Método para agregar mienbros al equipo
-        /// </summary>
-        /// <param name="requestTeamMemberDto"></param>
-        /// <returns></returns>
-        public async Task<ResponseContract<bool>> AddTeamMember(RequestTeamMemberDto requestTeamMemberDto)
+        public Task<TeamSummaryDto?> GetTeamByIdAsync(Guid teamId, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                // Validar si el usuario ya pertenece al equipo
-                var existingMember = await context.TeamsUsers
-                    .FirstOrDefaultAsync(tu => tu.TeamId == requestTeamMemberDto.TeamId 
-                                            && tu.UserId == requestTeamMemberDto.UserId);
-
-                if (existingMember != null)
-                {
-                    return ResponseContract<bool>.Fail("El atleta ya pertenece a este equipo");
-                }
-
-                var teamUser = new TeamUser()
-                {
-                    TeamId = requestTeamMemberDto.TeamId,
-                    UserId = requestTeamMemberDto.UserId,
-                    DateCreation = DateTime.Now,
-                };
-
-                await context.TeamsUsers.AddAsync(teamUser);
-                await context.SaveChangesAsync();
-                
-                return ResponseContract<bool>.Ok(true, "Miembro agregado exitosamente al equipo");
-            }
-            catch (Exception ex)
-            {
-                return ResponseContract<bool>.Fail(ex.Message);
-            }
-
-        }
-        /// <summary>
-        /// Método para obtener los equipos al que pertenece los entrenadores 
-        /// </summary>
-        /// <returns></returns>
-        /// <summary>
-        /// Método para obtener los equipos de un coach con la cantidad de integrantes por equipo
-        /// </summary>
-        public async Task<ResponseContract<List<TeamSummaryDto>>> GetTeamsForUser(Guid coachId)
-        {
-            try
-            {
-                // Obtener IDs de equipos donde el usuario está relacionado via TeamUser con Status activo
-                var teamIdsViaTeamUser = await context.TeamsUsers
-                    .Where(tu => tu.UserId == coachId && tu.Status == true)
-                    .Select(tu => tu.TeamId)
-                    .ToListAsync();
-
-                var teams = await context.Teams
-                    .Where(t => (t.Status == null || t.Status == true) &&
-                                (t.CoachId == coachId || teamIdsViaTeamUser.Contains(t.TeamId)))
-                    .Select(t => new TeamSummaryDto
-                    {
-                        TeamId = t.TeamId,
-                        NameTeam = t.NameTeam,
-                        Description = t.Description,
-                        CoachId = t.CoachId,
-                        Status = t.Status,
-                        Image = t.Image,
-                        Bc1 = t.Bc1,
-                        Bc2 = t.Bc2,
-                        Bc3 = t.Bc3,
-                        Bc4 = t.Bc4,
-                        Pairs = t.Pairs,
-                        Teams = t.Teams,
-                        Country = t.Country,
-                        Region = t.Region,
-                        CreatedAt = t.CreatedAt,
-                        UpdatedAt = t.UpdatedAt,
-                        MemberCount = context.TeamsUsers.Count(tu => tu.TeamId == t.TeamId && tu.Status == true)
-                    })
-                    .ToListAsync();
-
-                return ResponseContract<List<TeamSummaryDto>>.Ok(teams, "Equipos obtenidos satisfactoriamente");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error en GetTeamsForUser: {ex.Message}");
-                return ResponseContract<List<TeamSummaryDto>>.Fail(ex.Message);
-            }
-        }
-        /// <summary>
-        /// Método para obtener los integrantes de un equipo
-        /// </summary>
-        /// <param name="requestGetUserForTeamDto"></param>
-        /// <returns></returns>
-        public async Task<ResponseContract<List<TeamMemberDto>>> GetUsersForTeam(RequestGetUserForTeamDto requestGetUserForTeamDto)
-        {
-            try
-            {
-                var teamUsers = await context.TeamsUsers
-                .Where(tu => tu.TeamId == requestGetUserForTeamDto.TeamId && tu.User != null)
-                .Include(tu => tu.User!)
-                    .ThenInclude(u => u.UserRoles!)
-                    .ThenInclude(ru => ru.Rol)
-                .ToListAsync();
-
-                var users = teamUsers
-                    .Where(tu => tu.User != null && 
-                           tu.User.UserRoles != null && 
-                           tu.User.UserRoles.Any(ru => ru.RolId == requestGetUserForTeamDto.RolId))
-                    .Select(tu => tu.User!)
-                    .ToList();
-
-                // Mapear a TeamMemberDto sin incluir la contraseña
-                var teamMembers = users.Select(u => new TeamMemberDto
-                {
-                    UserId = u.UserId,
-                    Dni = u.Dni,
-                    FirstName = u.FirstName,
-                    LastName = u.LastName,
-                    Email = u.Email,
-                    Address = u.Address,
-                    Country = u.Country,
-                    Image = u.Image,
-                    Category = u.Category,
-                    Seniority = u.Seniority,
-                    Status = u.Status,
-                    CreatedAt = u.CreatedAt,
-                    UpdatedAt = u.UpdatedAt
-                }).ToList();
-
-                return ResponseContract<List<TeamMemberDto>>.Ok(teamMembers, "Usuarios obtenidos satisfactoriamente");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error en GetUsersForTeam: {ex.Message}");
-                return ResponseContract<List<TeamMemberDto>>.Fail(ex.Message);
-            }
+            return context.Teams
+                .AsNoTracking()
+                .Where(t => t.TeamId == teamId)
+                .Select(ToSummary)
+                .FirstOrDefaultAsync(cancellationToken);
         }
 
-        /// <summary>
-        /// Método para actualizar la imagen del equipo
-        /// </summary>
-        /// <param name="requestUpdateImageTeamDto"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentException"></exception>
-        public async Task<bool> UpdateTeam(RequestUpdateTeamDto requestUpdateImageTeamDto)
+        public Task<List<TeamSummaryDto>> GetTeamsForUserAsync(Guid userId, CancellationToken cancellationToken = default)
         {
-            try
+            // Una sola consulta (antes: una para los IDs vía TeamUser + otra con Contains).
+            return context.Teams
+                .AsNoTracking()
+                .Where(t => (t.Status == null || t.Status == true) &&
+                            (t.CoachId == userId ||
+                             context.TeamsUsers.Any(tu => tu.TeamId == t.TeamId && tu.UserId == userId && tu.Status)))
+                .Select(ToSummary)
+                .ToListAsync(cancellationToken);
+        }
+
+        public Task<List<TeamMemberDto>> GetTeamMembersAsync(Guid teamId, Guid? roleId, CancellationToken cancellationToken = default)
+        {
+            // Filtro por rol y proyección en SQL (antes se cargaban todos los usuarios con sus roles
+            // en memoria y se filtraba después).
+            var query = context.TeamsUsers
+                .AsNoTracking()
+                .Where(tu => tu.TeamId == teamId && tu.User != null);
+
+            if (roleId.HasValue)
             {
-                var team = await context.Teams.FirstOrDefaultAsync(t => t.TeamId == requestUpdateImageTeamDto.TeamId);
-
-                if (team == null)
-                    return false;
-
-                if (!string.IsNullOrEmpty(requestUpdateImageTeamDto.Image))
-                {
-                    // Validar que la cadena base64 sea válida
-                    if (string.IsNullOrWhiteSpace(requestUpdateImageTeamDto.Image))
-                        throw new ArgumentException("La imagen no puede estar vacía.");
-
-                    // Si quieres validar que realmente sea base64
-                    if (!IsBase64String(requestUpdateImageTeamDto.Image))
-                        throw new ArgumentException("El formato de imagen no es válido.");
-
-                    team.Image = requestUpdateImageTeamDto.Image;
-                }
-
-                team.Bc1 = requestUpdateImageTeamDto.Bc1;
-                team.Bc2 = requestUpdateImageTeamDto.Bc2;
-                team.Bc3 = requestUpdateImageTeamDto.Bc3;
-                team.Bc4 = requestUpdateImageTeamDto.Bc4;
-
-                team.Country = requestUpdateImageTeamDto.Country;
-                team.Region = requestUpdateImageTeamDto.Region;
-                
-                team.UpdatedAt = DateTime.UtcNow;
-
-                context.Teams.Update(team);
-                await context.SaveChangesAsync();
-
-                return true;
+                var role = roleId.Value;
+                query = query.Where(tu => tu.User!.UserRoles!.Any(ur => ur.RolId == role));
             }
-            catch (Exception ex)
+
+            return query
+                .Select(tu => new TeamMemberDto
+                {
+                    UserId = tu.User!.UserId,
+                    Dni = tu.User.Dni,
+                    FirstName = tu.User.FirstName,
+                    LastName = tu.User.LastName,
+                    Email = tu.User.Email,
+                    Address = tu.User.Address,
+                    Country = tu.User.Country,
+                    Image = tu.User.Image,
+                    Category = tu.User.Category,
+                    Seniority = tu.User.Seniority,
+                    Status = tu.User.Status,
+                    CreatedAt = tu.User.CreatedAt,
+                    UpdatedAt = tu.User.UpdatedAt
+                })
+                .ToListAsync(cancellationToken);
+        }
+
+        public async Task AddTeamMemberAsync(Guid teamId, Guid userId, CancellationToken cancellationToken = default)
+        {
+            context.TeamsUsers.Add(new TeamUser
             {
-                // Aquí puedes loguear el error si tienes un sistema de auditoría
-                Console.WriteLine($"Error al actualizar la imagen: {ex.Message}");
+                TeamId = teamId,
+                UserId = userId,
+                DateCreation = DateTime.Now
+            });
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task<bool> UpdateTeamAsync(RequestUpdateTeamDto dto, CancellationToken cancellationToken = default)
+        {
+            var team = await context.Teams.FirstOrDefaultAsync(t => t.TeamId == dto.TeamId, cancellationToken);
+            if (team is null)
                 return false;
-            }
-        }
-        private bool IsBase64String(string base64)
-        {
-            Span<byte> buffer = new Span<byte>(new byte[base64.Length]);
-            return Convert.TryFromBase64String(base64, buffer, out _);
+
+            if (!string.IsNullOrWhiteSpace(dto.Image))
+                team.Image = dto.Image;
+
+            team.Bc1 = dto.Bc1;
+            team.Bc2 = dto.Bc2;
+            team.Bc3 = dto.Bc3;
+            team.Bc4 = dto.Bc4;
+            team.Country = dto.Country;
+            team.Region = dto.Region;
+            team.UpdatedAt = DateTime.UtcNow;
+
+            // La entidad ya está rastreada: EF solo actualiza las columnas que cambiaron
+            // (context.Teams.Update marcaba todas las columnas como modificadas).
+            await context.SaveChangesAsync(cancellationToken);
+            return true;
         }
 
-        /// <summary>
-        /// Verificar si un usuario ya pertenece a un equipo
-        /// </summary>
-        public async Task<bool> IsUserInTeam(Guid userId, Guid teamId)
-        {
-            return await context.TeamsUsers
-                .AnyAsync(tu => tu.UserId == userId && tu.TeamId == teamId);
-        }
+        public Task<bool> TeamExistsAsync(Guid teamId, CancellationToken cancellationToken = default)
+            => context.Teams.AnyAsync(t => t.TeamId == teamId, cancellationToken);
 
-        /// <summary>
-        /// Contar la cantidad de equipos que ha creado un usuario
-        /// </summary>
-        public async Task<int> CountTeamsByUserIdAsync(Guid userId)
-        {
-            return await context.Teams
-                .CountAsync(t => t.CoachId == userId && (t.Status == null || t.Status == true));
-        }
+        public Task<bool> UserExistsAsync(Guid userId, CancellationToken cancellationToken = default)
+            => context.Users.AnyAsync(u => u.UserId == userId, cancellationToken);
 
-        /// <summary>
-        /// Contar la cantidad de atletas en un equipo
-        /// </summary>
-        public async Task<int> CountAthletesByTeamIdAsync(Guid teamId)
-        {
-            return await context.TeamsUsers
-                .CountAsync(tu => tu.TeamId == teamId);
-        }
+        public Task<bool> IsUserInTeam(Guid userId, Guid teamId, CancellationToken cancellationToken = default)
+            => context.TeamsUsers.AnyAsync(tu => tu.UserId == userId && tu.TeamId == teamId, cancellationToken);
+
+        public Task<int> CountTeamsByUserIdAsync(Guid userId)
+            => context.Teams.CountAsync(t => t.CoachId == userId && (t.Status == null || t.Status == true));
+
+        public Task<int> CountAthletesByTeamIdAsync(Guid teamId)
+            => context.TeamsUsers.CountAsync(tu => tu.TeamId == teamId);
     }
 }

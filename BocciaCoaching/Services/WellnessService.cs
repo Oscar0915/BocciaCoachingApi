@@ -1,125 +1,137 @@
 using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.Wellness;
+using BocciaCoaching.Models.Entities;
 using BocciaCoaching.Repositories.Interfaces.IWellness;
 using BocciaCoaching.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using MySqlConnector;
 
 namespace BocciaCoaching.Services
 {
-    public class WellnessService : IWellnessService
+    /// <summary>
+    /// ES: Reglas de negocio del test diario de bienestar (escala 1–7 en Sueño, Estrés, Fatiga y
+    /// Dolor Muscular; un registro por atleta por día). Los errores inesperados se propagan al
+    /// <c>GlobalExceptionHandler</c>.
+    /// </summary>
+    public class WellnessService(IWellnessRepository repository) : IWellnessService
     {
-        private readonly IWellnessRepository _repository;
+        private const int MinScore = 1;
+        private const int MaxScore = 7;
+        private const string OutOfRangeMessage = "Todos los indicadores deben estar entre 1 y 7.";
+        private const string AlreadyRegisteredMessage = "El atleta ya registró su test de bienestar para este día.";
+        private const string NotFoundMessage = "No se encontró el test de bienestar indicado.";
 
-        public WellnessService(IWellnessRepository repository)
+        public async Task<ResponseContract<ResponseDailyWellnessDto>> RegisterDailyWellnessAsync(AddDailyWellnessDto dto, CancellationToken cancellationToken = default)
         {
-            _repository = repository;
-        }
+            if (!AreValuesInRange(dto.Sleep, dto.Stress, dto.Fatigue, dto.MusclePain))
+                return ResponseContract<ResponseDailyWellnessDto>.Invalid(OutOfRangeMessage);
 
-        public async Task<ResponseContract<ResponseDailyWellnessDto>> RegisterDailyWellness(AddDailyWellnessDto dto)
-        {
+            var assessmentDate = (dto.AssessmentDate ?? DateTime.Now).Date;
+
+            if (await repository.ExistsForDayAsync(dto.AthleteId, assessmentDate, cancellationToken))
+                return ResponseContract<ResponseDailyWellnessDto>.Conflict(AlreadyRegisteredMessage);
+
+            if (!await repository.AthleteExistsAsync(dto.AthleteId, cancellationToken))
+                return ResponseContract<ResponseDailyWellnessDto>.NotFound("El atleta indicado no existe.");
+
+            var (total, average) = CalculateScores(dto.Sleep, dto.Stress, dto.Fatigue, dto.MusclePain);
+            var entity = new DailyWellness
+            {
+                AthleteId = dto.AthleteId,
+                TeamId = dto.TeamId,
+                AssessmentDate = assessmentDate,
+                Sleep = dto.Sleep,
+                Stress = dto.Stress,
+                Fatigue = dto.Fatigue,
+                MusclePain = dto.MusclePain,
+                TotalScore = total,
+                AverageScore = average,
+                Observations = dto.Observations,
+                CreatedAt = DateTime.Now
+            };
+
             try
             {
-                if (!AreValuesInRange(dto.Sleep, dto.Stress, dto.Fatigue, dto.MusclePain))
-                    return ResponseContract<ResponseDailyWellnessDto>.Fail("Todos los indicadores deben estar entre 1 y 7.");
-
-                return await _repository.CreateIfNotExistsForDayAsync(dto);
+                await repository.AddAsync(entity, cancellationToken);
             }
-            catch (Exception e)
+            catch (DbUpdateException ex) when (IsDuplicateKey(ex))
             {
-                Console.WriteLine(e);
-                return ResponseContract<ResponseDailyWellnessDto>.Fail($"Error al registrar el test de bienestar: {e.Message}");
+                // Dos envíos simultáneos: el índice único (atleta, día) garantiza un solo registro.
+                return ResponseContract<ResponseDailyWellnessDto>.Conflict(AlreadyRegisteredMessage);
             }
+
+            var created = await repository.GetByIdAsync(entity.DailyWellnessId, cancellationToken);
+            return ResponseContract<ResponseDailyWellnessDto>.Created(created!, "Test de bienestar registrado correctamente");
         }
 
-        public async Task<ResponseContract<ResponseDailyWellnessDto>> UpdateDailyWellness(UpdateDailyWellnessDto dto)
+        public async Task<ResponseContract<ResponseDailyWellnessDto>> UpdateDailyWellnessAsync(UpdateDailyWellnessDto dto, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                if (!AreValuesInRange(dto.Sleep, dto.Stress, dto.Fatigue, dto.MusclePain))
-                    return ResponseContract<ResponseDailyWellnessDto>.Fail("Todos los indicadores deben estar entre 1 y 7.");
+            if (!AreValuesInRange(dto.Sleep, dto.Stress, dto.Fatigue, dto.MusclePain))
+                return ResponseContract<ResponseDailyWellnessDto>.Invalid(OutOfRangeMessage);
 
-                return await _repository.UpdateAsync(dto);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return ResponseContract<ResponseDailyWellnessDto>.Fail($"Error al actualizar el test de bienestar: {e.Message}");
-            }
+            var entity = await repository.GetForUpdateAsync(dto.DailyWellnessId, cancellationToken);
+            if (entity is null)
+                return ResponseContract<ResponseDailyWellnessDto>.NotFound(NotFoundMessage);
+
+            var (total, average) = CalculateScores(dto.Sleep, dto.Stress, dto.Fatigue, dto.MusclePain);
+            entity.Sleep = dto.Sleep;
+            entity.Stress = dto.Stress;
+            entity.Fatigue = dto.Fatigue;
+            entity.MusclePain = dto.MusclePain;
+            entity.Observations = dto.Observations;
+            entity.TotalScore = total;
+            entity.AverageScore = average;
+            entity.UpdatedAt = DateTime.Now;
+
+            await repository.SaveChangesAsync(cancellationToken);
+
+            var updated = await repository.GetByIdAsync(entity.DailyWellnessId, cancellationToken);
+            return ResponseContract<ResponseDailyWellnessDto>.Ok(updated!, "Test de bienestar actualizado correctamente");
         }
 
-        public async Task<ResponseContract<ResponseDailyWellnessDto>> GetTodayWellness(Guid athleteId)
+        public Task<ResponseContract<ResponseDailyWellnessDto>> GetTodayWellnessAsync(Guid athleteId, CancellationToken cancellationToken = default)
+            => GetWellnessByDateAsync(athleteId, DateTime.Now, cancellationToken);
+
+        public async Task<ResponseContract<ResponseDailyWellnessDto>> GetWellnessByDateAsync(Guid athleteId, DateTime date, CancellationToken cancellationToken = default)
         {
-            return await GetWellnessByDate(athleteId, DateTime.Now);
+            var result = await repository.GetByAthleteAndDateAsync(athleteId, date, cancellationToken);
+            return result is null
+                ? ResponseContract<ResponseDailyWellnessDto>.NotFound("El atleta no ha registrado su test de bienestar para esta fecha.")
+                : ResponseContract<ResponseDailyWellnessDto>.Ok(result);
         }
 
-        public async Task<ResponseContract<ResponseDailyWellnessDto>> GetWellnessByDate(Guid athleteId, DateTime date)
+        public async Task<ResponseContract<ResponseDailyWellnessDto>> GetWellnessByIdAsync(Guid dailyWellnessId, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                var result = await _repository.GetByAthleteAndDateAsync(athleteId, date);
-                if (result == null)
-                    return ResponseContract<ResponseDailyWellnessDto>.Fail("El atleta no ha registrado su test de bienestar para esta fecha.");
-
-                return ResponseContract<ResponseDailyWellnessDto>.Ok(result);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return ResponseContract<ResponseDailyWellnessDto>.Fail($"Error al obtener el test de bienestar: {e.Message}");
-            }
+            var result = await repository.GetByIdAsync(dailyWellnessId, cancellationToken);
+            return result is null
+                ? ResponseContract<ResponseDailyWellnessDto>.NotFound(NotFoundMessage)
+                : ResponseContract<ResponseDailyWellnessDto>.Ok(result);
         }
 
-        public async Task<ResponseContract<ResponseDailyWellnessDto>> GetWellnessById(Guid dailyWellnessId)
+        public async Task<ResponseContract<WellnessAthleteHistoryDto>> GetAthleteHistoryAsync(Guid athleteId, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                var result = await _repository.GetByIdAsync(dailyWellnessId);
-                if (result == null)
-                    return ResponseContract<ResponseDailyWellnessDto>.Fail("No se encontró el test de bienestar indicado.");
-
-                return ResponseContract<ResponseDailyWellnessDto>.Ok(result);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return ResponseContract<ResponseDailyWellnessDto>.Fail($"Error al obtener el test de bienestar: {e.Message}");
-            }
+            var result = await repository.GetAthleteHistoryAsync(athleteId, cancellationToken);
+            return result is null
+                ? ResponseContract<WellnessAthleteHistoryDto>.NotFound("No se encontró el atleta indicado.")
+                : ResponseContract<WellnessAthleteHistoryDto>.Ok(result);
         }
 
-        public async Task<ResponseContract<WellnessAthleteHistoryDto>> GetAthleteHistory(Guid athleteId)
+        public async Task<ResponseContract<List<ResponseDailyWellnessDto>>> GetTeamWellnessByDateAsync(Guid teamId, DateTime date, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                var result = await _repository.GetAthleteHistoryAsync(athleteId);
-                if (result == null)
-                    return ResponseContract<WellnessAthleteHistoryDto>.Fail("No se encontró el atleta indicado.");
-
-                return ResponseContract<WellnessAthleteHistoryDto>.Ok(result);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return ResponseContract<WellnessAthleteHistoryDto>.Fail($"Error al obtener el historial de bienestar: {e.Message}");
-            }
-        }
-
-        public async Task<ResponseContract<List<ResponseDailyWellnessDto>>> GetTeamWellnessByDate(Guid teamId, DateTime date)
-        {
-            try
-            {
-                var result = await _repository.GetTeamWellnessByDateAsync(teamId, date);
-                return ResponseContract<List<ResponseDailyWellnessDto>>.Ok(result);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return ResponseContract<List<ResponseDailyWellnessDto>>.Fail($"Error al obtener los tests de bienestar del equipo: {e.Message}");
-            }
+            var result = await repository.GetTeamWellnessByDateAsync(teamId, date, cancellationToken);
+            return ResponseContract<List<ResponseDailyWellnessDto>>.Ok(result);
         }
 
         private static bool AreValuesInRange(params int[] values)
+            => values.All(v => v is >= MinScore and <= MaxScore);
+
+        private static (int Total, double Average) CalculateScores(int sleep, int stress, int fatigue, int musclePain)
         {
-            return values.All(v => v >= 1 && v <= 7);
+            var total = sleep + stress + fatigue + musclePain;
+            return (total, Math.Round(total / 4.0, 2));
         }
+
+        private static bool IsDuplicateKey(DbUpdateException ex)
+            => ex.InnerException is MySqlException { ErrorCode: MySqlErrorCode.DuplicateKeyEntry };
     }
 }
-

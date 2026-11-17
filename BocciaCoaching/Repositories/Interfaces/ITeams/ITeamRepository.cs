@@ -1,39 +1,53 @@
-﻿﻿﻿using BocciaCoaching.Models.DTO.General;
-using BocciaCoaching.Models.DTO.Team;
+﻿using BocciaCoaching.Models.DTO.Team;
 
 namespace BocciaCoaching.Repositories.Interfaces.ITeams
 {
+    /// <summary>
+    /// ES: Acceso a datos de equipos. Devuelve datos (no ResponseContract): las reglas de negocio
+    /// y los mensajes viven en <c>TeamService</c>.
+    /// </summary>
     public interface ITeamRepository
     {
         /// <summary>
-        /// Método para agregar un nuevo equipo
+        /// ES: Crea el equipo y vincula al entrenador como miembro en una sola transacción.
         /// </summary>
-        /// <param name="requestTeamDto">Información del equipo</param>
-        /// <returns></returns>
-        Task<ResponseContract<Guid>> AddTeam(RequestTeamDto requestTeamDto);
-
+        /// <returns>Identificador del equipo creado.</returns>
+        Task<Guid> AddTeamAsync(RequestTeamDto requestTeamDto, CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Método para agregar mienbros al equipo
+        /// ES: Obtiene el resumen de un equipo (incluye cantidad de integrantes activos).
         /// </summary>
-        /// <param name="requestTeamMemberDto"></param>
-        /// <returns></returns>
-        Task<ResponseContract<bool>> AddTeamMember(RequestTeamMemberDto requestTeamMemberDto);
+        Task<TeamSummaryDto?> GetTeamByIdAsync(Guid teamId, CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Método para traer el listado de equipos relacionados a un coach con la cantidad de integrantes por equipo
+        /// ES: Equipos activos en los que el usuario es entrenador o miembro activo.
         /// </summary>
-        /// <param name="coachId">Identificador del coach</param>
-        /// <returns></returns>
-        Task<ResponseContract<List<TeamSummaryDto>>> GetTeamsForUser(Guid coachId);
+        Task<List<TeamSummaryDto>> GetTeamsForUserAsync(Guid userId, CancellationToken cancellationToken = default);
 
-        Task<ResponseContract<List<TeamMemberDto>>> GetUsersForTeam(RequestGetUserForTeamDto requestGetUserForTeamDto);
-        Task<bool> UpdateTeam(RequestUpdateTeamDto requestUpdateImageTeamDto);
-        
+        /// <summary>
+        /// ES: Integrantes del equipo, opcionalmente filtrados por rol (sin datos sensibles).
+        /// </summary>
+        Task<List<TeamMemberDto>> GetTeamMembersAsync(Guid teamId, Guid? roleId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// ES: Agrega un usuario al equipo.
+        /// </summary>
+        Task AddTeamMemberAsync(Guid teamId, Guid userId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// ES: Actualiza los datos editables del equipo.
+        /// </summary>
+        /// <returns><c>false</c> si el equipo no existe.</returns>
+        Task<bool> UpdateTeamAsync(RequestUpdateTeamDto requestUpdateTeamDto, CancellationToken cancellationToken = default);
+
+        Task<bool> TeamExistsAsync(Guid teamId, CancellationToken cancellationToken = default);
+
+        Task<bool> UserExistsAsync(Guid userId, CancellationToken cancellationToken = default);
+
         /// <summary>
         /// Verificar si un usuario ya pertenece a un equipo
         /// </summary>
-        Task<bool> IsUserInTeam(Guid userId, Guid teamId);
+        Task<bool> IsUserInTeam(Guid userId, Guid teamId, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Contar la cantidad de equipos que ha creado un usuario

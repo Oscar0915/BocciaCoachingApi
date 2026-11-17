@@ -5,13 +5,12 @@ namespace BocciaCoaching.Services.Interfaces
 {
     public interface IWellnessService
     {
-        Task<ResponseContract<ResponseDailyWellnessDto>> RegisterDailyWellness(AddDailyWellnessDto dto);
-        Task<ResponseContract<ResponseDailyWellnessDto>> UpdateDailyWellness(UpdateDailyWellnessDto dto);
-        Task<ResponseContract<ResponseDailyWellnessDto>> GetTodayWellness(Guid athleteId);
-        Task<ResponseContract<ResponseDailyWellnessDto>> GetWellnessByDate(Guid athleteId, DateTime date);
-        Task<ResponseContract<ResponseDailyWellnessDto>> GetWellnessById(Guid dailyWellnessId);
-        Task<ResponseContract<WellnessAthleteHistoryDto>> GetAthleteHistory(Guid athleteId);
-        Task<ResponseContract<List<ResponseDailyWellnessDto>>> GetTeamWellnessByDate(Guid teamId, DateTime date);
+        Task<ResponseContract<ResponseDailyWellnessDto>> RegisterDailyWellnessAsync(AddDailyWellnessDto dto, CancellationToken cancellationToken = default);
+        Task<ResponseContract<ResponseDailyWellnessDto>> UpdateDailyWellnessAsync(UpdateDailyWellnessDto dto, CancellationToken cancellationToken = default);
+        Task<ResponseContract<ResponseDailyWellnessDto>> GetTodayWellnessAsync(Guid athleteId, CancellationToken cancellationToken = default);
+        Task<ResponseContract<ResponseDailyWellnessDto>> GetWellnessByDateAsync(Guid athleteId, DateTime date, CancellationToken cancellationToken = default);
+        Task<ResponseContract<ResponseDailyWellnessDto>> GetWellnessByIdAsync(Guid dailyWellnessId, CancellationToken cancellationToken = default);
+        Task<ResponseContract<WellnessAthleteHistoryDto>> GetAthleteHistoryAsync(Guid athleteId, CancellationToken cancellationToken = default);
+        Task<ResponseContract<List<ResponseDailyWellnessDto>>> GetTeamWellnessByDateAsync(Guid teamId, DateTime date, CancellationToken cancellationToken = default);
     }
 }
-

@@ -1,5 +1,5 @@
+using System.Linq.Expressions;
 using BocciaCoaching.Data;
-using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.Wellness;
 using BocciaCoaching.Models.Entities;
 using BocciaCoaching.Repositories.Interfaces.IWellness;
@@ -7,170 +7,110 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BocciaCoaching.Repositories.Wellness
 {
-    public class WellnessRepository : IWellnessRepository
+    public class WellnessRepository(ApplicationDbContext context) : IWellnessRepository
     {
-        private readonly ApplicationDbContext _context;
-
-        public WellnessRepository(ApplicationDbContext context)
+        /// <summary>
+        /// ES: Proyección traducida a SQL: solo trae las columnas necesarias (incluido el nombre del
+        /// atleta), sin cargar ni rastrear la entidad User completa.
+        /// </summary>
+        private static readonly Expression<Func<DailyWellness, ResponseDailyWellnessDto>> ToDto = w => new ResponseDailyWellnessDto
         {
-            _context = context;
+            DailyWellnessId = w.DailyWellnessId,
+            AthleteId = w.AthleteId,
+            AthleteName = w.Athlete != null ? ((w.Athlete.FirstName ?? "") + " " + (w.Athlete.LastName ?? "")).Trim() : null,
+            TeamId = w.TeamId,
+            AssessmentDate = w.AssessmentDate,
+            Sleep = w.Sleep,
+            Stress = w.Stress,
+            Fatigue = w.Fatigue,
+            MusclePain = w.MusclePain,
+            TotalScore = w.TotalScore,
+            AverageScore = w.AverageScore,
+            Observations = w.Observations
+        };
+
+        /// <summary>
+        /// ES: Filtro por día como rango [inicio, inicio+1). A diferencia de <c>AssessmentDate.Date == x</c>,
+        /// permite usar el índice (AthleteId, AssessmentDate).
+        /// </summary>
+        private static Expression<Func<DailyWellness, bool>> OnDay(DateTime date)
+        {
+            var start = date.Date;
+            var end = start.AddDays(1);
+            return w => w.AssessmentDate >= start && w.AssessmentDate < end;
         }
 
-        public async Task<ResponseContract<ResponseDailyWellnessDto>> CreateIfNotExistsForDayAsync(AddDailyWellnessDto dto)
+        public Task<bool> ExistsForDayAsync(Guid athleteId, DateTime day, CancellationToken cancellationToken = default)
+            => context.DailyWellnessAssessments
+                .Where(w => w.AthleteId == athleteId)
+                .Where(OnDay(day))
+                .AnyAsync(cancellationToken);
+
+        public async Task AddAsync(DailyWellness entity, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                await using var transaction = await _context.Database.BeginTransactionAsync();
-
-                var assessmentDate = (dto.AssessmentDate ?? DateTime.Now).Date;
-
-                var alreadyExists = await _context.DailyWellnessAssessments
-                    .AnyAsync(w => w.AthleteId == dto.AthleteId && w.AssessmentDate.Date == assessmentDate);
-
-                if (alreadyExists)
-                {
-                    await transaction.RollbackAsync();
-                    return ResponseContract<ResponseDailyWellnessDto>.Fail(
-                        "El atleta ya registró su test de bienestar para este día.");
-                }
-
-                var totalScore = dto.Sleep + dto.Stress + dto.Fatigue + dto.MusclePain;
-                var averageScore = Math.Round(totalScore / 4.0, 2);
-
-                var entity = new DailyWellness
-                {
-                    AthleteId = dto.AthleteId,
-                    TeamId = dto.TeamId,
-                    AssessmentDate = assessmentDate,
-                    Sleep = dto.Sleep,
-                    Stress = dto.Stress,
-                    Fatigue = dto.Fatigue,
-                    MusclePain = dto.MusclePain,
-                    TotalScore = totalScore,
-                    AverageScore = averageScore,
-                    Observations = dto.Observations,
-                    CreatedAt = DateTime.Now
-                };
-
-                await _context.DailyWellnessAssessments.AddAsync(entity);
-                await _context.SaveChangesAsync();
-                await transaction.CommitAsync();
-
-                var athlete = await _context.Users.FindAsync(entity.AthleteId);
-
-                return ResponseContract<ResponseDailyWellnessDto>.Ok(
-                    MapToDto(entity, athlete),
-                    "Test de bienestar registrado correctamente");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error en CreateIfNotExistsForDayAsync: {ex.Message}");
-                return ResponseContract<ResponseDailyWellnessDto>.Fail($"Error al registrar el test de bienestar: {ex.Message}");
-            }
+            context.DailyWellnessAssessments.Add(entity);
+            await context.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task<ResponseContract<ResponseDailyWellnessDto>> UpdateAsync(UpdateDailyWellnessDto dto)
+        public Task<DailyWellness?> GetForUpdateAsync(Guid dailyWellnessId, CancellationToken cancellationToken = default)
+            => context.DailyWellnessAssessments.FirstOrDefaultAsync(w => w.DailyWellnessId == dailyWellnessId, cancellationToken);
+
+        public Task SaveChangesAsync(CancellationToken cancellationToken = default)
+            => context.SaveChangesAsync(cancellationToken);
+
+        public Task<bool> AthleteExistsAsync(Guid athleteId, CancellationToken cancellationToken = default)
+            => context.Users.AnyAsync(u => u.UserId == athleteId, cancellationToken);
+
+        public Task<ResponseDailyWellnessDto?> GetByAthleteAndDateAsync(Guid athleteId, DateTime date, CancellationToken cancellationToken = default)
+            => context.DailyWellnessAssessments
+                .AsNoTracking()
+                .Where(w => w.AthleteId == athleteId)
+                .Where(OnDay(date))
+                .Select(ToDto)
+                .FirstOrDefaultAsync(cancellationToken);
+
+        public Task<ResponseDailyWellnessDto?> GetByIdAsync(Guid dailyWellnessId, CancellationToken cancellationToken = default)
+            => context.DailyWellnessAssessments
+                .AsNoTracking()
+                .Where(w => w.DailyWellnessId == dailyWellnessId)
+                .Select(ToDto)
+                .FirstOrDefaultAsync(cancellationToken);
+
+        public async Task<WellnessAthleteHistoryDto?> GetAthleteHistoryAsync(Guid athleteId, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                var entity = await _context.DailyWellnessAssessments.FindAsync(dto.DailyWellnessId);
-                if (entity == null)
-                    return ResponseContract<ResponseDailyWellnessDto>.Fail("No se encontró el test de bienestar indicado.");
+            var athleteName = await context.Users
+                .AsNoTracking()
+                .Where(u => u.UserId == athleteId)
+                .Select(u => ((u.FirstName ?? "") + " " + (u.LastName ?? "")).Trim())
+                .FirstOrDefaultAsync(cancellationToken);
 
-                entity.Sleep = dto.Sleep;
-                entity.Stress = dto.Stress;
-                entity.Fatigue = dto.Fatigue;
-                entity.MusclePain = dto.MusclePain;
-                entity.Observations = dto.Observations;
-                entity.TotalScore = dto.Sleep + dto.Stress + dto.Fatigue + dto.MusclePain;
-                entity.AverageScore = Math.Round(entity.TotalScore / 4.0, 2);
-                entity.UpdatedAt = DateTime.Now;
-
-                await _context.SaveChangesAsync();
-
-                var athlete = await _context.Users.FindAsync(entity.AthleteId);
-
-                return ResponseContract<ResponseDailyWellnessDto>.Ok(
-                    MapToDto(entity, athlete),
-                    "Test de bienestar actualizado correctamente");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error en UpdateAsync: {ex.Message}");
-                return ResponseContract<ResponseDailyWellnessDto>.Fail($"Error al actualizar el test de bienestar: {ex.Message}");
-            }
-        }
-
-        public async Task<ResponseDailyWellnessDto?> GetByAthleteAndDateAsync(Guid athleteId, DateTime date)
-        {
-            var targetDate = date.Date;
-            var entity = await _context.DailyWellnessAssessments
-                .Include(w => w.Athlete)
-                .FirstOrDefaultAsync(w => w.AthleteId == athleteId && w.AssessmentDate.Date == targetDate);
-
-            return entity == null ? null : MapToDto(entity, entity.Athlete);
-        }
-
-        public async Task<ResponseDailyWellnessDto?> GetByIdAsync(Guid dailyWellnessId)
-        {
-            var entity = await _context.DailyWellnessAssessments
-                .Include(w => w.Athlete)
-                .FirstOrDefaultAsync(w => w.DailyWellnessId == dailyWellnessId);
-
-            return entity == null ? null : MapToDto(entity, entity.Athlete);
-        }
-
-        public async Task<WellnessAthleteHistoryDto?> GetAthleteHistoryAsync(Guid athleteId)
-        {
-            var athlete = await _context.Users.FindAsync(athleteId);
-            if (athlete == null)
+            if (athleteName is null)
                 return null;
 
-            var records = await _context.DailyWellnessAssessments
+            var records = await context.DailyWellnessAssessments
+                .AsNoTracking()
                 .Where(w => w.AthleteId == athleteId)
                 .OrderByDescending(w => w.AssessmentDate)
-                .ToListAsync();
+                .Select(ToDto)
+                .ToListAsync(cancellationToken);
 
             return new WellnessAthleteHistoryDto
             {
                 AthleteId = athleteId,
-                AthleteName = $"{athlete.FirstName} {athlete.LastName}".Trim(),
+                AthleteName = athleteName,
                 TotalRecords = records.Count,
                 OverallAverageScore = records.Count > 0 ? Math.Round(records.Average(r => r.AverageScore), 2) : null,
-                Records = records.Select(r => MapToDto(r, athlete)).ToList()
+                Records = records
             };
         }
 
-        public async Task<List<ResponseDailyWellnessDto>> GetTeamWellnessByDateAsync(Guid teamId, DateTime date)
-        {
-            var targetDate = date.Date;
-            var records = await _context.DailyWellnessAssessments
-                .Include(w => w.Athlete)
-                .Where(w => w.TeamId == teamId && w.AssessmentDate.Date == targetDate)
+        public Task<List<ResponseDailyWellnessDto>> GetTeamWellnessByDateAsync(Guid teamId, DateTime date, CancellationToken cancellationToken = default)
+            => context.DailyWellnessAssessments
+                .AsNoTracking()
+                .Where(w => w.TeamId == teamId)
+                .Where(OnDay(date))
                 .OrderBy(w => w.AthleteId)
-                .ToListAsync();
-
-            return records.Select(r => MapToDto(r, r.Athlete)).ToList();
-        }
-
-        private static ResponseDailyWellnessDto MapToDto(DailyWellness entity, User? athlete)
-        {
-            return new ResponseDailyWellnessDto
-            {
-                DailyWellnessId = entity.DailyWellnessId,
-                AthleteId = entity.AthleteId,
-                AthleteName = athlete != null ? $"{athlete.FirstName} {athlete.LastName}".Trim() : null,
-                TeamId = entity.TeamId,
-                AssessmentDate = entity.AssessmentDate,
-                Sleep = entity.Sleep,
-                Stress = entity.Stress,
-                Fatigue = entity.Fatigue,
-                MusclePain = entity.MusclePain,
-                TotalScore = entity.TotalScore,
-                AverageScore = entity.AverageScore,
-                Observations = entity.Observations
-            };
-        }
+                .Select(ToDto)
+                .ToListAsync(cancellationToken);
     }
 }
-

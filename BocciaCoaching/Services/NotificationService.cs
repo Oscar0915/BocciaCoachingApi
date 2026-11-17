@@ -542,13 +542,7 @@ namespace BocciaCoaching.Services
                     return ResponseContract<bool>.Fail("Esta notificación no es una invitación de equipo");
 
                 // Agregar el atleta al equipo
-                var teamMemberDto = new RequestTeamMemberDto
-                {
-                    TeamId = notification.ReferenceId.Value,
-                    UserId = notification.ReceiverId
-                };
-
-                var addMemberResult = await _teamService.AddTeamMember(teamMemberDto);
+                var addMemberResult = await _teamService.AddTeamMemberAsync(notification.ReferenceId.Value, notification.ReceiverId);
 
                 if (!addMemberResult.Success)
                     return ResponseContract<bool>.Fail($"Error al agregar al equipo: {addMemberResult.Message}");

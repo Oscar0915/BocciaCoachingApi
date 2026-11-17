@@ -1,5 +1,5 @@
 # Imagen base para compilar la app
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:11.0 AS build
 WORKDIR /src
 
 # Copiar primero la solución y los csproj para aprovechar la cache de Docker
@@ -15,7 +15,7 @@ WORKDIR /src/BocciaCoaching
 RUN dotnet publish -c Release -o /app/publish
 
 # Imagen base para ejecutar la app
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:11.0 AS runtime
 WORKDIR /app
 COPY --from=build /app/publish .
 
