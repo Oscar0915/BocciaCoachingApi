@@ -148,6 +148,11 @@ namespace BocciaCoaching.Data
                 .HasIndex(w => new { w.AthleteId, w.AssessmentDate })
                 .IsUnique();
 
+            // DailyWellness → los registros existentes antes de McLean quedan como escala v1
+            modelBuilder.Entity<DailyWellness>()
+                .Property(w => w.ScaleVersion)
+                .HasDefaultValue(DailyWellness.LegacyScaleVersion);
+
             // DailyWellness → User (Athlete)
             modelBuilder.Entity<DailyWellness>()
                 .HasOne(w => w.Athlete)

@@ -226,6 +226,11 @@ builder.Services.AddJwtAuthentication(builder.Configuration, builder.Environment
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
+// Cuestionario de bienestar: "hoy" se calcula en la zona horaria del atleta (el servidor corre en UTC).
+builder.Services.Configure<BocciaCoaching.Services.Wellness.WellnessOptions>(
+    builder.Configuration.GetSection(BocciaCoaching.Services.Wellness.WellnessOptions.SectionName));
+builder.Services.AddSingleton(TimeProvider.System);
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>

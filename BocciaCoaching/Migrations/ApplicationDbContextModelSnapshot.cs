@@ -237,11 +237,23 @@ namespace BocciaCoaching.Migrations
                     b.Property<int>("Fatigue")
                         .HasColumnType("int");
 
+                    b.Property<int>("Mood")
+                        .HasColumnType("int");
+
                     b.Property<int>("MusclePain")
                         .HasColumnType("int");
 
                     b.Property<string>("Observations")
                         .HasColumnType("longtext");
+
+                    b.Property<string>("ReadinessLevel")
+                        .HasMaxLength(10)
+                        .HasColumnType("varchar(10)");
+
+                    b.Property<int>("ScaleVersion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
 
                     b.Property<int>("Sleep")
                         .HasColumnType("int");
@@ -257,6 +269,9 @@ namespace BocciaCoaching.Migrations
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("VetoApplied")
+                        .HasColumnType("tinyint(1)");
 
                     b.HasKey("DailyWellnessId");
 

@@ -4,34 +4,45 @@ using BocciaCoaching.Models.Entities;
 namespace BocciaCoaching.Repositories.Interfaces.IWellness
 {
     /// <summary>
-    /// ES: Acceso a datos del test diario de bienestar. Devuelve datos (no ResponseContract):
-    /// las reglas de negocio viven en <c>WellnessService</c>.
+    /// ES: Acceso a datos del cuestionario diario de bienestar. Devuelve datos (no ResponseContract):
+    /// las reglas de negocio y los permisos viven en <c>WellnessService</c>.
     /// </summary>
     public interface IWellnessRepository
     {
-        /// <summary>ES: Indica si el atleta ya registró el test para ese día.</summary>
+        /// <summary>ES: Indica si el atleta ya registró el cuestionario para ese día.</summary>
         Task<bool> ExistsForDayAsync(Guid athleteId, DateTime day, CancellationToken cancellationToken = default);
 
-        /// <summary>ES: Inserta un nuevo test. Lanza DbUpdateException si viola el índice único (atleta, día).</summary>
+        /// <summary>ES: Inserta un cuestionario. Lanza DbUpdateException si viola el índice único (atleta, día).</summary>
         Task AddAsync(DailyWellness entity, CancellationToken cancellationToken = default);
 
-        /// <summary>ES: Obtiene la entidad rastreada para modificarla y luego llamar a <see cref="SaveChangesAsync"/>.</summary>
+        /// <summary>ES: Entidad rastreada para modificarla y luego llamar a <see cref="SaveChangesAsync"/>.</summary>
         Task<DailyWellness?> GetForUpdateAsync(Guid dailyWellnessId, CancellationToken cancellationToken = default);
 
         Task SaveChangesAsync(CancellationToken cancellationToken = default);
 
         Task<bool> AthleteExistsAsync(Guid athleteId, CancellationToken cancellationToken = default);
 
-        /// <summary>ES: Obtiene el test de bienestar de un atleta para una fecha específica.</summary>
+        Task<bool> TeamExistsAsync(Guid teamId, CancellationToken cancellationToken = default);
+
+        /// <summary>ES: true si el usuario es entrenador (dueño o miembro con rol Coach) de algún equipo del atleta.</summary>
+        Task<bool> IsCoachOfAthleteAsync(Guid coachId, Guid athleteId, CancellationToken cancellationToken = default);
+
+        /// <summary>ES: true si el usuario es entrenador (dueño o miembro con rol Coach) del equipo.</summary>
+        Task<bool> IsCoachOfTeamAsync(Guid coachId, Guid teamId, CancellationToken cancellationToken = default);
+
         Task<ResponseDailyWellnessDto?> GetByAthleteAndDateAsync(Guid athleteId, DateTime date, CancellationToken cancellationToken = default);
 
-        /// <summary>ES: Obtiene un test de bienestar por su identificador.</summary>
         Task<ResponseDailyWellnessDto?> GetByIdAsync(Guid dailyWellnessId, CancellationToken cancellationToken = default);
 
-        /// <summary>ES: Historial de tests de un atleta (null si el atleta no existe).</summary>
+        /// <summary>ES: Historial del atleta (null si el atleta no existe).</summary>
         Task<WellnessAthleteHistoryDto?> GetAthleteHistoryAsync(Guid athleteId, CancellationToken cancellationToken = default);
 
-        /// <summary>ES: Todos los tests de un equipo para una fecha.</summary>
+        /// <summary>ES: Atletas activos del equipo (miembros con rol Atleta).</summary>
+        Task<List<WellnessPendingAthleteDto>> GetTeamAthletesAsync(Guid teamId, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// ES: Cuestionarios del día de los atletas del equipo (aunque los hayan registrado sin indicar equipo).
+        /// </summary>
         Task<List<ResponseDailyWellnessDto>> GetTeamWellnessByDateAsync(Guid teamId, DateTime date, CancellationToken cancellationToken = default);
     }
 }
