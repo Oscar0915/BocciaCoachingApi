@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authorization;
+using BocciaCoaching.Infrastructure.Auth;
 using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.Notification;
 using BocciaCoaching.Services.Interfaces;
@@ -30,6 +32,7 @@ namespace BocciaCoaching.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = AuthRoles.Admin)]
         [HttpPost("CreateType")]
         public async Task<ActionResult<ResponseContract<bool>>> CreateType([FromBody] RequestCreateNotificationTypeDto type)
         {
@@ -37,6 +40,7 @@ namespace BocciaCoaching.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = AuthRoles.Admin)]
         [HttpPut("UpdateType")]
         public async Task<ActionResult<ResponseContract<bool>>> UpdateType([FromBody] RequestUpdateNotificationTypeDto type)
         {

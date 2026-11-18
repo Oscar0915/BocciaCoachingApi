@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authorization;
+using BocciaCoaching.Infrastructure.Auth;
 using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.Rol;
 using BocciaCoaching.Services.Interfaces;
@@ -17,6 +19,7 @@ namespace BocciaCoaching.Controllers
         }
 
         /// <summary>Crear un nuevo rol</summary>
+        [Authorize(Roles = AuthRoles.Admin)]
         [HttpPost("Create")]
         public async Task<ActionResult<ResponseContract<RolResponseDto>>> Create(CreateRolDto dto)
         {
@@ -25,6 +28,7 @@ namespace BocciaCoaching.Controllers
         }
 
         /// <summary>Obtener todos los roles</summary>
+        [AllowAnonymous]
         [HttpGet("GetAll")]
         public async Task<ActionResult<ResponseContract<List<RolResponseDto>>>> GetAll()
         {
@@ -33,6 +37,7 @@ namespace BocciaCoaching.Controllers
         }
 
         /// <summary>Obtener un rol por Id</summary>
+        [AllowAnonymous]
         [HttpGet("GetById/{id}")]
         public async Task<ActionResult<ResponseContract<RolResponseDto>>> GetById(Guid id)
         {
@@ -41,6 +46,7 @@ namespace BocciaCoaching.Controllers
         }
 
         /// <summary>Actualizar un rol existente</summary>
+        [Authorize(Roles = AuthRoles.Admin)]
         [HttpPut("Update")]
         public async Task<ActionResult<ResponseContract<RolResponseDto>>> Update(UpdateRolDto dto)
         {
@@ -49,6 +55,7 @@ namespace BocciaCoaching.Controllers
         }
 
         /// <summary>Eliminar un rol</summary>
+        [Authorize(Roles = AuthRoles.Admin)]
         [HttpDelete("Delete/{id}")]
         public async Task<ActionResult<ResponseContract<bool>>> Delete(Guid id)
         {

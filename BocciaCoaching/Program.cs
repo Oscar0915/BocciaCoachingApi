@@ -1,5 +1,8 @@
 using BocciaCoaching.Data;
 using BocciaCoaching.Infrastructure.Api;
+using BocciaCoaching.Infrastructure.Auth;
+using BocciaCoaching.Repositories.Auth;
+using BocciaCoaching.Services.Auth;
 using BocciaCoaching.Models.Configuration;
 using BocciaCoaching.Repositories;
 using BocciaCoaching.Repositories.AssesstStrength;
@@ -217,6 +220,12 @@ builder.Services.AddScoped<IMicrocycleTypeRepository, MicrocycleTypeRepository>(
 // Rol - Roles
 builder.Services.AddScoped<IRolRepository, RolRepository>();
 
+// Autenticación: JWT (access token corto) + refresh tokens rotativos guardados como hash.
+// Todas las APIs exigen token salvo las marcadas con [AllowAnonymous].
+builder.Services.AddJwtAuthentication(builder.Configuration, builder.Environment);
+builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -232,11 +241,28 @@ builder.Services.AddSwaggerGen(c =>
     var xmlFile = Path.Combine(AppContext.BaseDirectory, $"{typeof(Program).Assembly.GetName().Name}.xml");
     if (System.IO.File.Exists(xmlFile))
         c.IncludeXmlComments(xmlFile);
+
+    // Botón "Authorize" en Swagger: pega el accessToken (sin el prefijo "Bearer").
+    var bearerScheme = new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Access token obtenido en POST /api/v1/auth/login",
+        Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
+    };
+    c.AddSecurityDefinition("Bearer", bearerScheme);
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement { [bearerScheme] = Array.Empty<string>() });
 });
 
 
 
 var app = builder.Build();
+
+// IP real del cliente detrás del proxy (necesaria para el rate limiting por IP).
+app.UseForwardedHeaders();
 
 // Debe ir primero para capturar las excepciones de todo el pipeline.
 app.UseExceptionHandler();
@@ -258,9 +284,12 @@ app.UseRouting();
 // Use CORS - permitir credenciales para SignalR
 app.UseCors("AllowSpecificOrigins");
 
+app.UseRateLimiter();
+
+app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapHealthChecks("/health");
+app.MapHealthChecks("/health").AllowAnonymous();
 app.MapControllers();
 
 app.Run();

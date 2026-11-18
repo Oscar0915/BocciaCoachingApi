@@ -21,19 +21,20 @@ namespace BocciaCoaching.Tests
             var teamValidationMock = new Mock<ITeamValidationRepository>();
             var validationsMock = new Mock<IValidationsAssetsStrength>();
 
-            var addDto = new AddAssessStrengthDto { Description = "x", TeamId = 1 };
+            var addDto = new AddAssessStrengthDto { Description = "x", TeamId = Guid.NewGuid(), CoachId = Guid.NewGuid() };
 
             teamValidationMock.Setup(t => t.ValidateTeam(It.IsAny<BocciaCoaching.Models.Entities.Team>()))
                 .ReturnsAsync(true);
 
+            var assessId = Guid.NewGuid();
             var repoResponse = ResponseContract<ResponseAddAssessStrengthDto>.Ok(
-                new ResponseAddAssessStrengthDto { AssessStrengthId = 1, DateEvaluation = System.DateTime.Now, State = true },
+                new ResponseAddAssessStrengthDto { AssessStrengthId = assessId, DateEvaluation = System.DateTime.Now, State = true },
                 "ok");
 
             repoMock.Setup(r => r.CreateAssessmentIfNoneActiveAsync(It.IsAny<AddAssessStrengthDto>()))
                 .ReturnsAsync(repoResponse);
 
-            var service = new AssessStrengthService(repoMock.Object, teamValidationMock.Object, validationsMock.Object);
+            var service = new AssessStrengthService(repoMock.Object, teamValidationMock.Object, validationsMock.Object, Mock.Of<INotificationService>());
 
             // Act
             var result = await service.CreateEvaluation(addDto);
@@ -41,7 +42,7 @@ namespace BocciaCoaching.Tests
             // Assert
             result.Should().NotBeNull();
             result.Success.Should().BeTrue();
-            result.Data.AssessStrengthId.Should().Be(1);
+            result.Data.AssessStrengthId.Should().Be(assessId);
             repoMock.Verify(r => r.CreateAssessmentIfNoneActiveAsync(It.IsAny<AddAssessStrengthDto>()), Times.Once);
         }
     }

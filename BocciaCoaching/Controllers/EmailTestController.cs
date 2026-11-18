@@ -1,6 +1,8 @@
 using BocciaCoaching.Models.DTO.Email;
 using BocciaCoaching.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using BocciaCoaching.Infrastructure.Auth;
+using Microsoft.AspNetCore.Authorization;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Configuration;
@@ -10,6 +12,7 @@ namespace BocciaCoaching.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = AuthRoles.Admin)] // diagnóstico de correo: solo administradores
     public class EmailTestController : ControllerBase
     {
         private readonly IEmailService _emailService;

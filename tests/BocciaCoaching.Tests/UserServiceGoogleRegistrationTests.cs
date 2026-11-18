@@ -194,7 +194,7 @@ public class UserServiceGoogleRegistrationTests
         var registration = ResponseContract<bool>.Ok(true);
         service.Setup(user => user.VerifyGoogleEmail(verificationRequest)).ReturnsAsync(verification);
         service.Setup(user => user.RegisterWithGoogle(registrationRequest)).ReturnsAsync(registration);
-        var controller = new UserController(service.Object, Mock.Of<IFileStorageService>());
+        var controller = new UserController(service.Object, Mock.Of<IFileStorageService>(), Mock.Of<BocciaCoaching.Services.Auth.IAuthService>());
 
         var verifiedResult = await controller.VerifyGoogleEmail(verificationRequest);
         var registeredResult = await controller.RegisterWithGoogle(registrationRequest);

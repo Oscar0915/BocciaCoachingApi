@@ -16,5 +16,11 @@
         public Guid RolId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+
+        /// <summary>
+        /// ES: Tokens de la sesión. El frontend debe enviar <c>Tokens.AccessToken</c> en la cabecera
+        /// <c>Authorization: Bearer</c> y usar <c>Tokens.RefreshToken</c> en <c>/api/v1/auth/refresh</c>.
+        /// </summary>
+        public AuthTokensDto? Tokens { get; set; }
     }
 }

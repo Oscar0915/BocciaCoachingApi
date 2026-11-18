@@ -10,6 +10,9 @@ namespace BocciaCoaching.Services.Interfaces
         Task SendSecurityCodeAsync(EmailParametersDto emailParametersDto);
         void SaveCode(EmailParametersDto emailParametersDto);
         EmailValidateCodeResponseDto ValidateCode(EmailParametersDto emailParametersDto);
+
+        /// <summary>ES: Invalida el código pendiente del email (p. ej. tras demasiados intentos fallidos).</summary>
+        void InvalidateCode(string email);
         
         // Métodos para notificaciones por email
         Task<bool> SendEmailNotificationAsync(EmailNotificationDto emailNotification);

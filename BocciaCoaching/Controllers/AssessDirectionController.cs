@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authorization;
+using BocciaCoaching.Infrastructure.Auth;
 using BocciaCoaching.Models.DTO.AssessDirection;
 using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.Entities;
@@ -66,6 +68,7 @@ namespace BocciaCoaching.Controllers
         /// <summary>
         /// Endpoint de debugging para verificar datos de evaluaciones de dirección
         /// </summary>
+        [Authorize(Roles = AuthRoles.Admin)]
         [HttpGet("DebugEvaluations/{teamId}")]
         public async Task<ActionResult> DebugEvaluations(Guid teamId)
         {

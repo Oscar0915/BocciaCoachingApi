@@ -336,6 +336,8 @@ namespace BocciaCoaching.Services
             _cache.Set(emailParametersDto.ToEmail, emailParametersDto.Code, options);
         }
 
+        public void InvalidateCode(string email) => _cache.Remove(email);
+
         public EmailValidateCodeResponseDto ValidateCode(EmailParametersDto emailParametersDto)
         {
             if (_cache.TryGetValue(emailParametersDto.ToEmail, out string? storedCode))

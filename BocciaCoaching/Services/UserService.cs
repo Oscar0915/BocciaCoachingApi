@@ -29,6 +29,10 @@ namespace BocciaCoaching.Services
 
         public async Task<ResponseContract<bool>> AddUser(InfoUserRegisterDto userDto)
         {
+            // El registro público solo permite entrenador o atleta: nadie puede auto-asignarse Admin.
+            if (userDto.Rol != RoleIds.Coach && userDto.Rol != RoleIds.Athlete)
+                return ResponseContract<bool>.Fail("El rol debe ser entrenador o atleta");
+
             return await _repository.AddUser(userDto);
         }
 
@@ -194,8 +198,13 @@ namespace BocciaCoaching.Services
 
         public async Task<ResponseContract<bool>> UpdatePassword(UpdatePasswordDto updatePasswordDto)
         {
-            if (updatePasswordDto.UserId == Guid.Empty && string.IsNullOrWhiteSpace(updatePasswordDto.Email))
-                return ResponseContract<bool>.Fail("Debe proporcionar el usuario o el email.");
+            // Cambiar la contraseña exige identificar al usuario y conocer la actual.
+            // (El restablecimiento sin contraseña actual va por ResetPassword con token del correo.)
+            if (updatePasswordDto.UserId == Guid.Empty)
+                return ResponseContract<bool>.Fail("Debe proporcionar el usuario.");
+
+            if (string.IsNullOrWhiteSpace(updatePasswordDto.CurrentPassword))
+                return ResponseContract<bool>.Fail("La contraseña actual es requerida.");
 
             if (!string.IsNullOrWhiteSpace(updatePasswordDto.Email))
                 updatePasswordDto.Email = updatePasswordDto.Email.Trim();

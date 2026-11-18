@@ -39,6 +39,7 @@ public abstract class ApiControllerBase : ControllerBase
         ResultStatus.Ok => StatusCodes.Status200OK,
         ResultStatus.Created => StatusCodes.Status201Created,
         ResultStatus.Invalid => StatusCodes.Status400BadRequest,
+        ResultStatus.Unauthorized => StatusCodes.Status401Unauthorized,
         ResultStatus.NotFound => StatusCodes.Status404NotFound,
         ResultStatus.Conflict => StatusCodes.Status409Conflict,
         ResultStatus.Forbidden => StatusCodes.Status403Forbidden,

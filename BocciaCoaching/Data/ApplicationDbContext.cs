@@ -76,8 +76,23 @@ namespace BocciaCoaching.Data
         // Microcycle Day (días/porcentajes por instancia de microciclo)
         public DbSet<MicrocycleDay> MicrocycleDays { get; set; }
 
+        // Autenticación: refresh tokens (solo se guarda el hash)
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // RefreshToken → búsqueda por hash (única) y revocación masiva por usuario/sesión
+            modelBuilder.Entity<RefreshToken>(entity =>
+            {
+                entity.HasIndex(t => t.TokenHash).IsUnique();
+                entity.HasIndex(t => t.UserId);
+                entity.HasIndex(t => t.FamilyId);
+                entity.HasOne(t => t.User)
+                    .WithMany()
+                    .HasForeignKey(t => t.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
             base.OnModelCreating(modelBuilder);
 
             // Seed de roles con GUIDs fijos (antes eran 1=Admin, 2=Coach, 3=Atleta)

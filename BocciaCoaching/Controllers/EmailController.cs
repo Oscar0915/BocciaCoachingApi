@@ -6,6 +6,10 @@ using BocciaCoaching.Services.Interfaces;
 using BocciaCoaching.Utils;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
+using BocciaCoaching.Infrastructure.Auth;
+using BocciaCoaching.Services.Auth;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace BocciaCoaching.Controllers
 {
@@ -15,40 +19,50 @@ namespace BocciaCoaching.Controllers
     {
 
         private readonly IEmailService _email;
+        private readonly IAuthService _auth;
 
-        public EmailController(IEmailService user)
+        public EmailController(IEmailService user, IAuthService auth)
         {
             _email = user;
+            _auth = auth;
         }
 
 
         [HttpPost("SendCodeVerify")]
+        [AllowAnonymous]
+        [EnableRateLimiting(AuthenticationSetup.AuthRateLimitPolicy)]
         public async Task<ActionResult<IEnumerable<bool>>> SendCodeVerify(EmailParametersDto emailParametersDto)
         {
-            var code = SecurityCodeGenerator.GenerateCode();
-
-            emailParametersDto.Code = code;
-
-            _email.SaveCode(emailParametersDto);
-
-            await _email.SendSecurityCodeAsync(emailParametersDto);
+            await _auth.SendVerificationCodeAsync(emailParametersDto.ToEmail);
 
             return Ok("Código enviado");
         }
 
 
+        /// <summary>
+        /// Valida el código enviado al correo (máx. 5 intentos). Si es válido devuelve <c>resetToken</c>,
+        /// de un solo uso y válido 10 minutos, que exige <c>User/ResetPassword</c>.
+        /// </summary>
         [HttpPost("ValidateCode")]
-        public async Task<ActionResult<IEnumerable<EmailValidateCodeResponseDto>>> ValidateCode(EmailParametersDto emailParametersDto)
+        [AllowAnonymous]
+        [EnableRateLimiting(AuthenticationSetup.AuthRateLimitPolicy)]
+        public async Task<ActionResult<EmailValidateCodeResponseDto>> ValidateCode(EmailParametersDto emailParametersDto)
         {
-            var isValid = _email.ValidateCode(emailParametersDto);
+            var result = await _auth.VerifyCodeAsync(emailParametersDto.ToEmail, emailParametersDto.Code);
 
-            return Ok(isValid);
+            return Ok(new EmailValidateCodeResponseDto
+            {
+                Message = result.Message,
+                StateCode = result.Success ? StatusCodes.Status200OK : StatusCodes.Status400BadRequest,
+                ResetToken = result.Data?.ResetToken
+            });
         }
 
         /// <summary>
         /// Test de conectividad SMTP
         /// </summary>
         [HttpGet("TestSmtpConnectivity")]
+        [Authorize(Roles = AuthRoles.Admin)]
         public async Task<ActionResult<object>> TestSmtpConnectivity()
         {
             try
@@ -90,6 +104,7 @@ namespace BocciaCoaching.Controllers
         /// Envía un email de prueba
         /// </summary>
         [HttpPost("SendTestEmail")]
+        [Authorize(Roles = AuthRoles.Admin)]
         public async Task<ActionResult<object>> SendTestEmail([FromQuery] string? toEmail = null)
         {
             try

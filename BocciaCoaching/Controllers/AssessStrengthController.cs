@@ -1,4 +1,6 @@
-﻿﻿﻿using BocciaCoaching.Models.DTO.AssessStrength;
+﻿﻿﻿using Microsoft.AspNetCore.Authorization;
+using BocciaCoaching.Infrastructure.Auth;
+using BocciaCoaching.Models.DTO.AssessStrength;
 using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.Statistic;
 using BocciaCoaching.Models.Entities;
@@ -67,6 +69,7 @@ namespace BocciaCoaching.Controllers
         /// </summary>
         /// <param name="teamId">ID del equipo</param>
         /// <returns>Información de debugging sobre las evaluaciones del equipo</returns>
+        [Authorize(Roles = AuthRoles.Admin)]
         [HttpGet("DebugEvaluations/{teamId}")]
         public async Task<ActionResult> DebugEvaluations(Guid teamId)
         {

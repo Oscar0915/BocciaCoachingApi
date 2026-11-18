@@ -16,6 +16,9 @@ public enum ResultStatus
     /// <summary>400 Bad Request — datos de entrada inválidos o regla de negocio incumplida.</summary>
     Invalid,
 
+    /// <summary>401 Unauthorized — credenciales o token inválidos.</summary>
+    Unauthorized,
+
     /// <summary>404 Not Found</summary>
     NotFound,
 

@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authorization;
+using BocciaCoaching.Infrastructure.Auth;
 using BocciaCoaching.Models.DTO.General;
 using BocciaCoaching.Models.DTO.Subscription;
 using BocciaCoaching.Models.DTO.Payment;
@@ -29,6 +31,7 @@ namespace BocciaCoaching.Controllers
         /// ES: Obtiene todos los tipos de suscripción disponibles
         /// EN: Gets all available subscription types
         /// </summary>
+        [AllowAnonymous]
         [HttpGet("types")]
         public async Task<ActionResult<ResponseContract<IEnumerable<SubscriptionTypeDto>>>> GetSubscriptionTypes()
         {
@@ -40,6 +43,7 @@ namespace BocciaCoaching.Controllers
         /// ES: Obtiene un tipo de suscripción por ID
         /// EN: Gets a subscription type by ID
         /// </summary>
+        [AllowAnonymous]
         [HttpGet("types/{id}")]
         public async Task<ActionResult<ResponseContract<SubscriptionTypeDto>>> GetSubscriptionType(Guid id)
         {
@@ -51,6 +55,7 @@ namespace BocciaCoaching.Controllers
         /// ES: Crea un nuevo tipo de suscripción (Solo para administradores)
         /// EN: Creates a new subscription type (Admin only)
         /// </summary>
+        [Authorize(Roles = AuthRoles.Admin)]
         [HttpPost("types")]
         public async Task<ActionResult<ResponseContract<SubscriptionTypeDto>>> CreateSubscriptionType(CreateSubscriptionTypeDto createDto)
         {
@@ -62,6 +67,7 @@ namespace BocciaCoaching.Controllers
         /// ES: Actualiza un tipo de suscripción (Solo para administradores)
         /// EN: Updates a subscription type (Admin only)
         /// </summary>
+        [Authorize(Roles = AuthRoles.Admin)]
         [HttpPut("types/{id}")]
         public async Task<ActionResult<ResponseContract<SubscriptionTypeDto>>> UpdateSubscriptionType(Guid id, CreateSubscriptionTypeDto updateDto)
         {
@@ -73,6 +79,7 @@ namespace BocciaCoaching.Controllers
         /// ES: Elimina un tipo de suscripción (Solo para administradores)
         /// EN: Deletes a subscription type (Admin only)
         /// </summary>
+        [Authorize(Roles = AuthRoles.Admin)]
         [HttpDelete("types/{id}")]
         public async Task<ActionResult<ResponseContract<bool>>> DeleteSubscriptionType(Guid id)
         {
@@ -338,6 +345,7 @@ namespace BocciaCoaching.Controllers
         /// ES: Maneja webhooks de Stripe
         /// EN: Handles Stripe webhooks
         /// </summary>
+        [AllowAnonymous]
         [HttpPost("webhooks/stripe")]
         public async Task<IActionResult> HandleStripeWebhook()
         {
@@ -375,6 +383,7 @@ namespace BocciaCoaching.Controllers
         /// ES: Obtiene todas las suscripciones (Solo administradores)
         /// EN: Gets all subscriptions (Admin only)
         /// </summary>
+        [Authorize(Roles = AuthRoles.Admin)]
         [HttpGet("admin/all")]
         public ActionResult<ResponseContract<IEnumerable<UserSubscriptionDto>>> GetAllSubscriptions()
         {
@@ -389,6 +398,7 @@ namespace BocciaCoaching.Controllers
         /// ES: Obtiene estadísticas de suscripciones (Solo administradores)
         /// EN: Gets subscription statistics (Admin only)
         /// </summary>
+        [Authorize(Roles = AuthRoles.Admin)]
         [HttpGet("admin/statistics")]
         public ActionResult<ResponseContract<object>> GetSubscriptionStatistics()
         {

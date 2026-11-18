@@ -15,6 +15,8 @@ namespace BocciaCoaching.Tests
         {
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
                 .UseInMemoryDatabase(dbName)
+                // El repositorio usa transacciones; la BD en memoria no las soporta y por defecto lanza.
+                .ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.InMemoryEventId.TransactionIgnoredWarning))
                 .Options;
             return new ApplicationDbContext(options);
         }
@@ -26,11 +28,12 @@ namespace BocciaCoaching.Tests
             var context = CreateInMemoryContext("testdb1");
             var repo = new AssessStrengthRepository(context);
 
-            // Seed: evaluación A para team 1
-            context.AssessStrengths.Add(new AssessStrength { TeamId = 1, State = "A", EvaluationDate = System.DateTime.Now });
+            // Seed: evaluación A para el equipo
+            var teamId = Guid.NewGuid();
+            context.AssessStrengths.Add(new AssessStrength { TeamId = teamId, State = "A", EvaluationDate = System.DateTime.Now });
             await context.SaveChangesAsync();
 
-            var dto = new AddAssessStrengthDto { TeamId = 1, Description = "Nuevo" };
+            var dto = new AddAssessStrengthDto { TeamId = teamId, CoachId = Guid.NewGuid(), Description = "Nuevo" };
 
             // Act
             var response = await repo.CreateAssessmentIfNoneActiveAsync(dto);
@@ -48,14 +51,17 @@ namespace BocciaCoaching.Tests
             var repo = new AssessStrengthRepository(context);
 
             // Seed assessStrength
-            var assess = new AssessStrength { TeamId = 1, State = "A", EvaluationDate = System.DateTime.Now };
+            var assess = new AssessStrength { TeamId = Guid.NewGuid(), State = "A", EvaluationDate = System.DateTime.Now };
             context.AssessStrengths.Add(assess);
+            // El repositorio exige que el atleta exista en User
+            var athleteId = Guid.NewGuid();
+            context.Users.Add(new User { UserId = athleteId, Email = "atleta@example.com" });
             await context.SaveChangesAsync();
 
             var detailDto = new BocciaCoaching.Models.DTO.AssessStrength.RequestAddDetailToEvaluationForAthlete
             {
                 AssessStrengthId = assess.AssessStrengthId,
-                AthleteId = 1,
+                AthleteId = athleteId,
                 ThrowOrder = 36,
                 ScoreObtained = 3,
                 Status = true,

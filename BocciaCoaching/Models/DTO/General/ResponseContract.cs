@@ -60,6 +60,9 @@ public class ResponseContract<T>
     public static ResponseContract<T> Invalid(string message)
         => new(false, message, default!, ResultStatus.Invalid);
 
+    public static ResponseContract<T> Unauthorized(string message = "No autorizado")
+        => new(false, message, default!, ResultStatus.Unauthorized);
+
     public static ResponseContract<T> NotFound(string message = "Recurso no encontrado")
         => new(false, message, default!, ResultStatus.NotFound);
 
